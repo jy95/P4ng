@@ -40,5 +40,39 @@ io.on("connection", function (socket) {
         });
     });
 
+    socket.on(eventEnum.JoinRoom , function (data) {
+       lobby.joinRoom(data, function (err,answer) {
+          if (err) {
+              // à déterminer
+          }  else {
+              socket.join(answer["name"]);
+              socket.emit(eventEnum.JoinRoom, answer);
+          }
+       });
+    });
+
+    socket.on(eventEnum.StartGame , function (data) {
+        lobby.startGame(data, function (err,answer) {
+            if (err) {
+                // à déterminer
+            } else {
+                io.emit(eventEnum.StartGame, answer);
+            }
+        });
+    });
+
+    socket.on(eventEnum.DeleteRoom, function (data) {
+        lobby.deleteRoom(data, function (err,answer) {
+           if (err) {
+               // à déterminer
+           } else {
+               // tell players that the room is deleted
+                io.in(data["name"]).emit(eventEnum.DeleteRoom, answer);
+                // to be tested ? : remove the room from Socket
+                io.sockets.in(data["name"]).leave(data["name"]);
+           }
+        });
+    });
+
 });
 
