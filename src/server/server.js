@@ -4,75 +4,44 @@
 var winston = require("winston");
 var lobby = require("./lobby.js");
 var eventEnum = require("../common/events.js");
-var app = require('express')();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-var port = 8080;
-
-server.listen(port, function () {
-    console.log('Server listening at port %d', port);
-});
-
-// Routing
-app.use(express.static(__dirname + '/public'));
-
+var io = require('socket.io')(8080);
 
 io.on("connection", function (socket) {
 
     socket.on(eventEnum.NewPlayer, function(data) {
-        lobby.newPlayer(data, function (err,player) {
-            if (err) {
-                // à déterminer
-            } else {
-                socket.emit(eventEnum.NewPlayer, player);
-            }
+        lobby.newPlayer(socket, data, function (err) {
+            winston.log("Requête " + eventEnum.newPlayer + " traitté : " + (err != null) ? " avec message " + err.message : " sans soucis" );
         });
 
     });
-    
-    socket.on(eventEnum.GetAvailableRooms , function () {
-        lobby.listRooms( function (err,rooms) {
-            if (err) {
-                // à déterminer
-            } else {
-                socket.emit(eventEnum.GetAvailableRooms, rooms);
-            }
-        });
+
+    socket.on(eventEnum.CreateRoom, function (data) {
+       lobby.createRoom(socket, data, function (err) {
+           winston.log("Requête " + eventEnum.CreateRoom + " traitté : " + (err != null) ? " avec message " + err.message : " sans soucis" );
+       });
     });
 
     socket.on(eventEnum.JoinRoom , function (data) {
-       lobby.joinRoom(data, function (err,answer) {
-          if (err) {
-              // à déterminer
-          }  else {
-              socket.join(answer["name"]);
-              socket.emit(eventEnum.JoinRoom, answer);
-          }
+       lobby.joinRoom(socket, data, function (err) {
+           winston.log("Requête " + eventEnum.JoinRoom + " traitté : " + (err != null) ? " avec message " + err.message : " sans soucis" );
        });
     });
 
     socket.on(eventEnum.StartGame , function (data) {
-        lobby.startGame(data, function (err,answer) {
-            if (err) {
-                // à déterminer
-            } else {
-                io.emit(eventEnum.StartGame, answer);
-            }
+        lobby.startGame(data, function (err) {
+            winston.log("Requête " + eventEnum.StartGame + " traitté : " + (err != null) ? " avec message " + err.message : " sans soucis" );
         });
     });
 
     socket.on(eventEnum.DeleteRoom, function (data) {
-        lobby.deleteRoom(data, function (err,answer) {
-           if (err) {
-               // à déterminer
-           } else {
-               // tell players that the room is deleted
-                io.in(data["name"]).emit(eventEnum.DeleteRoom, answer);
-                // to be tested ? : remove the room from Socket
-                io.sockets.in(data["name"]).leave(data["name"]);
-           }
+        lobby.deleteRoom(data, function (err) {
+            winston.log("Requête " + eventEnum.DeleteRoom + " traitté : " + (err != null) ? " avec message " + err.message : " sans soucis" );
         });
     });
 
 });
+
+module.exports = {
+    SocketIO : io
+};
 
