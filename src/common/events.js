@@ -7,5 +7,6 @@ module.exports = {
     GetAvailableRooms : "GetAvailableRooms",
     JoinRoom : "JoinRoom",
     DeleteRoom : "DeleteRoom",
-    StartGame : "StartGame"
+    StartGame : "StartGame",
+    CreateRoom : "CreateRoom"
 };
