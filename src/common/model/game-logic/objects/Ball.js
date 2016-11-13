@@ -4,9 +4,9 @@ module.exports = PongBall
 /*
 * Ball object
 */
-function PongBall({coordinatesBoundary, direction}){
+function PongBall({coordinatesBoundary, direction, game}){
     // this ball needs to know the game it's part of
-    this.game
+    this.game = game
 
     // ball coordinates, begins at the center
     this.x = coordinatesBoundary/2
@@ -17,7 +17,7 @@ function PongBall({coordinatesBoundary, direction}){
 
     // max for coordinates
     // should equal the game field width minus ball width
-    this.coordinatesBoundary = coordinatesBoundary
+    this.coordinatesBoundary = coordinatesBoundary-this.width
 
     // speed of the ball in pixels
     this.speed = 10
@@ -29,17 +29,22 @@ function PongBall({coordinatesBoundary, direction}){
     // represented by an angle in radians
     // defaults to a random angle
     this.beginningDirection = direction ? direction : Math.random() * Math.PI * 2
-    this.direction = beginningDirection
+    this.direction = this.beginningDirection
+
+    // the waiting baaaaall, used to wait for paddle stateID
+    // see https://github.com/jy95/P4ng/wiki/Synchronizing-strategy
+    this.waitingBall = new WaitingBall()
 }
 
 PongBall.prototype.move = function(){
+    this.waitingBall.addCommand(this.waitingBall.move)
     // move the ball from (x,y) to (x',y')
     // to compute x' and y' it uses:
     // this.angle as direction,
     // this.speed as distance
     // if you don't know math, it's magic, don't bother
-    this.x += this.speed * (Math.cos(this.angle))
-    this.y += this.speed * (Math.sin(this.angle))
+    this.x += this.speed * (Math.cos(this.direction))
+    this.y += this.speed * (Math.sin(this.direction))
 
     if(this.x < 0){
         this.x = 0 // enforcing boundaries
@@ -48,10 +53,10 @@ PongBall.prototype.move = function(){
         this.y = 0 // enforcing boundaries
         this.bounceFromNorth()
     }else if(this.x > this.coordinatesBoundary){
-        this.x = coordinatesBoundary // enforcing boundaries
+        this.x = this.coordinatesBoundary // enforcing boundaries
         this.bounceFromEast()
-    }else if(this.y > this.coordinatesBoundary-this.){
-        this.y = coordinatesBoundary // enforcing boundaries
+    }else if(this.y > this.coordinatesBoundary){
+        this.y = this.coordinatesBoundary // enforcing boundaries
         this.bounceFromSouth()
     }
 }
@@ -87,14 +92,15 @@ PongBall.prototype.bounce = function(side, straightAngle, position){
     // if the offset is a positive or negative int
     // we bounce of the paddle
     // else it's equal to 'no', meaning there was no collision (meaning a score)
-    var offset = this.game.getCollisionOffset(side, position)
+    var offset = this.game.getCollisionOffset(stateID, side, position)
     if(offset !== 'no') this.direction = straightAngle + offset
     else this.resetAfterScore()
 }
 
+// when a player scores
 PongBall.prototype.resetAfterScore = function(){
-    // we rotate the beginning direction to ninety degrees
-    this.beginningDirection += Math.PI/2
+    // we rotate the beginning direction of ninety degrees
+    this.beginningDirection = (this.beginningDirection + Math.PI/2)%(2*Math.PI)
     // we make it the new direction
     this.direction = this.beginningDirection
     // and start from center again
@@ -102,6 +108,10 @@ PongBall.prototype.resetAfterScore = function(){
     this.y = this.x
     // with the beginning speed
     this.speed = 10
+}
+
+PongBall.prototype.waitForState = function(stateID){
+    this.waitingBall.waitForState(stateID)
 }
 
 PongBall.prototype.toJSON = function(){
