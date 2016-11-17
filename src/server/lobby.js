@@ -1,10 +1,10 @@
-var roomModule = require("./room.js");
-var eventEnum = require("../common/events.js");
+let roomModule = require("./room.js");
+let eventEnum = require("../common/events.js");
 
 // all the rooms
-var rooms  = new Map();
+let rooms  = new Map();
 // all players
-var players = new Map();
+let players = new Map();
 
 module.exports = {
     newPlayer : function (socket,player,callback) {
@@ -20,13 +20,14 @@ module.exports = {
         callback(null);
     },
     createRoom : function (socket,data,callback) {
-        var currentPlayer = players.get(data["id"]);
+        // get player data
+        let currentPlayer = players.get( parseInt(data["id"] , 10));
 
         if (currentPlayer == null) {
-            callback(new Error("PAS D'ID User pour créer une ROOM"));
+            callback(new Error("No user found"));
         } else {
 
-        roomModule.createRoom(currentPlayer, generateId , function (err,room) {
+        roomModule.createRoom(parseInt(data["id"] , 10), generateId , data["roomName"], function (err,room) {
 
             // add creator in this room player
             room.addPlayer(socket, currentPlayer, function (err) {
@@ -36,6 +37,9 @@ module.exports = {
 
                     // add the created room to other
                     rooms.set(room.gameId, room);
+
+                    // json Data
+                    data["roomdId"] = room.gameId;
 
                     // send data
                     roomModule.sendMessage(socket,eventEnum.CreateRoom, data);
@@ -48,67 +52,104 @@ module.exports = {
         }
     },
     joinRoom : function (socket,data,callback) {
-        var currentPlayer = players.get(data["id"]);
-        var room = rooms.get(data["gameId"]);
+        // get player and room data
+        let currentPlayer = players.get( parseInt(data["id"], 10) );
+        let room = rooms.get( parseInt(data["roomdId"] , 10) );
+
 
         if (currentPlayer == null) {
-            callback(new Error("PAS D'ID User pour rejoindre une ROOM"));
+            callback(new Error("No user found"));
         } else if (room == null) {
-            callback(new Error("cette ROOM n'existe pas"));
+            callback(new Error("Room doesn't exist "));
         } else {
             room.addPlayer(socket,currentPlayer, function (err) {
                 if (err) {
                     callback(err);
                 } else {
 
-                    // send data
-                    roomModule.sendMessage(socket,eventEnum.JoinRoom, data);
-
+                    // send data to everyone
+                    roomModule.broadcastMessageInRoom(parseInt(data["roomdId"] , 10),eventEnum.JoinRoom,data);
                     callback(null);
                 }
             });
         }
     },
     startGame : function (socket,data,callback) {
-        var currentPlayer = players.get(data["id"]);
-        var room = rooms.get(data["gameId"]);
+        // get player and room data
+        let currentPlayer = players.get( parseInt(data["id"] , 10));
+        let room = rooms.get( parseInt( data["roomdId"] , 10) );
 
         if (currentPlayer == null) {
-            callback(new Error("PAS D'ID User pour rejoindre une ROOM"));
+            callback(new Error("No user found"));
         } else if (room == null) {
-            callback(new Error("cette ROOM n'existe pas"));
+            callback(new Error("Room doesn't exist "));
         } else {
             room.startGame(currentPlayer, function (err) {
                if (err) {
                    callback(err);
                } else {
                    // TODO What to send When game started ?
-                   roomModule.broadcastMessageInRoom(data["gameId"],eventEnum.StartGame,{})
+                   roomModule.broadcastMessageInRoom( parseInt( data["gameId"] , 10),eventEnum.StartGame,{})
                }
             });
         }
 
+    },
+    leaveRoom: function (socket,data,callback) {
+        // get player and room data
+        let currentPlayer = players.get( parseInt(data["id"] , 10));
+        let room = rooms.get( parseInt( data["roomdId"] , 10) );
+
+        if (currentPlayer == null) {
+            callback(new Error("No user found"));
+        } else if (room == null) {
+            callback(new Error("Room doesn't exist "));
+        } else {
+            room.leaveRoom(socket, currentPlayer , function (err, newMasterRequired , hasEnoughPlayers ) {
+               if (err) {
+                   callback(err);
+               } else {
+
+                   // remove player from lobby players
+                   players.delete( parseInt(data["id"] , 10) );
+
+                   // A new Master is required
+                   if ( hasEnoughPlayers && newMasterRequired) {
+                        room.newMaster( function (err, newMasterSocket, message) {
+                            if (err) {
+                                callback(err);
+                            } else {
+                                roomModule.sendMessage(newMasterSocket,eventEnum.NewMaster, message);
+                            }
+                        });
+                   }
+
+                   // send data
+                   roomModule.sendMessage(socket,eventEnum.LeaveRoom , data);
+                   // prevent another players in room
+                   roomModule.broadcastMessageInRoom( parseInt( data["roomdId"] , 10) , eventEnum.LeaveRoom,  data );
+
+               }
+            });
+        }
     }
-    // See next time for these cases :
-    //deleteRoom : deleteRoom
-    // removePlayer
 };
 
 // generateId Functions
 
 function generateId() {
-    var ts = new Date().toString();
-    var parts = ts.split( "" ).reverse();
-    var id = "";
+    let ts = new Date().toString();
+    let parts = ts.split( "" ).reverse();
+    let id = "";
 
-    for( var i = 0; i < this.length; ++i ) {
-        var index = getRandomInt( 0, parts.length - 1 );
+    for( let i = 0; i < this.length; ++i ) {
+        let index = _getRandomInt( 0, parts.length - 1 );
         id += parts[index];
     }
 
     return id;
 }
 
-function getRandomInt( min, max ) {
+function _getRandomInt( min, max ) {
     return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
 }
