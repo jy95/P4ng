@@ -1,15 +1,32 @@
 
-var game;
-var players = new Map();
-var creatorId;
-var gameId;
+let isStarted;
+let players = new Map();
+let creatorId;
+let gameId;
+let roomName;
 
-var io = require("./server").SocketIO;
+let io = require("./server").SocketIO;
 
-function Room(player,gameId,callback) {
-    this.creatorId = player;
+function Room(playerId,gameId,roomName,callback) {
+    this.creatorId = playerId;
     this.gameId = gameId;
+    this.roomName = roomName;
+    this.isStarted = false;
     callback(null,this);
+}
+
+/**
+ * Return index of player
+ * @param player
+ */
+function _findPlayer(player) {
+    let index = -1;
+    players.forEach( (value,key) => {
+        if ( parseInt( (value.user)["id"] , 10) === parseInt(player["id"] ,10) ) {
+            index = key;
+        }
+    });
+    return index;
 }
 
 module.exports = {
@@ -25,23 +42,56 @@ module.exports = {
             // add user socket to room
             socket.join('Room'+gameId);
 
-            // TODO add player in var game
+            // TODO add player in let game
 
             callback(null);
         } else {
-            callback(new Error('LIMITE DE JOUEURS ATTEINT'));
+            callback(new Error('MAX LIMIT players reached'));
         }
     },
     startGame : function (playerId,callback) {
-        if (creatorId.id === playerId) {
-
-            // TODO launch game (if not already done)
-
+        if (creatorId === playerId && !isStarted) {
+            isStarted = true;
             callback(null);
 
         } else {
-            callback(new Error("Vous n'êtes pas le propriétaire pour lancer la partie"));
+            callback(new Error("You don't have the right to start the game (only master can)"));
         }
+    },
+    leaveRoom : function (socket,player, callback) {
+
+        // find the index of this player in players array
+        let index = _findPlayer(player);
+
+        // check index
+        if ( index === -1 ) {
+            callback(new Error("Player not registered in this room"), false);
+        }
+
+        // remove player
+        players.delete(index);
+        socket.leave('Room'+ parseInt( player["roomId"] , 10));
+
+        // a New Master may be required , if enough players left
+        callback(null,  (creatorId === parseInt(player["id"], 10)) , players.size !== 1);
+
+    },
+    newMaster : function (callback) {
+
+        // first player key
+        let firstPlayer = players.keys().next().value;
+
+        // get his socket
+        let socket = (players.get(firstPlayer))["socketUser"];
+
+        // set creator
+        creatorId = parseInt ( (players.get(firstPlayer))["id"] , 10);
+
+        // message for the new player
+        let message = {id: creatorId, roomdId: gameId};
+
+        callback(null, socket,message);
+
     },
     sendMessage : function (socket,event,message) {
         socket.emit(event,message);
