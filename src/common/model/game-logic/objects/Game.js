@@ -13,6 +13,8 @@ function PongGame (ballDirection, updateCallback){
     this.width = 500
 
     // the last side to hit, so that we know who scored
+    // hitting is a good thing
+    // hitter did nothing wrong
     this.lastHitter = null
 
     // name is self-explanatory
@@ -29,42 +31,29 @@ function PongGame (ballDirection, updateCallback){
     // the object representing the ball
     if(!ballDirection) ballDirection = Math.random() * Math.PI * 2
     this.ball = new Ball({coordinatesBoundary : this.width, direction : ballDirection, game : this});
-
-    // here's all the shit needed to deal with latency
-
-    // history of every position each paddle has had
-    // each array is to be seen as a stack of every position a paddle reached
-    // to avoid memory overload, the 'stack' is actually an object
-    // its properties are the stateId of the paddle
-    // there's at alltime a maximum of 10 entries
-    this.paddlePositionHistory = {}
-    this.paddlePositionHistory[NORTH] = {}
-    this.paddlePositionHistory[EAST] = {}
-    this.paddleStateHistory[WEST] = {}
-    this.paddlePositionHistory[SOUTH] = {}
-
-    // stack of triplets of paddlePositionHistory id, side and ball position
-    // {side : 1, id : 27, ballPosition: 42}
-    this.collisionHistory = []
 }
 
 PongGame.prototype.addPlayer = function (player){
-    player.paddle = new Paddle({side : player.side, fieldSize : this.width})
+    // we give the player a paddle
+    player.paddle = new Paddle({side : player.side, fieldSize : this.width, isLocal: player.isLocal})
 
+    // we store him using his ID in the game list of players
     this.players[player.id] = player
 
+    // if the player doesn't have a side, we give him a free one
     if(!player.side) player.side = this.sides.length
+    // then we store his paddle on array storing the sides of the field
     this.sides[player.side] = player.paddle
 }
 
 PongGame.prototype.update = function (){
-    // moves the ball
-    this.ball.move()
-
     // magically moves only the local players :-O I'm David Blaine yo!
+    // (I'm kidding, I used an isLocal boolean in the move method)
     for (let paddle of this.sides)
         paddle.move()
-    this.updateCallback(this.toJson())
+    // moves the ball
+    this.ball.move()
+    this.updateCallback(this.toJSON())
 }
 
 PongGame.prototype.getCollisionOffset = function(stateID, side, position){
@@ -72,12 +61,14 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
     var hitPaddle = this.sides[side]
 
     // returns the offset, and sets a waiting ball if needed
-    var offset = getOffset(stateID, hitPaddle, position, this.ball.ballSize)
+    var offset = this.getCollision(stateID, hitPaddle, position, this.ball.ballSize)
     if(offset !== 'no') this.lastHitter = side
     else{
         // we give the paddle a point if we're sure he deserves it
-        if(this.lastHitter && stateID === this.lastHitter.stateID)
+        if(this.lastHitter !== null && stateID === hitPaddle.stateID){
             this.sides[this.lastHitter].score++
+            console.log('\nHITTER DID NOTHING WRONG\n' + stateID + ' = ' + hitPaddle.stateID)
+        }
         this.lastHitter = null
     }
     return offset
@@ -85,16 +76,18 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
 
 
 // this needs a drawing to explain
-PongGame.prototype.getOffset = function(stateID, paddle, ballPosition, ballSize){
+// returns 'no' if no collision with the paddle
+// else the offset of the ball on the paddle
+PongGame.prototype.getCollision = function(stateID, paddle, ballPosition, ballSize){
     var offset
     var halfWidth = paddle.width/2
-    if(paddle.stateHistory[stateID]){
-        offset = ballPosition - paddle.stateHistory[stateID] + halfWidth
+    if(paddle.stateHistory[stateID] !== undefined){
+        offset = ballPosition - (paddle.stateHistory[stateID] + halfWidth)
     }else{
-        offset = ballPosition - paddle.position + halfWidth
-        this.ball.waitForState(stateID, paddle);
+        offset = ballPosition - (paddle.position + halfWidth)
+        this.ball.waitForState(stateID, paddle)
     }
-    if(offset < 0) offset += ballSize
+    if(offset < 0) offset += this.ball.width
     if(Math.abs(offset) > halfWidth)return 'no'
     else return offset
 }

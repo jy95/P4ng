@@ -10,8 +10,8 @@ module.exports = WaitingBall
 function WaitingBall(ball){
     // we copy the value of master into local value
     // (WaitingBall is a Ball too, see prototype)
-    for(var prop in ball)
-        if(prop === 'waitingBall') this.[prop] = ball[prop]
+    //for(var prop in ball)
+    //    if(prop === 'waitingBall') this[prop] = ball[prop]
 
     // we don't want the waiting ball's waiting ball set automatically
     this.waitingBall = null
@@ -26,7 +26,7 @@ function WaitingBall(ball){
     this.wayTooOld = true
 
     // if we're also waiting on a waiting ball to execute
-    // we're a dirty WaitingBall
+    // we're a dirty, dirty WaitingBall
     this.dirty = false
 }
 

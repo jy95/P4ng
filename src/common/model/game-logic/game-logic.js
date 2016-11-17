@@ -4,7 +4,7 @@ const EventEmitter = require('events')
 
 var currentGame = null
 var gameEventEmitter = new EventEmitter()
-var intervalId
+var intervalId = 0
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(beginningDirection){
@@ -32,8 +32,8 @@ module.exports.startGame = function(){
 }
 
 module.exports.killGame = function(){
+    clearInterval(intervalId)
     delete currentGame.ball.game // I'm afraid of circular references
-    clearInterval(currentGame.intervalId)
     currentGame = null
 }
 // returns a JSON with all the data needed to display the game
@@ -41,15 +41,15 @@ module.exports.getState = function(){
     return currentGame.toJSON()
 }
 
-module.exports.udpatePlayer = function(id,position){
+module.exports.updatePlayer = function({id,position}){
     currentGame.players[id].paddle.position = position
 }
 
-module.exports.movePLayerLeft = function(id){
+module.exports.movePlayerLeft = function({id}){
     currentGame.players[id].paddle.movingLeft()
 }
 
-module.exports.movePLayerRight = function(id){
+module.exports.movePlayerRight = function({id}){
     currentGame.players[id].paddle.movingRight()
 }
 
@@ -58,6 +58,6 @@ module.exports.stopPlayer = function(id){
 }
 
 module.exports.ballCorrection = function(paddlePosition, playerId){
-    
+
     currentGame.ball.move()
 }

@@ -1,10 +1,17 @@
 const {NORTH, EAST, WEST, SOUTH} = require('../game-const.js') // ES6 deconstruction
+const WaitingBall = require('./WaitingBall.js')
+
 
 module.exports = PongBall
 /*
 * Ball object
 */
 function PongBall({coordinatesBoundary, direction, game}){
+    // stateID, used for synchronizing
+    // starts at 1 because paddles start at zero
+    // and since we execute paddle.update() before ball.update()
+    // state never match otherwise
+    this.stateID = 1
     // this ball needs to know the game it's part of
     this.game = game
 
@@ -20,7 +27,7 @@ function PongBall({coordinatesBoundary, direction, game}){
     this.coordinatesBoundary = coordinatesBoundary-this.width
 
     // speed of the ball in pixels
-    this.speed = 10
+    this.speed = 50
     this.maxSpeed = 70
     // strategy for how we increment speed (defaults to linear-medium)
     this.incrementSpeedFunction = this.linearMediumIncrementSpeed
@@ -37,7 +44,7 @@ function PongBall({coordinatesBoundary, direction, game}){
 }
 
 PongBall.prototype.move = function(){
-    this.waitingBall.addCommand(this.waitingBall.move)
+    //this.waitingBall.addCommand(this.waitingBall.move)
     // move the ball from (x,y) to (x',y')
     // to compute x' and y' it uses:
     // this.angle as direction,
@@ -59,6 +66,7 @@ PongBall.prototype.move = function(){
         this.y = this.coordinatesBoundary // enforcing boundaries
         this.bounceFromSouth()
     }
+    this.stateID++
 }
 
 // strategy function
@@ -92,7 +100,8 @@ PongBall.prototype.bounce = function(side, straightAngle, position){
     // if the offset is a positive or negative int
     // we bounce of the paddle
     // else it's equal to 'no', meaning there was no collision (meaning a score)
-    var offset = this.game.getCollisionOffset(stateID, side, position)
+    var offset = this.game.getCollisionOffset(this.stateID, side, position)
+    console.log('\noffset: ' + offset + '\n')
     if(offset !== 'no') this.direction = straightAngle + offset
     else this.resetAfterScore()
 }
@@ -110,8 +119,8 @@ PongBall.prototype.resetAfterScore = function(){
     this.speed = 10
 }
 
-PongBall.prototype.waitForState = function(stateID){
-    this.waitingBall.waitForState(stateID)
+PongBall.prototype.waitForState = function(stateID, paddle){
+    this.waitingBall.waitForState(stateID, paddle)
 }
 
 PongBall.prototype.toJSON = function(){
