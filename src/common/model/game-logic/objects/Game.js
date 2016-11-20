@@ -99,6 +99,7 @@ PongGame.prototype.getCollision = function(stateID, paddle, ballPosition, ballSi
 
 PongGame.prototype.toJSON = function(){
     var thePlayers = []
+
     for(let paddle of this.sides)
         thePlayers.push(paddle.toJSON())
 

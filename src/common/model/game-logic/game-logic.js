@@ -61,3 +61,8 @@ module.exports.ballCorrection = function(paddlePosition, playerId){
 
     currentGame.ball.move()
 }
+
+module.exports.ballCorrection = function(paddlePosition, playerId){
+
+    currentGame.ball.move()
+}
