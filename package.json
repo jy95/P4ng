@@ -2,15 +2,17 @@
   "name": "p4ng",
   "version": "1.0.0",
   "description": "A realtime Node.js pong game",
-  "main": "app.js",
+  "main": "src/app.js",
   "dependencies": {
+    "electron": "^1.4.7",
     "express": "^4.14.0",
     "socket.io": "^1.5.1",
     "winston": "^2.3.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron src/app.js"
   },
   "repository": {
     "type": "git",
