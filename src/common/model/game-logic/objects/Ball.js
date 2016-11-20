@@ -27,7 +27,7 @@ function PongBall({coordinatesBoundary, direction, game}){
     this.coordinatesBoundary = coordinatesBoundary-this.width
 
     // speed of the ball in pixels
-    this.speed = 50
+    this.speed = 10
     this.maxSpeed = 70
     // strategy for how we increment speed (defaults to linear-medium)
     this.incrementSpeedFunction = this.linearMediumIncrementSpeed

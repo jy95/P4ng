@@ -28,7 +28,7 @@ module.exports.addPlayer = function(player){
 module.exports.startGame = function(){
     intervalId = setInterval(function(){
         currentGame.update()
-    }, 250)
+    }, 17)
 }
 
 module.exports.killGame = function(){
