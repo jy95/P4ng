@@ -4,7 +4,9 @@ module.exports = PongPaddle
 /*
 * Paddle object
 */
-function PongPaddle ({side, fieldSize, isLocal}){
+function PongPaddle ({side, fieldSize, isLocal, id}){
+    // player's id
+    this.id = id
     //how many position we've been in
     // used for latency correction
     this.stateID = 0
@@ -87,4 +89,13 @@ PongPaddle.prototype.movingRight = function(){
 
 PongPaddle.prototype.subscribe = function(ball){
     this.subscribers[ball.stateID] = ball
+}
+
+PongPaddle.prototype.toJSON = function(){
+    return {
+        width: this.width,
+        position: this.position,
+        side: this.side,
+        score: this.score
+    }
 }

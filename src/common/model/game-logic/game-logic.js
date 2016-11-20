@@ -8,9 +8,9 @@ var intervalId = 0
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(beginningDirection){
-    currentGame = new Game(beginningDirection, function(){
-        this.emit('game-update')
-    }.bind(gameEventEmitter))
+    currentGame = new Game(beginningDirection, ()=>{
+        gameEventEmitter.emit('game-update')
+    })
 }
 
 // subscribe to state update
@@ -42,19 +42,19 @@ module.exports.getState = function(){
 }
 
 module.exports.updatePlayer = function({id,position}){
-    currentGame.players[id].paddle.position = position
+    currentGame.players[id].position = position
 }
 
 module.exports.movePlayerLeft = function({id}){
-    currentGame.players[id].paddle.movingLeft()
+    currentGame.players[id].movingLeft()
 }
 
 module.exports.movePlayerRight = function({id}){
-    currentGame.players[id].paddle.movingRight()
+    currentGame.players[id].movingRight()
 }
 
 module.exports.stopPlayer = function(id){
-    currentGame.players[id].paddle.stop()
+    currentGame.players[id].stop()
 }
 
 module.exports.ballCorrection = function(paddlePosition, playerId){

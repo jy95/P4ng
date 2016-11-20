@@ -3,7 +3,6 @@ const Ball = require('./Ball.js')
 const Paddle = require('./Paddle.js')
 
 module.exports = PongGame
-// TODO: deal with synchronicity
 /*
 * Game object
 */
@@ -35,15 +34,22 @@ function PongGame (ballDirection, updateCallback){
 
 PongGame.prototype.addPlayer = function (player){
     // we give the player a paddle
-    player.paddle = new Paddle({side : player.side, fieldSize : this.width, isLocal: player.isLocal})
+    var paddle = new Paddle({
+        side: player.side,
+        fieldSize: this.width,
+        isLocal: player.isLocal,
+        id: player.id
+    })
 
     // we store him using his ID in the game list of players
-    this.players[player.id] = player
+    this.players[player.id] = paddle
 
     // if the player doesn't have a side, we give him a free one
     if(!player.side) player.side = this.sides.length
     // then we store his paddle on array storing the sides of the field
-    this.sides[player.side] = player.paddle
+    this.sides[player.side] = paddle
+
+    return player.side
 }
 
 PongGame.prototype.update = function (){
@@ -93,10 +99,8 @@ PongGame.prototype.getCollision = function(stateID, paddle, ballPosition, ballSi
 
 PongGame.prototype.toJSON = function(){
     var thePlayers = []
-    for(let currentId in this.players){
-        var paddle = this.players[currentId].paddle
-        thePlayers.push({id : currentId, position : paddle.position, side : paddle.side, score: paddle.score})
-    }
+    for(let paddle of this.sides)
+        thePlayers.push(paddle.toJSON())
 
     var theBall = this.ball.toJSON()
 

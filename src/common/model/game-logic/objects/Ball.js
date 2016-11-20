@@ -123,7 +123,7 @@ PongBall.prototype.waitForState = function(stateID, paddle){
 }
 
 PongBall.prototype.toJSON = function(){
-    return {x: this.x, y: this.y}
+    return {x: this.x, y: this.y, width: this.width}
 }
 
 
