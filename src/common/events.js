@@ -36,15 +36,14 @@ module.exports = {
         The server sends {roomdId: 47, roomName: 'pong fever'}
         If not, the server sends back the same JSON (may change if not clear enough)
 
-        NOTE : the roomId is always equal to the id of its creator
-
     */
     CreateRoom : "CreateRoom",
 
     /*
         When a player wants to join a room, the client sends {id: 47, roomId: 69}
         If the room is accessible and everything's okay, the server removes the player from the main lobby, puts him in that room and returns the same JSON
-        Futhermore, every player in the room (including the new one) is sent a list of all the players in that room
+        + Every player in the room (except the new one) is sent the new player's JSON to update their view
+        + The new player is sent a list of all the players in that room to update his view (ListEnrolledPlayers)
         If not, the server returns {id: 47, roomId: -1}
     */
     JoinRoom : "JoinRoom",
@@ -57,7 +56,7 @@ module.exports = {
         Else if the player isn't the creator and the game hasn't started yet, only that player will be moved and sent the same JSON
         If the game has already started, wheter creator or not, only that player is moved and sent the same JSON. He is also considered having lost
         For every case, all the players moved to the main lobby will be sent a list of the available rooms and all the players remaining in the room will
-        be sent the list of all the players in the room
+        be sent the JSON of the player who left the room
         If there is only one remaining player and the game has started, he is considered the winner
         If the player isn't in that room, the server sends back {id: 47, roomId: -1}
 
@@ -76,7 +75,7 @@ module.exports = {
 
 
     /*
-        Whenever needed (player joins/leaves a room), all the players in that room are sent a list of all the players in that room to keep up-to-date
+        When a player enters a room he is sent a list of all the players currently in that room
         The server sends a simple array of player JSON
     */
     ListEnrolledPlayers : "ListEnrolledPlayers",
