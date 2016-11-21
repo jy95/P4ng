@@ -8,52 +8,71 @@ gameLogic.subscribe(()=>{
 var c = null
 
 c = document.getElementById('gameArea').getContext('2d')
+c.font = '30px LLPIXEL'
 
 document.getElementById('startButton').addEventListener('click', ()=>{
     start()
 })
 
-// leave place for the paddle's thickness
-c.translate(10,10)
-
 function updateView(){
     requestAnimationFrame(()=>{
         let state = gameLogic.getState()
+        c.clearRect(0,0,520,520)
 
-        c.clearRect(-10,-10,520,520)
+        c.fillStyle = '#FAEBD7'
+        // draw the ball
         drawBall(state.ball)
 
+        // draw the paddles and scores
         for(let paddle of state.players){
             drawPaddle(paddle)
-            document.getElementById(`p${paddle.side}`).innerText = paddle.score;
+            drawScore(paddle)
         }
     })
 }
 
 function drawBall({x,y, width}){
-    console.log(`x: ${x}, y: ${y}, width: ${width}`)
     c.fillRect(x, y, width, width)
 }
 
 function drawPaddle({side, position, width}){
+    let x, y, xOffset, yOffset
     switch(side){
-
         case NORTH:
-        c.fillRect(position, -10, width, 10)
-        break
-
         case SOUTH:
-        c.fillRect(position, 500, width, 510)
+        x = position
+        y = NORTH ? 10 : 490
+        xOffset = width
+        yOffset = 10
         break
 
         case EAST:
-        c.fillRect(500, position, 10, width)
-        break
-
         case WEST:
-        c.fillRect(-10, position, 10, width)
+        x = WEST ? 0 : 490
+        y = position
+        xOffset = 10
+        yOffset = width
         break
     }
+    c.fillRect(x, y, xOffset, yOffset)
+}
+
+function drawScore({side, score}){
+    let x = 250, y = 250
+    switch(side){
+        case NORTH:
+        y = 10
+        case SOUTH:
+        y = 490
+        break;
+        case EAST:
+        x = 490
+        break;
+        case WEST:
+        x = 10
+        break;
+    }
+    c.fillText(score, x, y)
 }
 
 function start(){
