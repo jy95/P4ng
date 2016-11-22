@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - "6.9.1"
+  - "node"
+install:
+  - npm install
+notifications:
+  slack:
+      on_success: change
+      on_failure: always
+branches:
+  only:
+  - master
+env:
+  matrix:
+  - TRAVIS_NODE_VERSION="6"
+  - TRAVIS_NODE_VERSION="7"

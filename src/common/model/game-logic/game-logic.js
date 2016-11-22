@@ -8,9 +8,9 @@ var intervalId = 0
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(beginningDirection){
-    currentGame = new Game(beginningDirection, ()=>{
+    currentGame = new Game({ballDirection: beginningDirection, updateCallback: ()=>{
         gameEventEmitter.emit('game-update')
-    })
+    }})
 }
 
 // subscribe to state update

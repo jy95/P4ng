@@ -1,4 +1,4 @@
-const {NORTH, EAST, WEST, SOUTH} = require('../game-const.js')
+const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = require('../game-const.js')
 const Ball = require('./Ball.js')
 const Paddle = require('./Paddle.js')
 
@@ -6,10 +6,10 @@ module.exports = PongGame
 /*
 * Game object
 */
-function PongGame (ballDirection, updateCallback){
+function PongGame ({ballDirection, updateCallback}){
     // P4ng field should be a square
     // this is the width of the field in pixels
-    this.width = 500
+    this.width = FIELD_WIDTH
 
     // the last side to hit, so that we know who scored
     // hitting is a good thing
@@ -28,8 +28,7 @@ function PongGame (ballDirection, updateCallback){
     this.players = {}
 
     // the object representing the ball
-    if(!ballDirection) ballDirection = Math.random() * Math.PI * 2
-    this.ball = new Ball({coordinatesBoundary : this.width, direction : ballDirection, game : this});
+    this.ball = new Ball({direction : ballDirection, game : this});
 }
 
 PongGame.prototype.addPlayer = function (player){
@@ -45,7 +44,7 @@ PongGame.prototype.addPlayer = function (player){
     this.players[player.id] = paddle
 
     // if the player doesn't have a side, we give him a free one
-    if(!player.side) player.side = this.sides.length
+    if(player.side === undefined) player.side = this.sides.length
     // then we store his paddle on array storing the sides of the field
     this.sides[player.side] = paddle
 
@@ -84,17 +83,18 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
 // returns 'no' if no collision with the paddle
 // else the offset of the ball on the paddle
 PongGame.prototype.getCollision = function(stateID, paddle, ballPosition, ballSize){
-    var offset
-    var halfWidth = paddle.width/2
+    let offset
     if(paddle.stateHistory[stateID] !== undefined){
-        offset = ballPosition - (paddle.stateHistory[stateID] + halfWidth)
+        offset = ballPosition - (paddle.stateHistory[stateID])
     }else{
-        offset = ballPosition - (paddle.position + halfWidth)
+        offset = ballPosition - (paddle.position)
         this.ball.waitForState(stateID, paddle)
     }
-    if(offset < 0) offset += this.ball.width
-    if(Math.abs(offset) > halfWidth)return 'no'
-    else return offset
+
+    let halfPaddle = paddle.width/2
+    let halfBall = this.ball.width/2
+    if(Math.abs(offset)-halfBall > halfPaddle)return 'no'
+    else return (((Math.PI/2) - 0.09)/(paddle.width/2))*offset
 }
 
 PongGame.prototype.toJSON = function(){

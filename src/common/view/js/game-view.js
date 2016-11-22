@@ -13,11 +13,14 @@ c.font = '30px LLPIXEL'
 document.getElementById('startButton').addEventListener('click', ()=>{
     start()
 })
+document.getElementById('stopButton').addEventListener('click', ()=>{
+    stop()
+})
 
 function updateView(){
     requestAnimationFrame(()=>{
         let state = gameLogic.getState()
-        c.clearRect(0,0,520,520)
+        c.clearRect(0,0,500,500)
 
         c.fillStyle = '#FAEBD7'
         // draw the ball
@@ -28,61 +31,78 @@ function updateView(){
             drawPaddle(paddle)
             drawScore(paddle)
         }
+        drawCorners()
     })
 }
 
 function drawBall({x,y, width}){
-    c.fillRect(x, y, width, width)
+    let halfWidth = width/2
+    c.fillRect(x-halfWidth, y-halfWidth, width, width)
 }
 
 function drawPaddle({side, position, width}){
-    let x, y, xOffset, yOffset
+    let halfWidth = width/2
     switch(side){
         case NORTH:
+        c.fillRect(position-halfWidth, 0, width, 10)
+        break
+
         case SOUTH:
-        x = position
-        y = NORTH ? 10 : 490
-        xOffset = width
-        yOffset = 10
+        c.fillRect(position-halfWidth, 490, width, 10)
         break
 
         case EAST:
+        c.fillRect(490, position-halfWidth, 10, width)
+        break
+
         case WEST:
-        x = WEST ? 0 : 490
-        y = position
-        xOffset = 10
-        yOffset = width
+        c.fillRect(0, position-halfWidth, 10, width)
         break
     }
-    c.fillRect(x, y, xOffset, yOffset)
 }
 
 function drawScore({side, score}){
-    let x = 250, y = 250
+    let x = 240, y = 260
     switch(side){
         case NORTH:
-        y = 10
+        y = 40
+        break
+
         case SOUTH:
-        y = 490
-        break;
+        y = 480
+        break
+
         case EAST:
-        x = 490
-        break;
+        x = 460
+        break
+
         case WEST:
-        x = 10
-        break;
+        x = 20
+        break
     }
     c.fillText(score, x, y)
 }
 
+function drawCorners(){
+    c.fillRect(0,0,10,10)
+    c.fillRect(490,0,10,10)
+    c.fillRect(490,490,10,10)
+    c.fillRect(0,490,10,10)
+}
+
 function start(){
-    gameLogic.initGame(3*Math.PI/2)
+    //gameLogic.initGame((Math.PI*2)-(0.02*5)) //
+    gameLogic.initGame(Math.PI-1.522)
 
     gameLogic.addPlayer({id: 0, side: 0, isLocal: true})
     gameLogic.addPlayer({id: 1, side: 1})
     gameLogic.addPlayer({id: 2, side: 2, isLocal: true})
     gameLogic.addPlayer({id: 3, side: 3})
-    gameLogic.movePlayerRight({id:2})
+    //gameLogic.movePlayerRight({id:2})
 
     gameLogic.startGame()
+}
+
+function stop(){
+    gameLogic.killGame()
 }
