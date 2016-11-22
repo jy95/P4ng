@@ -1,10 +1,10 @@
-const {NORTH, EAST, WEST, SOUTH} = require('../game-const.js')
+const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = require('../game-const.js')
 
 module.exports = PongPaddle
 /*
 * Paddle object
 */
-function PongPaddle ({side, fieldSize, isLocal, id}){
+function PongPaddle ({side, isLocal, id}){
     // player's id
     this.id = id
     //how many position we've been in
@@ -21,18 +21,16 @@ function PongPaddle ({side, fieldSize, isLocal, id}){
     this.side = side
 
     // width of the paddle
-    this.width = fieldSize/10
+    this.width = FIELD_WIDTH/10
 
-    // maximum value of position
-    // should be PongGame.width - this.paddleLength
-    this.max = fieldSize - this.width
+    // boundaries
 
     // position of the paddle on the field side
     // we start in the middle
-    this.position = (fieldSize/2)-(this.width/2)
+    this.position = (FIELD_WIDTH/2)
 
     // speed of the paddle
-    this.speed = fieldSize/50
+    this.speed = FIELD_WIDTH/25
 
     // direction of the paddle
     this.direction = 0
@@ -44,8 +42,11 @@ function PongPaddle ({side, fieldSize, isLocal, id}){
     this.isLocal = isLocal
 }
 
+PongPaddle.prototype.max = function(){return FIELD_WIDTH - this.width/2}
+PongPaddle.prototype.min = function(){return this.width/2}
+
 PongPaddle.prototype.setPosition = function (position){
-    if(position < 0 && position > this.max) return false
+    if(position < this.min() && position > this.max()) return false
 
     this.position = position
     this.manageHistory()
@@ -58,18 +59,18 @@ PongPaddle.prototype.setPosition = function (position){
 PongPaddle.prototype.manageHistory = function(){
     this.stateID++
     this.stateHistory[this.stateID] = this.position
-    // keep the state short
+    // keep the state history short
     delete this.stateHistory[this.stateID-20]
 }
 
 PongPaddle.prototype.move = function(){
     // if speed is at 0, paddle doesn't move
     // negative goes one side, positive goes the other
-    var position = this.position + (this.speed*this.direction)
+    let position = this.position + (this.speed*this.direction)
 
     // this enforces boundaries
-    if(position > this.max) position = this.max
-    else if(position < 0) position = 0
+    if(position > this.max()) position = this.max()
+    else if(position < this.min()) position = this.min()
 
     // finally we set the position
     if(this.isLocal) this.setPosition(position)
