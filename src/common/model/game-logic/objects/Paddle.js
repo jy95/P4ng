@@ -30,7 +30,7 @@ function PongPaddle ({side, isLocal, id}){
     this.position = (FIELD_WIDTH/2)
 
     // speed of the paddle
-    this.speed = FIELD_WIDTH/25
+    this.speed = FIELD_WIDTH/50
 
     // direction of the paddle
     this.direction = 0

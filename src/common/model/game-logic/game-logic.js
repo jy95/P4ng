@@ -53,7 +53,7 @@ module.exports.movePlayerRight = function({id}){
     currentGame.players[id].movingRight()
 }
 
-module.exports.stopPlayer = function(id){
+module.exports.stopPlayer = function({id}){
     currentGame.players[id].stop()
 }
 

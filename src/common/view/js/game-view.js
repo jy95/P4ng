@@ -10,11 +10,25 @@ var c = null
 c = document.getElementById('gameArea').getContext('2d')
 c.font = '30px LLPIXEL'
 
-document.getElementById('startButton').addEventListener('click', ()=>{
+document.getElementById('startButton').addEventListener('click', function(e){
     start()
+    // reusable, for "once" events
+    e.target.removeEventListener(e.type, arguments.callee)
 })
 document.getElementById('stopButton').addEventListener('click', ()=>{
     stop()
+    document.getElementById('startButton').addEventListener('click', (e)=>{
+        start()
+        // reusable, for "once" events
+        e.target.removeEventListener(e.type, arguments.callee)
+    })
+})
+document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowLeft') gameLogic.movePlayerLeft({id: 2})
+    if(e.key === 'ArrowRight') gameLogic.movePlayerRight({id: 2})
+})
+document.addEventListener('keyup', function(e){
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowRight') gameLogic.stopPlayer({id: 2})
 })
 
 function updateView(){

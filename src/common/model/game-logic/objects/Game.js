@@ -14,7 +14,7 @@ function PongGame ({ballDirection, updateCallback}){
     // the last side to hit, so that we know who scored
     // hitting is a good thing
     // hitter did nothing wrong
-    this.lastHitter = null
+    this.lastHitter = undefined
 
     // name is self-explanatory
     // this function is passed a JSON representation of the current state as arg
@@ -70,10 +70,10 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
     if(offset !== 'no') this.lastHitter = side
     else{
         // we give the paddle a point if we're sure he deserves it
-        if(this.lastHitter !== null && stateID === hitPaddle.stateID){
+        if(this.lastHitter !== undefined && stateID === hitPaddle.stateID){
             this.sides[this.lastHitter].score++
         }
-        this.lastHitter = null
+        this.lastHitter = undefined
     }
     return offset
 }

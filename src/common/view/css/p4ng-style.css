@@ -1,3 +1,7 @@
+*{
+    background-color: #FAEBD7;
+}
+
 @font-face {
     font-family: 'LLPIXEL';
     src : url('../../../../ressources/LLPIXEL3.ttf')
@@ -14,4 +18,17 @@ canvas{
     display: block;
     background-color: #322;
     margin: auto;
+    border: 3px dashed #FAEBD7;
+}
+
+#controls{
+    display:block;
+    margin: auto;
+    width: 500px;
+}
+#stopButton {
+    float: right;
+}
+#startButton {
+    float: left;
 }
