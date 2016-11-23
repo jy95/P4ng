@@ -1,5 +1,6 @@
 let roomModule = require("./room.js");
 let eventEnum = require("../common/events.js");
+let uuid = require('node-uuid');
 
 // all the rooms
 let rooms  = new Map();
@@ -10,7 +11,7 @@ module.exports = {
     newPlayer : function (socket,player,callback) {
 
         // create a id for this player
-        player.id = generateId();
+        player.id = uuid.v1();
 
         // add player Json to Players
         players.set(player.id, player);
@@ -21,13 +22,15 @@ module.exports = {
     },
     createRoom : function (socket,data,callback) {
         // get player data
-        let currentPlayer = players.get( parseInt(data["id"] , 10));
+        let currentPlayer = players.get( data["id"]);
 
         if (currentPlayer == null) {
             callback(new Error("No user found"));
         } else {
 
-        roomModule.createRoom(parseInt(data["id"] , 10), generateId , data["roomName"], function (err,room) {
+        let roomId = uuid.v1();
+
+        roomModule.createRoom( data["id"], roomId , data["roomName"], function (err,room) {
 
             // add creator in this room player
             room.addPlayer(socket, currentPlayer, function (err) {
@@ -53,8 +56,8 @@ module.exports = {
     },
     joinRoom : function (socket,data,callback) {
         // get player and room data
-        let currentPlayer = players.get( parseInt(data["id"], 10) );
-        let room = rooms.get( parseInt(data["roomdId"] , 10) );
+        let currentPlayer = players.get( data["id"] );
+        let room = rooms.get( data["roomdId"] );
 
 
         if (currentPlayer == null) {
@@ -68,7 +71,7 @@ module.exports = {
                 } else {
 
                     // send data to everyone
-                    roomModule.broadcastMessageInRoom(parseInt(data["roomdId"] , 10),eventEnum.JoinRoom,data);
+                    roomModule.broadcastMessageInRoom( data["roomdId"] ,eventEnum.JoinRoom,data);
                     callback(null);
                 }
             });
@@ -76,8 +79,8 @@ module.exports = {
     },
     startGame : function (socket,data,callback) {
         // get player and room data
-        let currentPlayer = players.get( parseInt(data["id"] , 10));
-        let room = rooms.get( parseInt( data["roomdId"] , 10) );
+        let currentPlayer = players.get( data["id"]);
+        let room = rooms.get( data["roomdId"] );
 
         if (currentPlayer == null) {
             callback(new Error("No user found"));
@@ -89,7 +92,7 @@ module.exports = {
                    callback(err);
                } else {
                    // TODO What to send When game started ?
-                   roomModule.broadcastMessageInRoom( parseInt( data["gameId"] , 10),eventEnum.StartGame,{})
+                   roomModule.broadcastMessageInRoom( data["gameId"] ,eventEnum.StartGame,{})
                }
             });
         }
@@ -97,8 +100,8 @@ module.exports = {
     },
     leaveRoom: function (socket,data,callback) {
         // get player and room data
-        let currentPlayer = players.get( parseInt(data["id"] , 10));
-        let room = rooms.get( parseInt( data["roomdId"] , 10) );
+        let currentPlayer = players.get( data["id"]);
+        let room = rooms.get( data["roomdId"] );
 
         if (currentPlayer == null) {
             callback(new Error("No user found"));
@@ -111,7 +114,7 @@ module.exports = {
                } else {
 
                    // remove player from lobby players
-                   players.delete( parseInt(data["id"] , 10) );
+                   players.delete( data["id"] );
 
                    // A new Master is required
                    if ( hasEnoughPlayers && newMasterRequired) {
@@ -127,29 +130,10 @@ module.exports = {
                    // send data
                    roomModule.sendMessage(socket,eventEnum.LeaveRoom , data);
                    // prevent another players in room
-                   roomModule.broadcastMessageInRoom( parseInt( data["roomdId"] , 10) , eventEnum.LeaveRoom,  data );
+                   roomModule.broadcastMessageInRoom( data["roomdId"] , eventEnum.LeaveRoom,  data );
 
                }
             });
         }
     }
 };
-
-// generateId Functions
-
-function generateId() {
-    let ts = new Date().toString();
-    let parts = ts.split( "" ).reverse();
-    let id = "";
-
-    for( let i = 0; i < this.length; ++i ) {
-        let index = _getRandomInt( 0, parts.length - 1 );
-        id += parts[index];
-    }
-
-    return id;
-}
-
-function _getRandomInt( min, max ) {
-    return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
-}

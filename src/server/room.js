@@ -22,7 +22,7 @@ function Room(playerId,gameId,roomName,callback) {
 function _findPlayer(player) {
     let index = -1;
     players.forEach( (value,key) => {
-        if ( parseInt( (value.user)["id"] , 10) === parseInt(player["id"] ,10) ) {
+        if (  ( (value.user)["id"] ) === player["id"] ) {
             index = key;
         }
     });
@@ -70,10 +70,10 @@ module.exports = {
 
         // remove player
         players.delete(index);
-        socket.leave('Room'+ parseInt( player["roomId"] , 10));
+        socket.leave('Room'+  player["roomId"]);
 
         // a New Master may be required , if enough players left
-        callback(null,  (creatorId === parseInt(player["id"], 10)) , players.size !== 1);
+        callback(null,  (creatorId === player["id"]) , players.size !== 1);
 
     },
     newMaster : function (callback) {
@@ -85,7 +85,7 @@ module.exports = {
         let socket = (players.get(firstPlayer))["socketUser"];
 
         // set creator
-        creatorId = parseInt ( (players.get(firstPlayer))["id"] , 10);
+        creatorId =  (players.get(firstPlayer))["id"];
 
         // message for the new player
         let message = {id: creatorId, roomdId: gameId};

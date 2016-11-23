@@ -6,42 +6,49 @@ let lobby = require("./lobby.js");
 let eventEnum = require("../common/events.js");
 let io = require('socket.io')(8080);
 
+// winstom config
+winston.remove(winston.transports.Console);
+winston.add(
+    winston.transports.Console,
+    {'timestamp':true , 'colorize' : true}
+);
+
 io.on("connection", function (socket) {
 
     socket.on(eventEnum.NewPlayer, function(data) {
         lobby.newPlayer(socket, data, function (err) {
-            winston.log("Requête " + eventEnum.newPlayer + " traité : " + (err != null) ? " avec message " + err.message : " sans soucis" );
+            winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.NewPlayer + " handled : " + ( (err) ? " with message " + err.message : " successfully") );
         });
 
     });
 
     socket.on(eventEnum.CreateRoom, function (data) {
        lobby.createRoom(socket, data, function (err) {
-           winston.log("Requête " + eventEnum.CreateRoom + " traité : " + (err != null) ? " avec message " + err.message : " sans soucis" );
+           winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.CreateRoom + " handled : " + (err) ? " with message " + err.message : " successfully" );
        });
     });
 
     socket.on(eventEnum.JoinRoom , function (data) {
        lobby.joinRoom(socket, data, function (err) {
-           winston.log("Requête " + eventEnum.JoinRoom + " traité : " + (err != null) ? " avec message " + err.message : " sans soucis" );
+           winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.JoinRoom + " handled : " + (err) ? " with message " + err.message : " successfully" );
        });
     });
 
     socket.on(eventEnum.StartGame , function (data) {
         lobby.startGame(data, function (err) {
-            winston.log("Requête " + eventEnum.StartGame + " traité : " + (err != null) ? " avec message " + err.message : " sans soucis" );
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.StartGame + " handled : " + (err) ? " with message " + err.message : " successfully" );
         });
     });
 
     socket.on(eventEnum.DeleteRoom, function (data) {
         lobby.deleteRoom(data, function (err) {
-            winston.log("Requête " + eventEnum.DeleteRoom + " traité : " + (err != null) ? " avec message " + err.message : " sans soucis" );
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.DeleteRoom + " handled : " + (err) ? " with message " + err.message : " successfully" );
         });
     });
 
     socket.on(eventEnum.LeaveRoom, function (data) {
         lobby.leaveRoom(data, function (err) {
-            winston.log("Requête " + eventEnum.LeaveRoom + " traité : " + (err != null) ? " avec message " + err.message : " sans soucis" );
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.LeaveRoom + " handled : " + (err) ? " with message " + err.message : " successfully" );
         });
     });
 
