@@ -1,6 +1,6 @@
 let roomModule = require("./room.js");
 let eventEnum = require("../common/events.js");
-let uuid = require('node-uuid');
+let uuid = require('uuid');
 
 // all the rooms
 let rooms  = new Map();
