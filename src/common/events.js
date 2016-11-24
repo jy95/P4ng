@@ -91,7 +91,15 @@ module.exports = {
 
 
     /*
-        Every x ms, each client sends and array of {id : 47, roomId: 47, coord: 21} i.e., the position of its local player(s)
+        Every x ms, each client sends the position of its local player(s) like :
+        {
+            "players":{
+                "1":{"isLocal":true,"id":"1","score":5,"position":18},
+                "2":{"isLocal":true,"id":"3","score":2,"position":400}
+            },
+            "roomId":15487
+        } 
+        
         Witch each PlayerState, the server will be able to hold the general GameState
 
         NOTE : although the roomId isn't absolutely mandatory, it can be used to hasten the research in the server, depending on its implementation
@@ -109,11 +117,7 @@ module.exports = {
 
 
     /*
-        When a game ends, every client involved sends
-        {
-            roomId : 47,
-            scores : array of {id: 47, score: 5}
-        }
+        When a game ends, every client involved sends the same json as the one for PlayerSate but with all the players
         The server sends back an array of {id: 47, score: 5} after he chose the most commonly attributed score for each player to counter cheating
 
         NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag 
