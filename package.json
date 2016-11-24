@@ -13,7 +13,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "mocha",
+    "test": "mocha test/test.js ",
     "start": "electron src/app.js"
   },
   "repository": {
