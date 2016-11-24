@@ -3,6 +3,7 @@ node_js:
   - "6.9.1"
   - "node"
 install:
+  - npm install -g mocha
   - npm install
 notifications:
   slack:
