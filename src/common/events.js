@@ -94,8 +94,8 @@ module.exports = {
         Every x ms, each client sends the position of its local player(s) like :
         {
             "players":{
-                "1":{"isLocal":true,"id":"1","score":5,"position":18},
-                "2":{"isLocal":true,"id":"3","score":2,"position":400}
+                "17":{"isLocal":true,"id":"17","score":5,"position":18},
+                "32":{"isLocal":true,"id":"32","score":2,"position":400}
             },
             "roomId":15487
         } 
@@ -108,7 +108,7 @@ module.exports = {
 
 
     /*
-        Every x ms, each client will be sent an array of {id : 47, coord: 21} containing the latest PlayerState present on the server
+        Every x ms, each client will be sent the game state (same json structure as PlayerState) containing the latest players' state present on the server
         of all the players in the game so that it can render the game
 
         NOTE : this methodology is subject to change, for performance purposes
@@ -118,7 +118,7 @@ module.exports = {
 
     /*
         When a game ends, every client involved sends the same json as the one for PlayerSate but with all the players
-        The server sends back an array of {id: 47, score: 5} after he chose the most commonly attributed score for each player to counter cheating
+        The server chooses the most commonly attributed score for each player to counter cheating
 
         NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag 
         in a potential chat "EZ u all suk lel")
