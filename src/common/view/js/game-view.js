@@ -41,9 +41,9 @@ function updateView(){
         drawBall(state.ball)
 
         // draw the paddles and scores
-        for(let paddle of state.players){
-            drawPaddle(paddle)
-            drawScore(paddle)
+        for(let id in state.players){
+            drawPaddle(state.players[id])
+            drawScore(state.players[id])
         }
         drawCorners()
     })

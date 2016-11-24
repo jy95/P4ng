@@ -97,6 +97,7 @@ PongPaddle.prototype.toJSON = function(){
         width: this.width,
         position: this.position,
         side: this.side,
-        score: this.score
+        score: this.score,
+        isLocal: this.isLocal
     }
 }

@@ -10,8 +10,8 @@ module.exports = WaitingBall
 function WaitingBall(ball){
     // we copy the value of master into local value
     // (WaitingBall is a Ball too, see prototype)
-    //for(var prop in ball)
-    //    if(prop === 'waitingBall') this[prop] = ball[prop]
+    for(var prop in ball)
+        if(prop === 'waitingBall') this[prop] = ball[prop]
 
     // we don't want the waiting ball's waiting ball set automatically
     this.waitingBall = null
@@ -30,7 +30,35 @@ function WaitingBall(ball){
     this.dirty = false
 }
 
-WaitingBall.prototype = Ball
+WaitingBall.prototype = Ball.prototype
+
+// redefining add command to avoid infinite recursion
+WaitingBall.prototype.move = function(){
+    if(this.waitingBall) this.waitingBall.addCommand(this.waitingBall.move)
+
+    // move the ball from (x,y) to (x',y')
+    // to compute x' and y' it uses:
+    // this.angle as direction,
+    // this.speed as distance
+    // if you don't know math, it's magic, don't bother
+    this.x += this.speed * (Math.cos(this.direction))
+    this.y += this.speed * (Math.sin(this.direction))
+
+    if(this.x < 0){
+        this.x = 0 // enforcing boundaries
+        this.bounceFromWest()
+    }else if(this.y < 0){
+        this.y = 0 // enforcing boundaries
+        this.bounceFromNorth()
+    }else if(this.x > this.coordinatesBoundary){
+        this.x = this.coordinatesBoundary // enforcing boundaries
+        this.bounceFromEast()
+    }else if(this.y > this.coordinatesBoundary){
+        this.y = this.coordinatesBoundary // enforcing boundaries
+        this.bounceFromSouth()
+    }
+    this.stateID++
+}
 
 // this method is called by a paddle we subscribed to
 // when it reaches the state we told it we were waiting for
@@ -63,7 +91,7 @@ WaitingBall.prototype.correctingState = function(x, y, direction){
     // if the master is also a WaitingBall, we call his correction method
     // the method kinda bubbles up the WaitingBall chain
     if(this.master.correctingState)
-        this.master.correctingState(x, y, direction)
+    this.master.correctingState(x, y, direction)
 }
 
 WaitingBall.prototype.waitForState = function(stateID, paddle){

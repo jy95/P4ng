@@ -29,6 +29,11 @@ function PongGame ({ballDirection, updateCallback}){
 
     // the object representing the ball
     this.ball = new Ball({direction : ballDirection, game : this});
+
+    // first at maxScore wins
+    this.maxScore = 10
+    // when a player reaches max
+    this.isFinished = false
 }
 
 PongGame.prototype.addPlayer = function (player){
@@ -70,8 +75,9 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
     if(offset !== 'no') this.lastHitter = side
     else{
         // we give the paddle a point if we're sure he deserves it
-        if(this.lastHitter !== undefined && stateID === hitPaddle.stateID){
+        if(this.lastHitter !== undefined && stateID === hitPaddle.stateID && !this.isFinished){
             this.sides[this.lastHitter].score++
+            this.isFinished = this.sides[this.lastHitter].score === this.maxScore
         }
         this.lastHitter = undefined
     }
@@ -98,13 +104,13 @@ PongGame.prototype.getCollision = function(stateID, paddle, ballPosition, ballSi
 }
 
 PongGame.prototype.toJSON = function(){
-    var thePlayers = []
+    var thePlayers = {}
 
     for(let paddle of this.sides)
-        thePlayers.push(paddle.toJSON())
+        thePlayers[paddle.id] = paddle.toJSON()
 
     var theBall = this.ball.toJSON()
 
-    return {players : thePlayers, ball : theBall}
+    return {players : thePlayers, ball : theBall, isFinished: this.isFinished}
 
 }
