@@ -1,5 +1,4 @@
 const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = require('../game-const.js') // ES6 deconstruction
-const WaitingBall = require('./WaitingBall.js')
 
 
 module.exports = PongBall
@@ -41,11 +40,12 @@ function PongBall({direction, game}){
 
     // the waiting baaaaall, used to wait for paddle stateID
     // see https://github.com/jy95/P4ng/wiki/Synchronizing-strategy
-    this.waitingBall = new WaitingBall()
+    this.waitingBall = null
 }
 
 PongBall.prototype.move = function(){
-    //this.waitingBall.addCommand(this.waitingBall.move)
+    if(this.waitingBall === null) this.waitingBall = new WaitingBall()
+    this.waitingBall.addCommand(this.waitingBall.move)
     // move the ball from (x,y) to (x',y')
     // to compute x' and y' it uses:
     // this.angle as direction,
@@ -196,3 +196,5 @@ function dealWithWest(val){
     let max = 5*Math.PI/2 - 0.02
     return keepBoundaries(min, max, val)%(Math.PI*2)
 }
+
+const WaitingBall = require('./WaitingBall.js')
