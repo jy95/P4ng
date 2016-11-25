@@ -33,7 +33,7 @@ module.exports = {
         When a player wants to create a room, he specifies a name. Other attributes may be added in the future
         The client sends {id: 47, roomName: 'pong fever'}
         If the player isn't in a room yet, he will be moved from the main lobby to his newly created room
-        The server sends {roomdId: 47, roomName: 'pong fever'}
+        The server sends {roomId: 47, roomName: 'pong fever'}
         If not, the server sends back the same JSON (may change if not clear enough)
 
     */
@@ -69,7 +69,7 @@ module.exports = {
     /*
         As mentioned above, "In the case where the creator of the game chooses a random angle at the beginning of each round, if he leaves a running game,
         a new player will have to be chosen as the new "master" of the game "
-        The server sends {id: 69, roomdId: 47} to the new master that he has elected 
+        The server sends {id: 69, roomId: 47} to the new master that he has elected
     */
     NewMaster : "NewMaster",
 

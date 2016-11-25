@@ -36,7 +36,7 @@ Room.prototype.addPlayer = function(socket, player,callback) {
 Room.prototype.startGame = function(playerId,callback) {
     if (this.creatorId === playerId && !this.isStarted && !this.isFinished) {
         isStarted = true;
-        callback(null);
+        callback(null , 0.8);
 
     } else {
         callback(new Error("You don't have the right to start the game (only master can)"));
@@ -74,7 +74,7 @@ Room.prototype.newMaster = function(callback) {
     creatorId =  (this.players.get(firstPlayer))["id"];
 
     // message for the new player
-    let message = {id: this.creatorId, roomdId: this.gameId};
+    let message = {id: this.creatorId, roomId: this.gameId};
 
     callback(null, socket,message);
 
