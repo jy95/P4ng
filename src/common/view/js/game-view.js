@@ -5,24 +5,13 @@ gameLogic.subscribe(()=>{
     updateView()
 })
 // context
-var c = null
+var c = document.getElementById('gameArea').getContext('2d')
+c.font = '30px earlygameboy'
 
-c = document.getElementById('gameArea').getContext('2d')
-c.font = '30px LLPIXEL'
+document.getElementById('createGame').addEventListener('click', onCreateGame)
+document.getElementById('stopButton').addEventListener('click', onStop)
+document.getElementById('startButton').addEventListener('click', onStart)
 
-document.getElementById('startButton').addEventListener('click', function(e){
-    start()
-    // reusable, for "once" events
-    e.target.removeEventListener(e.type, arguments.callee)
-})
-document.getElementById('stopButton').addEventListener('click', ()=>{
-    stop()
-    document.getElementById('startButton').addEventListener('click', (e)=>{
-        start()
-        // reusable, for "once" events
-        e.target.removeEventListener(e.type, arguments.callee)
-    })
-})
 document.addEventListener('keydown', function(e){
     if(e.key === 'ArrowLeft') gameLogic.movePlayerLeft({id: 2})
     if(e.key === 'ArrowRight') gameLogic.movePlayerRight({id: 2})
@@ -104,7 +93,7 @@ function drawCorners(){
     c.fillRect(0,490,10,10)
 }
 
-function start(){
+function onStart(){
     //gameLogic.initGame((Math.PI*2)-(0.02*5)) //
     gameLogic.initGame(Math.PI-1.522)
 
@@ -117,6 +106,15 @@ function start(){
     gameLogic.startGame()
 }
 
-function stop(){
+function onCreateGame(){
+    document.getElementById('lobbyContainer').className = 'closed'
+    document.getElementById('gameContainer').className = 'open'
+}
+function onStop(){
     gameLogic.killGame()
+    document.getElementById('lobbyContainer').className = 'open'
+    let gc = document.getElementById('gameContainer')
+    gc.addEventListener('transitionend', function(){c.clearRect(0,0,500,500)})
+    gc.className = 'closed'
+    document.getElementById('startButton').addEventListener('click', onStart)
 }

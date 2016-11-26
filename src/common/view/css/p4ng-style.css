@@ -1,18 +1,106 @@
+@font-face {
+    font-family: 'earlygameboy';
+    src : url('early_gameboy.ttf');
+}
 *{
     background-color: #FAEBD7;
+    font-family: 'earlygameboy';
+    color: #322;
+    overflow: hidden;
 }
-
-@font-face {
-    font-family: 'LLPIXEL';
-    src : url('../../../../ressources/LLPIXEL3.ttf')
-}
-
 h1{
     text-align: center;
-    font-family: 'LLPIXEL';
-    color: #322;
 }
 
+/* LOBBY PANEL */
+
+#lobbyPanel{
+	border-collapse: collapse;
+	width: 504px;
+	margin: auto;
+}
+#lobbyPanel td{
+    vertical-align: top;
+	border: 3px dashed #322;
+	padding: 0;
+    height: 500px;
+	max-height: 500px;
+	width: 250px;
+    max-width: 250px;
+	/*overflow: scroll;*/
+}
+.localPlayer{
+	border-bottom: 3px dashed #322;
+}
+.playerInfo {
+	list-style: none;
+	padding: 0 1em ;
+}
+.remotePlayersList{
+    list-style-type: square;
+    padding: 0;
+}
+.remotePlayer{
+    height: 1.5em;
+    overflow: hidden;
+}
+.remotePlayer ul:first-child{
+    font-style: underlined;
+}
+.remotePlayer::before{
+    content: "\025aa";
+    background-color: none;
+    position: absolute;
+}
+
+
+/* GAMES */
+
+#games{
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0 1px;
+    border-top: 3px dashed #322;
+}
+#games tr{
+	border-collapse: collapse;
+}
+#games tr td {
+    vertical-align: middle;
+	font-size: 1em;
+	text-align: center;
+	height: auto;
+	border-right: 1px dashed #322;
+	border-left: 0px dashed #322;
+	border-top: 1px solid #322;
+	border-bottom: 0px solid #322;
+	background-color: transparent;
+    width: 1em;
+}
+#games tr td:last-child {
+    border-right: 0;
+}
+#games tr td:first-child{
+    width: auto;
+}
+#games tr:hover, #games button:hover, #createGame:hover{
+	background-color: #e1d3c1;
+    cursor: pointer;
+}
+#games button{
+    padding: 0;
+}
+
+#createGame{
+    width: 100%;
+    border-width: 5px;
+}
+#newGame{
+    margin: 1em 1px;
+    text-align: center;
+}
+
+/* GAME PANEL */
 
 canvas{
     display: block;
@@ -22,13 +110,58 @@ canvas{
 }
 
 #controls{
-    display:block;
+    display: block;
     margin: auto;
     width: 500px;
 }
-#stopButton {
+.control{
+	width: auto;
+	margin-top: 0.25em;
+	font-size: 2em;
+	text-align: center;
+	border-right: 5px solid #322;
+	border-bottom: 5px solid #322;
+	border-top: 2px solid #322;
+	border-left: 2px solid #322;
+	border-radius: 0.25em;
+	padding: 0.10em 0.25em;
+	cursor: pointer;
+}
+.control:hover{
+	background-color: #e1d3c1;
+}
+.control:active{
+	border-left: 6px solid #322;
+	border-top: 6px solid #322;
+	border-bottom: 1px solid #322;
+	border-right: 1px solid #322;
+}
+#stopButton{
     float: right;
 }
 #startButton {
     float: left;
+}
+p{
+	display: inline;
+}
+
+/* UTILITARY */
+
+.invisible{
+    display: none;
+}
+
+.open{
+    height: 600px;
+    transition-property: height;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+}
+.closed{
+    overflow: hidden;
+    height: 0;
+    transition-property: height;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
 }
