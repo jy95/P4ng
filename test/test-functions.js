@@ -91,7 +91,6 @@ module.exports = {
             sockets.forEach( (socket) => {
 
                 socket.on(eventEnum.StartGame , function (data) {
-                    debugger;
                     assert.deepEqual(data.id, masterJson.id, "Wrong User Id");
                     assert.deepEqual(data.roomId, masterJson.roomId, "Wrong Room Id");
                     assert.notEqual(data.angle, undefined , "No angle");
@@ -124,6 +123,27 @@ module.exports = {
                 assert.notEqual( data.roomId,-1 , 'No same RoomId');
             });
             callback(null,null);
+        } catch (err) {
+            callback(err,null);
+        }
+
+    },
+
+    GameState : function (sockets, goodAnswer, callback) {
+
+        try {
+
+            sockets.forEach( (socket) => {
+                socket.on(eventEnum.GameState, function (data) {
+
+                    console.log("TEST A CORRIGER SUREMENT");
+                    console.log(data);
+
+                    assert.deepEqual( data, goodAnswer , 'Not the same GameState Received');
+                });
+            });
+            callback(null,null);
+
         } catch (err) {
             callback(err,null);
         }

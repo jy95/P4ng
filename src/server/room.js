@@ -1,4 +1,5 @@
-var Game = require('./gameState.js')
+let Game = require('./gameState.js');
+let eventsEnum = require('../common/events.js');
 
 let isStarted;
 let isFinished;
@@ -15,7 +16,7 @@ function Room(playerId,gameId,roomName) {
     this.isStarted = false;
     this.isFinished = false;
     this.players= new Map();
-    this.game = new Game(60);
+    this.game = new Game(this.gameId,60);
 }
 
 Room.prototype.addPlayer = function(socket, player,callback) {
@@ -37,10 +38,10 @@ Room.prototype.addPlayer = function(socket, player,callback) {
 };
 
 Room.prototype.startGame = function(playerId,callback) {
-    if (this.creatorId === playerId && !this.isStarted && !this.isFinished) {
+    if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished) {
         isStarted = true;
-        callback(null , 0.8);
         this.game.start();
+        callback(null , 0.8);
     } else {
         callback(new Error("You don't have the right to start the game (only master can)"));
     }
@@ -131,6 +132,10 @@ Room.prototype._allPlayers = function(callback) {
             });
     });
     callback(null, { roomName : this.roomName , roomId : this.gameId , roomPlayers : playerJson } );
+};
+
+Room.prototype.endGame = function (data,callback) {
+
 };
 
 module.exports = Room;

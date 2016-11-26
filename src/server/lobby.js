@@ -18,6 +18,7 @@ function Lobby() {
 }
 
 Lobby.prototype.joinRoom = function(IOsockets,socket,data,callback) {
+
     // get player and room data
     let currentPlayer = this.players.get( data["id"] );
     let room = this.rooms.get( data["roomId"] );
@@ -197,5 +198,48 @@ Lobby.prototype.getAvailableRooms = function (IOsockets,socket,callback) {
     callback(null);
 };
 
+Lobby.prototype.playerState = function (IOsockets,socket,callback) {
+
+    let room = this.rooms.get( data["roomId"] );
+
+    if (room == null) {
+        callback(new Error("Room doesn't exist"));
+    } else {
+
+        room.playerState(data, function (callback) {
+            // si message à envoyer
+        });
+        callback(null);
+    }
+
+};
+
+Lobby.prototype.endGame = function (IOsockets,socket,callback) {
+
+    let room = this.rooms.get( data["roomId"] );
+
+    if (room == null) {
+        callback(new Error("Room doesn't exist"));
+    } else {
+
+        room.endGame(data, function (callback) {
+            // si message à envoyer
+        });
+        callback(null);
+    }
+
+};
+
+Lobby.prototype.gameState = function (IOsockets, data, callback) {
+    let room = this.rooms.get( data["gameId"] );
+
+    if (room == null) {
+        callback(new Error("Room doesn't exist"));
+    } else {
+
+        room.broadcastMessageInRoom(IOsockets, data["gameId"], eventEnum.GameState , data );
+        callback(null);
+    }
+};
 
 module.exports = Lobby;

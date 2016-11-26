@@ -54,4 +54,22 @@ module.exports.gestionSocket = function(socket, IOsockets){
         });
     });
 
+    socket.on(eventEnum.PlayerState , function (data) {
+        lobby.playerState(IOsockets,socket,data, function (err) {
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.PlayerState + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+        });
+    });
+
+    socket.on(eventEnum.EndGame , function (data) {
+        lobby.endGame(IOsockets,socket,data, function (err) {
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.EndGame + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+        });
+    });
+
+};
+
+module.exports.GameState = function (data, IOsockets) {
+  lobby.gameState(IOsockets,data , function (err) {
+      winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.GameState + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+  })
 };
