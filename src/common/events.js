@@ -111,6 +111,7 @@ module.exports = {
         } 
         
         Witch each PlayerState, the server will be able to hold the general GameState
+        Every x ms, the server sends the same json but with the position of all the players in the game
 
         NOTE : although the roomId isn't absolutely mandatory, it can be used to hasten the research in the server, depending on its implementation
     */
@@ -118,10 +119,14 @@ module.exports = {
 
 
     /*
+        !!!!!!!!!!!! FORGET ABOUT IT FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         Every x ms, each client will be sent the game state (same json structure as PlayerState) containing the latest players' state present on the server
         of all the players in the game so that it can render the game
 
         NOTE : this methodology is subject to change, for performance purposes
+
+        !!!!!!!!!!!! FORGET ABOUT IT FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     */
     gameStateUpdate : "gameStateUpdate",
 
