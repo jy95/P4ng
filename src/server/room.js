@@ -20,6 +20,9 @@ Room.prototype.addPlayer = function(socket, player,callback) {
         // add user socket to room
         socket.join('Room' + this.gameId);
 
+        //add player to game
+        this.game.addPlayer(player);
+
         // TODO add player in let game
 
         callback(null);
@@ -51,6 +54,9 @@ Room.prototype.leaveRoom = function(socket,player, callback) {
     // remove player
     this.players.delete(index);
     socket.leave('Room'+  player["roomId"]);
+
+    //remove player from game
+    this.game.removePlayer(player);
 
     // a New Master may be required , if enough players left
     callback(null,  (creatorId === player["id"]) , this.players.size > 1 , this.players.size === 0);
@@ -125,8 +131,20 @@ Room.prototype._allPlayers = function(callback) {
     callback(null, { roomName : this.roomName , roomId : this.gameId , roomPlayers : playerJson } );
 };
 
+Room.prototype.playerState = function(data, callback){
+    this.game.updatePlayers(data);
+    callback(null);
+};
+
 Room.prototype.endGame = function (data,callback) {
 
+};
+
+
+// implement the onUpdate function of game
+game.onUpdate = function () {
+    var playerState = this.game.getPlayerState();
+    //TO DO : envoyer ce playerState à tous les joueurs (event => playerStateUpdate)
 };
 
 module.exports = Room;
