@@ -42,7 +42,9 @@ module.exports.getState = function(){
 }
 
 module.exports.updatePlayer = function({id,position}){
-    currentGame.players[id].position = position
+    let p = currentGame.players[id]
+    if(!p.islocal)
+        p.position = position
 }
 
 module.exports.movePlayerLeft = function({id}){
