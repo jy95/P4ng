@@ -28,6 +28,11 @@ module.exports = {
 
     */
     GetAvailableRooms : "GetAvailableRooms",
+    
+    /*
+        Event fired when the client lobby updates its available rooms list after a GetAvailableRooms
+    */
+    GotAvailableRooms : "GotAvailableRooms",
 
     /*
         When a player wants to create a room, he specifies a name. Other attributes may be added in the future
