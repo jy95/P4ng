@@ -18,9 +18,10 @@ function Lobby() {
 }
 
 Lobby.prototype.joinRoom = function(IOsockets,socket,data,callback) {
+
     // get player and room data
     let currentPlayer = this.players.get( data["id"] );
-    let room = this.rooms.get( data["roomdId"] );
+    let room = this.rooms.get( data["roomId"] );
 
 
     if (currentPlayer == null) {
@@ -43,10 +44,10 @@ Lobby.prototype.joinRoom = function(IOsockets,socket,data,callback) {
                 room.listAllPlayer(function (err,json) {
 
                     // notify all the player that new player is registered
-                    primaryRoom.broadcastMessageInRoom(IOsockets,data["roomdId"] ,eventEnum.JoinRoom,data);
+                    primaryRoom.broadcastMessageInRoom(IOsockets,data["roomId"] ,eventEnum.JoinRoom,data);
 
                     // sends to new player an array of players
-                    primaryRoom.sendMessage(socket, data["roomdId"] ,eventEnum.ListEnrolledPlayers,json);
+                    primaryRoom.sendMessage(socket, data["roomId"] ,eventEnum.ListEnrolledPlayers,json);
 
                     callback(null);
 
@@ -88,7 +89,7 @@ Lobby.prototype.createRoom = function (IOsockets,socket,data,callback) {
         this.rooms.set(room.gameId, room);
 
         // json Data
-        data["roomdId"] = room.gameId;
+        data["roomId"] = room.gameId;
 
         primaryRoom.sendMessage(socket,eventEnum.CreateRoom, data);
 
@@ -104,19 +105,22 @@ Lobby.prototype.createRoom = function (IOsockets,socket,data,callback) {
 Lobby.prototype.startGame = function (IOsockets,socket,data,callback) {
     // get player and room data
     let currentPlayer = this.players.get( data["id"]);
-    let room = this.rooms.get( data["roomdId"] );
+    let room = this.rooms.get( data["roomId"] );
 
     if (currentPlayer == null) {
+        primaryRoom.sendMessage(socket, eventEnum.StartGame, {id: data.id, roomId: -1, angle: 0.0} );
         callback(new Error("No user found"));
     } else if (room == null) {
+        primaryRoom.sendMessage(socket, eventEnum.StartGame, {id: data.id, roomId: -1, angle: 0.0} );
         callback(new Error("Room doesn't exist "));
     } else {
-        room.startGame(currentPlayer, function (err) {
+        room.startGame(currentPlayer, function (err,angle) {
             if (err) {
                 callback(err);
             } else {
-                // TODO What to send When game started ?
-                primaryRoom.broadcastMessageInRoom(IOsockets, data["gameId"] ,eventEnum.StartGame,{})
+                // notify game start
+                primaryRoom.broadcastMessageInRoom(IOsockets, data["gameId"] ,eventEnum.StartGame, {id: data.id, roomId: data.roomId, angle: angle} );
+                callback(null);
             }
         });
     }
@@ -126,7 +130,8 @@ Lobby.prototype.startGame = function (IOsockets,socket,data,callback) {
 Lobby.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
     // get player and room data
     let currentPlayer = this.players.get( data["id"]);
-    let room = this.rooms.get( data["roomdId"] );
+
+    let room = this.rooms.get( data["roomId"] );
 
     if (currentPlayer == null) {
         primaryRoom.sendMessage(socket,eventEnum.LeaveRoom , { id: data["id"], roomId: -1 } );
@@ -157,11 +162,11 @@ Lobby.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
                 // send data
                 primaryRoom.sendMessage(socket,eventEnum.LeaveRoom , data);
                 // prevent another players in room
-                primaryRoom.broadcastMessageInRoom(IOsockets, data["roomdId"] , eventEnum.LeaveRoom,  data );
+                primaryRoom.broadcastMessageInRoom(IOsockets, data["roomId"] , eventEnum.LeaveRoom,  data );
 
                 if ( lastPlayerQuit) {
                     // remove room reference
-                    this.rooms.delete( data["roomdId"] );
+                    this.rooms.delete( data["roomId"] );
                 }
 
             }
@@ -169,5 +174,72 @@ Lobby.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
     }
 };
 
+Lobby.prototype.getAvailableRooms = function (IOsockets,socket,callback) {
+
+    // json array for all rooms
+    let Roomsjson = [];
+
+    // iteration
+    this.rooms.forEach( (value,key) => {
+
+        // Json for a single room
+        let Roomjson = {};
+
+        value._allPlayers( function (err,data) {
+            Roomjson = data;
+            Roomsjson.push(Roomjson);
+        });
+
+    });
+
+    // sends data
+    primaryRoom.sendMessage(socket,eventEnum.GetAvailableRooms, Roomsjson);
+
+    callback(null);
+};
+
+Lobby.prototype.playerState = function (IOsockets,socket,callback) {
+
+    let room = this.rooms.get( data["roomId"] );
+
+    if (room == null) {
+        callback(new Error("Room doesn't exist"));
+    } else {
+
+        room.playerState(data, function (callback) {
+            // si message à envoyer
+        });
+        callback(null);
+    }
+
+};
+
+Lobby.prototype.endGame = function (IOsockets,socket,callback) {
+
+    let room = this.rooms.get( data["roomId"] );
+
+    if (room == null) {
+        callback(new Error("Room doesn't exist"));
+    } else {
+
+        room.endGame(data, function (callback) {
+            // si message à envoyer
+        });
+        callback(null);
+    }
+
+};
+
+Lobby.prototype.gameState = function (IOsockets, data, callback) {
+    let room = this.rooms.get( data["gameId"] );
+
+    if (room == null) {
+        callback(new Error("Room doesn't exist"));
+    } else {
+
+        room.broadcastMessageInRoom(IOsockets, data["gameId"], eventEnum.GameState , data );
+        callback(null);
+    }
+};
 
 module.exports = Lobby;

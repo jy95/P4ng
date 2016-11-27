@@ -19,10 +19,10 @@ gameLogic.subscribe(() => {
 var getLocalPlayersState = function ({players, roomId}){
     var localPlayersState = {}
     localPlayersState.players = {}
-    var index = 1
     for(key in players){
-        if(players[key].isLocal){
-            localPlayersState.players[index++] = players[key]
+        var player = players[key]
+        if(player.isLocal){
+            localPlayersState.players[player.id] = players[key]
         }
     }
     localPlayersState.roomId = roomId

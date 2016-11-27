@@ -33,7 +33,7 @@ module.exports = {
         When a player wants to create a room, he specifies a name. Other attributes may be added in the future
         The client sends {id: 47, roomName: 'pong fever'}
         If the player isn't in a room yet, he will be moved from the main lobby to his newly created room
-        The server sends {roomdId: 47, roomName: 'pong fever'}
+        The server sends {roomId: 47, roomName: 'pong fever'}
         If not, the server sends back the same JSON (may change if not clear enough)
 
     */
@@ -69,7 +69,7 @@ module.exports = {
     /*
         As mentioned above, "In the case where the creator of the game chooses a random angle at the beginning of each round, if he leaves a running game,
         a new player will have to be chosen as the new "master" of the game "
-        The server sends {id: 69, roomdId: 47} to the new master that he has elected 
+        The server sends {id: 69, roomId: 47} to the new master that he has elected
     */
     NewMaster : "NewMaster",
 
@@ -94,8 +94,8 @@ module.exports = {
         Every x ms, each client sends the position of its local player(s) like :
         {
             "players":{
-                "1":{"isLocal":true,"id":"1","score":5,"position":18},
-                "2":{"isLocal":true,"id":"3","score":2,"position":400}
+                "17":{"isLocal":true,"id":"17","score":5,"position":18},
+                "32":{"isLocal":true,"id":"32","score":2,"position":400}
             },
             "roomId":15487
         } 
@@ -108,7 +108,7 @@ module.exports = {
 
 
     /*
-        Every x ms, each client will be sent an array of {id : 47, coord: 21} containing the latest PlayerState present on the server
+        Every x ms, each client will be sent the game state (same json structure as PlayerState) containing the latest players' state present on the server
         of all the players in the game so that it can render the game
 
         NOTE : this methodology is subject to change, for performance purposes
@@ -118,7 +118,7 @@ module.exports = {
 
     /*
         When a game ends, every client involved sends the same json as the one for PlayerSate but with all the players
-        The server sends back an array of {id: 47, score: 5} after he chose the most commonly attributed score for each player to counter cheating
+        The server chooses the most commonly attributed score for each player to counter cheating
 
         NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag 
         in a potential chat "EZ u all suk lel")

@@ -35,103 +35,199 @@ describe('Server tests : ' , function () {
 
     });
 
-    describe('Server answers tests :' , function () {
+    describe('Server tests :' , function () {
 
-        it('Test n°3 : Should be able to register a new user' ,function (done) {
-            this.timeout(100);
+        describe('Test Cases n°1 : Register user test cases : ', function () {
 
-            socket1 = io.connect('http://localhost:8080');
-            testFunctions.createPlayer(socket1,player1, function (err,data) {
+            it('Test n°3 : Should be able to register a new user', function (done) {
+                this.timeout(100);
 
-                if (!err) {
-                    player1.id = data.id;
-                    done();
-                } else {
-                    done(err);
-                }
+                socket1 = io.connect('http://localhost:8080');
+                testFunctions.createPlayer(socket1, player1, function (err, data) {
+
+                    if (!err) {
+                        player1.id = data.id;
+                        done();
+                    } else {
+                        done(err);
+                    }
+                });
+
+            });
+
+            it('Test n°4 : Should be able to register a another new user', function (done) {
+                this.timeout(100);
+
+                socket2 = io.connect('http://localhost:8080');
+                testFunctions.createPlayer(socket2, player2, function (err, data) {
+
+                    if (err) {
+                        done(err);
+                    } else {
+                        player2.id = data.id;
+                        done();
+                    }
+
+                });
+
+            });
+        });
+
+        describe('Test Cases n°2 : Room test cases : ', function () {
+
+            it('Test n°5 : Should be able to create a room', function (done) {
+                this.timeout(100);
+                player1.roomId = -1;
+                player1.roomName = "TestRoom";
+
+                testFunctions.createRoom(socket1, player1, function (err, data) {
+
+                    if (err) {
+                        done(err);
+                    } else {
+                        player1.roomId = data.roomId;
+                        roomId1 = data.roomId;
+                        done();
+                    }
+
+                });
+
+            });
+
+            it("Test n°6 : Should be able to list the rooms ", function (done) {
+                this.timeout(100);
+
+                let expectedJson = [
+                    {
+                        "roomName": player1.roomName,
+                        "roomId": roomId1,
+                        "roomPlayers": [
+                            {
+                                "playerName": player1.name,
+                                "playerId": player1.id,
+                                "playerNumber": 0
+                            }
+                        ]
+                    }];
+
+                testFunctions.getAvailableRooms(socket2, expectedJson, function (err) {
+
+                    if (err) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });
+
+            });
+
+            it('Test n°7 : Should be able to join a room', function (done) {
+                this.timeout(100);
+
+                player2.roomId = roomId1;
+                playersRoomJson1 = [
+                    {
+                        "playerName": "Jacques",
+                        "playerId": player1.id,
+                        "playerNumber": 0
+                    }
+                ];
+
+                testFunctions.joinRoom(socket2, player2, playersRoomJson1, function (err) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });
+
+            });
+
+            it('Test n°8 : Should be able to leave the game' , function (done) {
+                this.timeout(150);
+
+                let socketTest = io.connect('http://localhost:8080');
+                let playerTest = {name: "RAGE EXIT" };
+
+                testFunctions.createPlayer(socketTest, playerTest, function (err, data) {
+
+                    if (err) {
+                        done(err);
+                    } else {
+                        playerTest.id = data.id;
+                    }
+
+                });
+
+                // set other player added in previous test
+                playerTest.roomId = roomId1;
+                playersRoomJson1.push(
+                    {
+                        "playerName": player2.name,
+                        "playerId": player2.id,
+                        "playerNumber": 1
+                    }
+                );
+
+                testFunctions.joinRoom(socketTest, playerTest, playersRoomJson1, function (err) {
+                    if (err) {
+                        done(err);
+                    }
+                });
+
+                testFunctions.leaveRoom(socketTest,playerTest,socket1, function (err) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });
             });
 
         });
 
-        it('Test n°4 : Should be able to register a another new user' ,function (done) {
-            this.timeout(100);
+        describe('Test Cases n°3 : Game test cases : ', function () {
 
-            socket2 = io.connect('http://localhost:8080');
-            testFunctions.createPlayer(socket2,player2, function (err,data) {
+            it('Test n°9 : Should not be able to start the game', function (done) {
+                this.timeout(100);
 
-                if (err) {
-                    done(err);
-                } else {
-                    player2.id = data.id;
-                    done();
-                }
-
-            });
-
-        });
-
-        it('Test n°5 : Should be able to create a room' , function (done) {
-            this.timeout(100);
-            player1.roomdId = -1;
-            player1.roomName = "TestRoom";
-
-            testFunctions.createRoom(socket1,player1, function (err,data) {
-
-                if (err) {
-                    done(err);
-                } else {
-                    player1.roomId = data.roomdId;
-                    roomId1 = data.roomdId;
-                    done();
-                }
+                testFunctions.startGame([socket1, socket2], socket2, player2, function (err) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });
 
             });
 
-        });
+            it('Test n°10 : Should be able to start the game', function (done) {
+                this.timeout(100);
 
+                testFunctions.startGame([socket1, socket2], socket1, player1, function (err) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });
 
-        it('Test n°6 : Should be able to join a room', function (done) {
-            this.timeout(100);
-
-            player2.roomId = roomId1;
-            playersRoomJson1 = [
-                {
-                    "playerName": "Jacques",
-                    "playerId" : player1.id,
-                    "playerNumber": 0
-                }
-            ];
-
-            testFunctions.joinRoom(socket2,player2, playersRoomJson1 , function (err,data) {
-                if (err) {
-                    done(err);
-                } else {
-                    done();
-                }
             });
 
-        });
+            it('Test n°11 : Should be able to receive GameState ', function (done) {
+                this.timeout(100);
+                let goodAnswer;
 
-        // TODO TO BE IMPLEMENTED
-        it('Test n°7 : Should be able to start the game' , function (done) {
-            this.timeout(100);
-            try {
-                assert.equal(true,true);
-                done();
-            } catch (err) {
-                done(err);
-            }
-        });
+                testFunctions.GameState([socket1,socket2], goodAnswer, function (err) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });
 
-        // TODO TO BE IMPLEMENTED
-        it('Test n°8 : Should be able to leave the game' , function (done) {
-            this.timeout(100);
-            try {
-                assert.equal(true,true);
-                done();
-            } catch (err) {
-                done(err);
-            }
+            });
+
         });
 
     });
