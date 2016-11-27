@@ -215,7 +215,7 @@ describe('Server tests : ' , function () {
             });
 
             it('Test n°11 : Should be able to receive GameState ', function (done) {
-                this.timeout(100);
+                this.timeout(250);
                 let goodAnswer;
 
                 testFunctions.GameState([socket1,socket2], goodAnswer, function (err) {

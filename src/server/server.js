@@ -3,7 +3,6 @@
  */
 let socketio = require('socket.io');
 let eventsEnum = require('../common/events.js');
-let gameEventEmitter = require("./gameEventEmitter.js").commonEmitter;
 
 module.exports.listen = function () {
     let io = socketio.listen(8080);
@@ -13,9 +12,10 @@ module.exports.listen = function () {
         require("./routes.js").gestionSocket(socket,io.sockets);
     });
 
-    gameEventEmitter.on( eventsEnum.GameState, function (data) {
+    let gameEventEmitter = require("./gameEventEmitter.js").commonEmitter;
 
-        require("./routes.js").gestionSocket(data,io.sockets);
+    gameEventEmitter.on( eventsEnum.gameStateUpdate, function (data) {
+        require("./routes.js").GameState(data,io.sockets);
 
     });
 

@@ -1,13 +1,4 @@
 let Game = require('./gameState.js');
-let eventsEnum = require('../common/events.js');
-
-let isStarted;
-let isFinished;
-let players;
-let creatorId;
-let gameId;
-let roomName;
-let game;
 
 function Room(playerId,gameId,roomName) {
     this.creatorId = playerId;
@@ -27,7 +18,7 @@ Room.prototype.addPlayer = function(socket, player,callback) {
         this.players.set(this.players.size, {user: player, socketUser: socket});
 
         // add user socket to room
-        socket.join('Room' + gameId);
+        socket.join('Room' + this.gameId);
 
         // TODO add player in let game
 

@@ -17,52 +17,52 @@ module.exports.winston = winston;
 
 module.exports.gestionSocket = function(socket, IOsockets){
 
-    socket.on(eventEnum.NewPlayer, function(data) {
+    socket.on(eventEnum.newPlayer, function(data) {
         lobby.newPlayer(IOsockets,socket, data, function (err) {
-            winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.NewPlayer + " handled : " + ( (err) ? " with message " + err.message : " successfully") );
+            winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.newPlayer + " handled : " + ( (err) ? " with message " + err.message : " successfully") );
         });
 
     });
 
-    socket.on(eventEnum.CreateRoom, function (data) {
+    socket.on(eventEnum.createRoom, function (data) {
         lobby.createRoom(IOsockets,socket, data, function (err) {
-            winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.CreateRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+            winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.createRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
-    socket.on(eventEnum.JoinRoom , function (data) {
+    socket.on(eventEnum.joinRoom , function (data) {
         lobby.joinRoom(IOsockets,socket, data, function (err) {
-            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.JoinRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.joinRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
-    socket.on(eventEnum.StartGame , function (data) {
+    socket.on(eventEnum.startGame , function (data) {
         lobby.startGame(IOsockets,socket,data, function (err) {
-            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.StartGame + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.startGame + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
-    socket.on(eventEnum.LeaveRoom, function (data) {
+    socket.on(eventEnum.leaveRoom, function (data) {
         lobby.leaveRoom(IOsockets,socket,data, function (err) {
-            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.LeaveRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ) );
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.leaveRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ) );
         });
     });
 
-    socket.on(eventEnum.GetAvailableRooms, function () {
+    socket.on(eventEnum.getAvailableRooms, function () {
         lobby.getAvailableRooms(IOsockets,socket, function (err) {
-            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.GetAvailableRooms + " handled : " + ( (err) ? " with message " + err.message : " successfully" ) );
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.getAvailableRooms + " handled : " + ( (err) ? " with message " + err.message : " successfully" ) );
         });
     });
 
-    socket.on(eventEnum.PlayerState , function (data) {
+    socket.on(eventEnum.playerStateUpdate , function (data) {
         lobby.playerState(IOsockets,socket,data, function (err) {
-            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.PlayerState + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.playerStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
-    socket.on(eventEnum.EndGame , function (data) {
+    socket.on(eventEnum.endGame , function (data) {
         lobby.endGame(IOsockets,socket,data, function (err) {
-            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.EndGame + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+            winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.endGame + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 

@@ -1,14 +1,13 @@
 let eventsEnum = require('../common/events.js');
-let emitter = require("./gameEventEmitter.js").commonEmitter;
 
 let Game = function (gameId,fps) {
     this.fps = fps;
     this.delay = 1000 / this.fps;
     this.gameId = gameId;
     this.loopFunction;
+    this.emitter = require("./gameEventEmitter.js").commonEmitter;
     this.onUpdate = function () {
-        emitter.emit(eventsEnum.GameState, {gameId : this.gameId , data: tesDonnees} );
-        console.log("TEST OK KO");
+        this.emitter.emit(eventsEnum.gameStateUpdate, {gameId : this.gameId , data: {} } );
     };
 };
 
