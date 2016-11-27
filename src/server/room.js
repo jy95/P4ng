@@ -8,6 +8,12 @@ function Room(playerId,gameId,roomName) {
     this.isFinished = false;
     this.players= new Map();
     this.game = new Game(this.gameId,60);
+    
+    // implement the onUpdate function of game
+    this.game.onUpdate = function () {
+        var playerState = this.game.getPlayerState();
+        //TO DO : envoyer ce playerState à tous les joueurs (event => playerStateUpdate)
+    }.bind(this);
 }
 
 Room.prototype.addPlayer = function(socket, player,callback) {
@@ -141,10 +147,6 @@ Room.prototype.endGame = function (data,callback) {
 };
 
 
-// implement the onUpdate function of game
-game.onUpdate = function () {
-    var playerState = this.game.getPlayerState();
-    //TO DO : envoyer ce playerState à tous les joueurs (event => playerStateUpdate)
-};
+
 
 module.exports = Room;
