@@ -1,21 +1,19 @@
 const {NORTH, EAST, WEST, SOUTH} = require('./game-const.js')
 const Game = require('./objects/Game.js')
-const EventEmitter = require('events')
+
+var gameEventEmitter = new (require('events'))()
 
 var currentGame = null
-var gameEventEmitter = new EventEmitter()
 var intervalId = 0
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(beginningDirection){
-    currentGame = new Game({ballDirection: beginningDirection, updateCallback: ()=>{
-        gameEventEmitter.emit('game-update')
-    }})
+    currentGame = new Game({ballDirection: beginningDirection})
 }
 
 // subscribe to state update
-module.exports.subscribe = function(callback){
-    gameEventEmitter.on('game-update', function(){
+module.exports.on = function(callback){
+    gameEventEmitter.on('gameStateUpdate', function(){
         callback()
     })
 }
@@ -25,9 +23,11 @@ module.exports.addPlayer = function(player){
     currentGame.addPlayer(player)
 }
 
-module.exports.startGame = function(){
+module.exports.startGame = function({angle}){
+    currentGame.ball.direction = angle
     intervalId = setInterval(function(){
         currentGame.update()
+        gameEventEmitter.emit('gameStateUpdate')
     }, 17)
 }
 
@@ -47,19 +47,14 @@ module.exports.updatePlayer = function({id,position}){
         p.position = position
 }
 
-module.exports.movePlayerLeft = function({id}){
-    currentGame.players[id].movingLeft()
+module.exports.movePlayerLeft = function({side}){
+    currentGame.sides[side].movingLeft()
 }
 
-module.exports.movePlayerRight = function({id}){
-    currentGame.players[id].movingRight()
+module.exports.movePlayerRight = function({side}){
+    currentGame.sides[side].movingRight()
 }
 
-module.exports.stopPlayer = function({id}){
-    currentGame.players[id].stop()
-}
-
-module.exports.ballCorrection = function(paddlePosition, playerId){
-
-    currentGame.ball.move()
+module.exports.stopPlayer = function({side}){
+    currentGame.sides[side].stop()
 }

@@ -8,8 +8,8 @@ module.exports = {
         The server registers the new player, gives him and ID and puts him in the main lobby
         The server sends back {name: "Jacques", id: 47}
         This event is also used for multiple players on the same client
-    */ 
-    NewPlayer : "NewPlayer",
+    */
+    newPlayer : "newPlayer",
 
     /*
         Whenever needed (player has just connected, returns to the main lobby after a game is finished...) the server will send a client
@@ -23,11 +23,16 @@ module.exports = {
 
         TO DISCUSS : to not overload the traffic, we perhaps shouldn't send the info that a new game is created to all players in the main lobby
         to keep their view up-to-date, but just send the list at key moments as mentioned above and add a refresh button in the client.
-        The room may contain a lot of other attributes, like a difficulty (casu, hardcore), a password, a max number of player etc that will be clarified 
+        The room may contain a lot of other attributes, like a difficulty (casu, hardcore), a password, a max number of player etc that will be clarified
         later in the development.
 
     */
-    GetAvailableRooms : "GetAvailableRooms",
+    getAvailableRooms : "getAvailableRooms",
+
+    /*
+        Event fired when the client lobby updates its available rooms list after a GetAvailableRooms
+    */
+    gotAvailableRooms : "gotAvailableRooms",
 
     /*
         When a player wants to create a room, he specifies a name. Other attributes may be added in the future
@@ -37,7 +42,7 @@ module.exports = {
         If not, the server sends back the same JSON (may change if not clear enough)
 
     */
-    CreateRoom : "CreateRoom",
+    createRoom : "createRoom",
 
     /*
         When a player wants to join a room, the client sends {id: 47, roomId: 69}
@@ -46,7 +51,7 @@ module.exports = {
         + The new player is sent a list of all the players in that room to update his view (ListEnrolledPlayers)
         If not, the server returns {id: 47, roomId: -1}
     */
-    JoinRoom : "JoinRoom",
+    joinRoom : "joinRoom",
 
 
     /*
@@ -61,9 +66,9 @@ module.exports = {
         If the player isn't in that room, the server sends back {id: 47, roomId: -1}
 
         EXTRA : In the case where the creator of the game chooses a random angle at the beginning of each round, if he leaves a running game,
-        a new player will have to be chosen as the new "master" of the game 
+        a new player will have to be chosen as the new "master" of the game
     */
-    LeaveRoom : "LeaveRoom",
+    leaveRoom : "leaveRoom",
 
 
     /*
@@ -71,14 +76,19 @@ module.exports = {
         a new player will have to be chosen as the new "master" of the game "
         The server sends {id: 69, roomId: 47} to the new master that he has elected
     */
-    NewMaster : "NewMaster",
+    newMaster : "newMaster",
 
 
     /*
         When a player enters a room he is sent a list of all the players currently in that room
         The server sends a simple array of player JSON
     */
-    ListEnrolledPlayers : "ListEnrolledPlayers",
+    listEnrolledPlayers : "listEnrolledPlayers",
+    /*
+        Event fired when the server response is received
+    */
+
+    gotListEnrolledPlayers : "gotListEnrolledPlayers",
 
     /*
         When there is at least two players and the creator feels like it, he can send {id: 47, roomId: 47, angle: 0.8}
@@ -87,7 +97,7 @@ module.exports = {
         and it signals the effective start of the game
         If not, the client who requested the start is sent {id: 47, roomId: -1, angle: 0.8}
     */
-    StartGame : "StartGame",
+    startGame : "startGame",
 
 
     /*
@@ -98,38 +108,36 @@ module.exports = {
                 "32":{"isLocal":true,"id":"32","score":2,"position":400}
             },
             "roomId":15487
-        } 
-        
+        }
+
         Witch each PlayerState, the server will be able to hold the general GameState
+        Every x ms, the server sends the same json but with the position of all the players in the game
 
         NOTE : although the roomId isn't absolutely mandatory, it can be used to hasten the research in the server, depending on its implementation
     */
-    PlayerState : "PlayerState",
+    playerStateUpdate : "playerStateUpdate",
 
 
     /*
+        !!!!!!!!!!!! FORGET ABOUT IT FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         Every x ms, each client will be sent the game state (same json structure as PlayerState) containing the latest players' state present on the server
         of all the players in the game so that it can render the game
 
         NOTE : this methodology is subject to change, for performance purposes
+
+        !!!!!!!!!!!! FORGET ABOUT IT FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     */
-    GameState : "GameState",
+    gameStateUpdate : "gameStateUpdate",
 
 
     /*
         When a game ends, every client involved sends the same json as the one for PlayerSate but with all the players
         The server chooses the most commonly attributed score for each player to counter cheating
 
-        NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag 
+        NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag
         in a potential chat "EZ u all suk lel")
     */
-    EndGame : "EndGame"
+    endGame : "endGame"
 
-
-
-
-    
-
-
-    
 };

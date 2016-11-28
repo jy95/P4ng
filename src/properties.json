@@ -1,0 +1,25 @@
+{
+    "gameConsts": {
+        "NORTH": 0,
+        "EAST" : 1,
+        "SOUTH": 2,
+        "WEST": 3
+    },
+    "gameProp": {
+        "fieldWidth": 500
+    },
+    "p4ngModules":{
+        "eventsEnum": "./common/event.js",
+        "gameController": "./common/controller/game-controller.js",
+        "gameView": "./common/view/js/game-view.js",
+        "lobbyLogic": "./common/model/lobby-logic/lobby-logic.js",
+        "lobbyController": "./common/controller/lobby-controller.js",
+        "lobbyView": "./common/view/js/lobby-view.js",
+
+        "gameToServer": "./common/controller/game-to-server.js",
+        "serverToGame": "./common/controller/server-to-game.js",
+
+        "lobbyToServer": "./common/controller/lobby-to-server.js",
+        "serverToLobby": "./common/controller/server-to-lobby.js"
+    }
+}

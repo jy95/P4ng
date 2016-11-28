@@ -6,6 +6,9 @@
     <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function(){
         require('../js/game-view.js')
+        require('../js/lobby-view.js')
+        require('../../controller/game-controller.js')
+        require('../../controller/lobby-controller.js')
     })
     </script>
     <link rel="stylesheet" type="text/css" href="../css/p4ng-style.css">
@@ -28,13 +31,14 @@
                         <ul class="playerInfo">
                             <li>
                                 <p>Your name: </p>
-                                <textarea rows="3" cols="6.5"></textarea>
+                                <textarea rows="3" cols="6.5" id="localPlayerName"></textarea>
                             </li>
                             <li><p>Score: </p><p></p></li>
                             <li><p>Rank: </p><p></p></li>
                         </ul>
                     </div>
-                    <ul class="remotePlayersList">
+                    <button id="refreshPlayers">refresh</button>
+                    <ul id="remotePlayersList">
                         <li id="122" class="remotePlayer">
                             <ul class="playerInfo">
                                 <li>abcdefgh</li>
@@ -58,6 +62,7 @@
                         <input type="text" size="9" id="newGameName">
                         <button id="createGame">create</button>
                     </div>
+                    <button id="refreshRooms">refresh</button>
                     <table id="games">
                         <thead>
                             <tr>

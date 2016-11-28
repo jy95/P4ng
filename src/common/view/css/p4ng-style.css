@@ -36,7 +36,7 @@ h1{
 	list-style: none;
 	padding: 0 1em ;
 }
-.remotePlayersList{
+#remotePlayersList{
     list-style-type: square;
     padding: 0;
 }
