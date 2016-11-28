@@ -1,4 +1,5 @@
-const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = require('../game-const.js') // ES6 deconstruction
+const props = require('../../../../properties-loader.js')
+const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = props.gameConsts // ES6 deconstruction
 
 
 module.exports = PongBall

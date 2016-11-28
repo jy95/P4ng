@@ -1,5 +1,6 @@
-var eventsEnum = require('../events.js')
-var socket = require('../client-socket.js').socket
+const props = require('../../properties-loader.js')
+var eventsEnum = require(props.eventsEnumPath())
+var socket = require(props.socketPath()).socket
 
 var endGameAlreadySent = false
 

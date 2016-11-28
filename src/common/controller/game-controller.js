@@ -1,4 +1,5 @@
-const {NORTH, EAST, WEST, SOUTH} = require('../model/game-logic/game-const.js')
+const props = require('../../properties-loader.js')
+const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 var gameControllerEventEmitter = new (require('events'))()
 
 // default values for controls

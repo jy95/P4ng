@@ -1,6 +1,6 @@
 var lobbyEventEmitter = new (require('events'))()
-const props = require('../../../../properties-loader')
-var eventsEnum = require(props.eventNum)
+const props = require('../../../properties-loader.js')
+var eventsEnum = require(props.eventsEnumPath())
 
 let localPlayer = null
 let remotePlayers = {}

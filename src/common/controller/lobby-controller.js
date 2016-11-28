@@ -1,5 +1,6 @@
+var props = require('../../properties-loader.js')
 var lobbyControllerEventEmitter = new (require('events'))()
-var eventsEnum = require('../events.js')
+var eventsEnum = require(props.eventsEnumPath())
 
 document.getElementById('createGame').addEventListener('click', onCreate)
 document.getElementById('localPlayerName').addEventListener('keypress', onNewPlayer)

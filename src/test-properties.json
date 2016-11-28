@@ -20,7 +20,7 @@
         "serverToGame": "./common/controller/server-to-game.js",
         "lobbyToServer": "./common/controller/lobby-to-server.js",
         "serverToLobby": "./common/controller/server-to-lobby.js",
-        "socket": "./common/client-socket.js"
+        "socket": "./common/fake-client-socket.js"
     },
     "p4ngIndex": "./common/view/html/index.html",
     "p4ngIcon": "./../ressources/P4ng_logo_1.png",

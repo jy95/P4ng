@@ -1,4 +1,6 @@
-const {NORTH, EAST, WEST, SOUTH} = require('../../model/game-logic/game-const.js')
+
+const props = require('../../../properties-loader.js')
+const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 const EventEmitter = require('events')
 var gameViewEventEmitter = new EventEmitter()
 

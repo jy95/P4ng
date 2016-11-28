@@ -1,5 +1,6 @@
-var eventsEnum = require('../events.js')
-var socket = require('../client-socket.js').socket
+var props = require('../../properties-loader.js')
+var eventsEnum = require(props.eventsEnumPath())
+var socket = require(props.socketPath()).socket
 
 module.exports.createRoom = function({id, roomName}){
     socket.emit(eventsEnum.createRoom, {'id': id, 'roomName': roomName})

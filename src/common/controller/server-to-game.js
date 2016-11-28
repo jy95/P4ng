@@ -1,6 +1,7 @@
-var eventsEnum = require('../events.js')
-var gameLogic = require('../model/game-logic/game-logic.js')
-var socket = require('../client-socket.js').socket
+
+var props = require('../../properties-loader.js')
+var eventsEnum = require(props.eventsEnumPath())
+var socket = require(props.socketPath()).socket
 var serverToGameEventEmitter = new (require('events'))()
 
 

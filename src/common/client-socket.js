@@ -1,11 +1,7 @@
 //Used to share the client socket among the controllers
 
 var io = require('socket.io-client')
-var socket
-
-//called by main
-module.exports.initClientSocket = function(confObj){
-    socket = io.connect(confObj.url)
-}
+const props = require('../properties-loader.js')
+var socket = io.connect(props.socket.url)
 
 module.exports.socket = socket

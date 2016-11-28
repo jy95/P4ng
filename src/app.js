@@ -1,32 +1,35 @@
 const {app, BrowserWindow} = require('electron')
-const path = require('path')
 const url = require('url')
-const properties = require('./properties-loader.js')
+const props = require('./properties-loader.js')
 
-var eventsEnum = require(props.eventsEnum)
+var eventsEnum = require(props.eventsEnumPath())
 // can't require views and controllers as long as the document isn't loaded
-var gameLogic = require(props.gameLogic)
+var gameLogic = require(props.gameLogicPath())
 var gameController = null
 var gameView = null
 
-var lobbyLogic = require(props.lobbyLogic)
+var lobbyLogic = require(props.lobbyLogicPath())
 var lobbyController = null
 var lobbyView = null
 
-var lobbyToServer = require(props.lobbyToServer)
-var serverToLobby = require(props.serverToLobby)
+var lobbyToServer = require(props.lobbyToServerPath())
+var serverToLobby = require(props.serverToLobbyPath())
 
-var gameToServer = require(props.gameToServer)
-var serverToGame = require(props.serverToGame)
+var gameToServer = require(props.gameToServerPath())
+var serverToGame = require(props.serverToGamePath())
 
 
 // Global ref to window to avoid garbage collection
 let win
 
 function createWindow(){
-    win = new BrowserWindow({width: 700, height: 700, icon: path.resolve(`${__dirname}/../ressources/P4ng_logo_1.png`)})
+    win = new BrowserWindow({
+        width: 700,
+        height: 700,
+        icon: props.p4ngIcon
+    })
     win.loadURL(url.format({
-        pathname: path.join(__dirname, 'common/view/html/index.html'),
+        pathname: props.p4ngIndex,
         protocol: 'file:',
         slashes: true
     }))
@@ -43,11 +46,11 @@ function createWindow(){
 
 function init(){
 
-    gameController = require('./common/controller/game-controller.js')
-    gameView = require('./common/view/js/game-view.js')
+    gameController = require(props.gameControllerPath())
+    gameView = require(props.gameViewPath())
 
-    lobbyController = require('./common/controller/lobby-controller.js')
-    lobbyView = require('./common/view/js/lobby-view.js')
+    lobbyController = require(props.lobbyControllerPath())
+    lobbyView = require(props.lobbyViewPath())
 
 
     // set lobby-controller listeners

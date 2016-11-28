@@ -1,4 +1,5 @@
-const {NORTH, EAST, WEST, SOUTH} = require('./game-const.js')
+const props = require('../../../properties-loader.js')
+const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 const Game = require('./objects/Game.js')
 
 var gameEventEmitter = new (require('events'))()
