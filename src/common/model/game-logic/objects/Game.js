@@ -7,7 +7,8 @@ module.exports = PongGame
 /*
 * Game object
 */
-function PongGame ({ballDirection}){
+function PongGame (id){
+    this.id = id
     // P4ng field should be a square
     // this is the width of the field in pixels
     this.width = FIELD_WIDTH
@@ -111,6 +112,6 @@ PongGame.prototype.toJSON = function(){
 
     var theBall = this.ball.toJSON()
 
-    return {players : thePlayers, ball : theBall, isFinished: this.isFinished}
+    return {players : thePlayers, ball : theBall, isFinished: this.isFinished, roomId: this.id}
 
 }

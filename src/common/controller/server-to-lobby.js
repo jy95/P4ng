@@ -32,3 +32,5 @@ socket.on(eventsEnum.leaveRoom, ({id, roomId})=>{
 socket.on(eventsEnum.gotListEnrolledPlayers, (playersList)=>{
     serverToLobbyEventEmitter.emit(eventsEnum.gotListEnrolledPlayers, playersList)
 })
+
+module.exports.on = serverToLobbyEventEmitter.on

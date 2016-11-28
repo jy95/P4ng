@@ -78,9 +78,7 @@ module.exports.setRooms = function(roomsList){
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
-module.exports.subscribe = function(callback){
-    lobbyEventEmitter.on('lobbyUpdate', callback)
-}
+module.exports.on = lobbyEventEmitter.on
 
 module.exports.getState = function(){
     return {

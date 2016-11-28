@@ -1,13 +1,12 @@
 const props = require('../properties-loader.js')
+var serverEmmiter = new (require('events'))()
 
 
-var socket = {
-    on: function(event, data){
+var intervalId = null
 
-    },
-    emit: function(event, data){
+module.exports.socket = fakeClientSocketEventEmmiter
 
-    }
-}
 
-module.exports.socket = socket
+fakeClientSocketEventEmmiter.on('newPlayer', function(){
+
+})

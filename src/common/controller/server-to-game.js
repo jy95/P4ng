@@ -8,3 +8,5 @@ var serverToGameEventEmitter = new (require('events'))()
 socket.on(eventsEnum.playerStateUpdate, (playerStateArray)=>{
     serverToGameEventEmitter.emit(eventsEnum.playerStateUpdate, playerStateArray)
 })
+
+module.exports.on = serverToGameEventEmitter.on
