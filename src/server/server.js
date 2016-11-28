@@ -9,13 +9,13 @@ module.exports.listen = function () {
 
     io.on("connection", function (socket) {
 
-        require("./routes.js").gestionSocket(socket,io.sockets);
+        require("./server-logic/routes.js").gestionSocket(socket,io.sockets);
     });
 
-    let gameEventEmitter = require("./gameEventEmitter.js").commonEmitter;
+    let gameEventEmitter = require("./server-logic/gameEventEmitter.js").commonEmitter;
 
     gameEventEmitter.on( eventsEnum.gameStateUpdate, function (data) {
-        require("./routes.js").GameState(data,io.sockets);
+        require("./server-logic/routes.js").GameState(data,io.sockets);
 
     });
 

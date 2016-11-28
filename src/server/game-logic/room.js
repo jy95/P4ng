@@ -16,20 +16,15 @@ function Room(playerId,gameId,roomName) {
     }.bind(this);
 }
 
-Room.prototype.addPlayer = function(socket, player,callback) {
+Room.prototype.addPlayer = function(player,callback) {
     if (this.players.size < 4) {
 
         // add player in Players Map
         // I prefer to store the player JSON and its socket - Just in case
-        this.players.set(this.players.size, {user: player, socketUser: socket});
-
-        // add user socket to room
-        socket.join('Room' + this.gameId);
+        this.players.set(this.players.size, {user: player });
 
         //add player to game
         this.game.addPlayer(player);
-
-        // TODO add player in let game
 
         callback(null);
     } else {
@@ -47,7 +42,7 @@ Room.prototype.startGame = function(playerId,callback) {
     }
 };
 
-Room.prototype.leaveRoom = function(socket,player, callback) {
+Room.prototype.leaveRoom = function(player, callback) {
 
     // find the index of this player in players array
     let index = _findPlayer(player);
@@ -59,7 +54,6 @@ Room.prototype.leaveRoom = function(socket,player, callback) {
 
     // remove player
     this.players.delete(index);
-    socket.leave('Room'+  player["roomId"]);
 
     //remove player from game
     this.game.removePlayer(player);
@@ -75,15 +69,15 @@ Room.prototype.newMaster = function(callback) {
     let firstPlayer = this.players.keys().next().value;
 
     // get his socket
-    let socket = (this.players.get(firstPlayer))["socketUser"];
+    let userId = (this.players.get(firstPlayer))["user"];
 
     // set creator
-    creatorId =  (this.players.get(firstPlayer))["id"];
+    creatorId =  userId["id"];
 
     // message for the new player
     let message = {id: this.creatorId, roomId: this.gameId};
 
-    callback(null, socket,message);
+    callback(null, userId,message);
 
 };
 
@@ -92,21 +86,6 @@ Room.prototype.listAllPlayer = function(callback) {
     this._allPlayers( function (err,data) {
         callback(err,data);
     })
-};
-
-Room.prototype.sendMessage = function(socket,event,message) {
-    socket.emit(event,message);
-};
-
-Room.prototype.broadcastMessageInRoomWithoutMe = function(roomId,socket,event,data) {
-    socket.broadcast.to('Room'+roomId).emit(event, data);
-};
-
-Room.prototype.broadcastMessageInRoom = function(IOsockets,roomId,event,data) {
-    IOsockets.in('Room'+roomId).emit(event,data);
-};
-Room.prototype.broadcastMessageToEveryone = function(IOsockets,event,data) {
-    IOsockets.emit(event,data);
 };
 
 /**

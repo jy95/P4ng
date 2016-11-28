@@ -1,8 +1,8 @@
 /**
  * Created by jacques on 24-11-16.
  */
-let eventEnum = require("../common/events.js");
-let LobbyGenerator = require("./lobby.js");
+let eventEnum = require("../../common/events.js");
+let LobbyGenerator = require("./../game-manager/lobby-manager.js");
 let lobby = new LobbyGenerator();
 let winston = require("winston");
 
