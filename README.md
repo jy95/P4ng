@@ -38,15 +38,15 @@ Pull requests and stars are always welcome. For bugs and feature requests, [plea
 
 **Emilien**
 
-* [github/jy95](https://github.com/jy95)
+* [github/EmilienD](https://github.com/EmilienD)
 
 **Gaël**
 
-* [github/jy95](https://github.com/jy95)
+* [github/calypsow777](https://github.com/calypsow777)
 
 **Theodor**
 
-* [github/jy95](https://github.com/jy95)
+* [github/tdimov93](https://github.com/tdimov93)
 
 ## License
 
