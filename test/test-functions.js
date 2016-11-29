@@ -15,7 +15,7 @@ module.exports = {
                 assert.notEqual( data.id,-1 , 'No UserId');
                 callback(null, data);
             } catch (err) {
-                callback(err,null)
+                callback(err,null);
             }
 
         });

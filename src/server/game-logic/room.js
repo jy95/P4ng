@@ -66,7 +66,7 @@ Room.prototype.leaveRoom = function(player, callback) {
             this.game.removePlayer(player);
 
             // a New Master may be required , if enough players left
-            callback(null,  (creatorId === player["id"]) , this.players.size > 1 , this.players.size === 0);
+            callback(null,  (creatorId === player.id) , this.players.size > 1 , this.players.size === 0);
     }
 
 
@@ -85,10 +85,10 @@ Room.prototype.newMaster = function(callback) {
 
         default :
             // get his socket
-            let userId = (this.players.get(firstPlayer))["user"];
+            let userId = (this.players.get(firstPlayer)).user;
 
             // set creator
-            creatorId =  userId["id"];
+            creatorId =  userId.id;
 
             // message for the new player
             let message = {id: this.creatorId, roomId: this.gameId};
@@ -103,7 +103,7 @@ Room.prototype.listAllPlayer = function(callback) {
 
     this._allPlayers( function (err,data) {
         callback(err,data);
-    })
+    });
 };
 
 /**
@@ -113,7 +113,7 @@ Room.prototype.listAllPlayer = function(callback) {
 Room.prototype._findPlayer = function(player) {
     let index = -1;
     players.forEach( (value,key) => {
-        if (  ( (value.user)["id"] ) === player["id"] ) {
+        if (  ( (value.user).id ) === player.id ) {
             index = key;
         }
     });
@@ -126,8 +126,8 @@ Room.prototype._allPlayers = function(callback) {
 
     this.players.forEach( (value,key) => {
         playerJson.push(
-            { playerName: (value.user)["name"],
-                playerId : (value.user)["id"] ,
+            { playerName: (value.user).name,
+                playerId : (value.user).id ,
                 playerNumber : key
             });
     });

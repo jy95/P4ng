@@ -38,16 +38,16 @@ Game.prototype.removePlayer = function(player){
 };
 
 Game.prototype.updatePlayers = function({players}){
-    for(id in players){
+    for(let id in players){
         this.players[id].push(players[id]);
     }
 };
 
 Game.prototype.getPlayerState = function(){
-    var playerState = {};
+    let playerState = {};
     playerState.roomId = this.roomId;
     playerState.players = {};
-    for(id in this.players){
+    for(let id in this.players){
         playerState.players[id] = this.players[id].shift();
     }
     return playerState;

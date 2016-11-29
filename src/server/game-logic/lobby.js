@@ -13,8 +13,8 @@ function Lobby() {
 Lobby.prototype.joinRoom = function(data,callback) {
 
     // get player and room data
-    let currentPlayer = this.players.get( data["id"] );
-    let room = this.rooms.get( data["roomId"] );
+    let currentPlayer = this.players.get( data.id );
+    let room = this.rooms.get( data.roomId );
 
     if (currentPlayer === undefined) {
         callback(new Error("No user found"));
@@ -56,7 +56,7 @@ Lobby.prototype.newPlayer = function (player,callback) {
 
 Lobby.prototype.createRoom = function (data,callback) {
     // get player data
-    let currentPlayer = this.players.get( data["id"]);
+    let currentPlayer = this.players.get( data.id);
 
     if (currentPlayer === undefined) {
         callback(new Error("No user found"));
@@ -66,13 +66,13 @@ Lobby.prototype.createRoom = function (data,callback) {
         let roomId = uuid.v1();
 
         // create a new Room with this id
-        let room = new RoomModule( data["id"], roomId , data["roomName"]);
+        let room = new RoomModule( data.id, roomId , data.roomName);
 
         // add the created room to other
         this.rooms.set(room.gameId, room);
 
         // json Data
-        data["roomId"] = room.gameId;
+        data.roomId = room.gameId;
         callback(null, data);
     }
 
@@ -80,8 +80,8 @@ Lobby.prototype.createRoom = function (data,callback) {
 
 Lobby.prototype.startGame = function (data,callback) {
     // get player and room data
-    let currentPlayer = this.players.get( data["id"]);
-    let room = this.rooms.get( data["roomId"] );
+    let currentPlayer = this.players.get( data.id);
+    let room = this.rooms.get( data.roomId );
 
     if (currentPlayer === undefined) {
         callback(new Error("No user found"));
@@ -104,9 +104,9 @@ Lobby.prototype.startGame = function (data,callback) {
 
 Lobby.prototype.leaveRoom = function (data,callback) {
     // get player and room data
-    let currentPlayer = this.players.get( data["id"]);
+    let currentPlayer = this.players.get( data.id);
 
-    let room = this.rooms.get( data["roomId"] );
+    let room = this.rooms.get( data.roomId );
 
     if (currentPlayer === undefined) {
 
@@ -126,7 +126,7 @@ Lobby.prototype.leaveRoom = function (data,callback) {
             } else {
 
                 // remove player from lobby players
-                this.players.delete( data["id"] );
+                this.players.delete( data.id );
 
                 callback(null, newMasterRequired , hasEnoughPlayers, lastPlayerQuit);
 
@@ -158,7 +158,7 @@ Lobby.prototype.getAvailableRooms = function (callback) {
 
 Lobby.prototype.playerState = function (data,callback) {
 
-    let room = this.rooms.get( data["roomId"] );
+    let room = this.rooms.get( data.roomId );
 
     if (room === undefined) {
         callback(new Error("Room doesn't exist"));
@@ -174,7 +174,7 @@ Lobby.prototype.playerState = function (data,callback) {
 
 Lobby.prototype.endGame = function (IOsockets,socket,callback) {
 
-    let room = this.rooms.get( data["roomId"] );
+    let room = this.rooms.get( data.roomId );
 
     if (room === undefined) {
         callback(new Error("Room doesn't exist"));
@@ -190,13 +190,13 @@ Lobby.prototype.endGame = function (IOsockets,socket,callback) {
 
 Lobby.prototype.gameState = function (IOsockets, data, callback) {
 
-    let room = this.rooms.get( data["gameId"] );
+    let room = this.rooms.get( data.gameId );
 
     if (room === undefined) {
         callback(new Error("Room doesn't exist"));
     } else {
 
-        room.broadcastMessageInRoom(IOsockets, data["gameId"], eventEnum.GameState , data );
+        room.broadcastMessageInRoom(IOsockets, data.gameId, eventEnum.GameState , data );
         callback(null);
     }
 };

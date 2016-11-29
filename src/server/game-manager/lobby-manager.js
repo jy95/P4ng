@@ -24,20 +24,20 @@ LobbyManager.prototype.joinRoom = function(IOsockets,socket,data,callback) {
             case null :
 
                 // add the player inside the room ( Socket part )
-                this.socketManager.registerNewPlayerInsideARoom(socket, data["roomId"]);
+                this.socketManager.registerNewPlayerInsideARoom(socket, data.roomId);
 
                 // notify all the player that new player is registered
-                this.socketManager.broadcastMessageInRoom(IOsockets,data["roomId"] ,eventEnum.joinRoom,data);
+                this.socketManager.broadcastMessageInRoom(IOsockets,data.roomId ,eventEnum.joinRoom,data);
 
                 // sends to new player an array of players
-                this.socketManager.sendMessage(socket, data["roomId"] ,eventEnum.ListEnrolledPlayers,json);
+                this.socketManager.sendMessage(socket, data.roomId ,eventEnum.ListEnrolledPlayers,json);
 
                 callback(null);
 
                 break;
 
             default :
-                this.socketManager.sendMessage(socket,eventEnum.joinRoom, {id: data["id"], roomId: -1});
+                this.socketManager.sendMessage(socket,eventEnum.joinRoom, {id: data.id, roomId: -1});
                 callback(err);
         }
 
@@ -99,7 +99,7 @@ LobbyManager.prototype.createRoom = function (IOsockets,socket,data,callback) {
 
             default :
 
-                this.socketManager.sendMessage(socket,eventEnum.createRoom, {id: data["id"], roomId: -1});
+                this.socketManager.sendMessage(socket,eventEnum.createRoom, {id: data.id, roomId: -1});
                 callback(err);
 
         }
@@ -115,7 +115,7 @@ LobbyManager.prototype.startGame = function (IOsockets,socket,data,callback) {
         switch(err) {
             case null :
 
-                this.socketManager.broadcastMessageInRoom(IOsockets, data["gameId"] ,eventEnum.startGame, {id: data.id, roomId: data.roomId, angle: answer} );
+                this.socketManager.broadcastMessageInRoom(IOsockets, data.gameId ,eventEnum.startGame, {id: data.id, roomId: data.roomId, angle: answer} );
                 callback(null);
                 break;
 
@@ -139,7 +139,7 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
                 // A new Master is required
                 if ( hasEnoughPlayers && newMasterRequired) {
 
-                    this.gameLogic.electNewMaster( data["roomId"] , (error,userId, message) => {
+                    this.gameLogic.electNewMaster( data.roomId , (error,userId, message) => {
                         if (!error) {
                             let newMasterSocket = this.playersToSocket.get(userId);
                             this.socketManager.sendMessage(newMasterSocket,eventEnum.NewMaster, message);
@@ -154,19 +154,19 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
                 // TODO remove inside the two map
 
                 // prevent another players in room
-                this.socketManager.broadcastMessageInRoom(IOsockets, data["roomId"] , eventEnum.leaveRoom,  data );
+                this.socketManager.broadcastMessageInRoom(IOsockets, data.roomId , eventEnum.leaveRoom,  data );
 
                 if ( lastPlayerQuit) {
 
                     // remove room reference
-                    this.gameLogic.removeRoom(data["roomId"]);
+                    this.gameLogic.removeRoom(data.roomId);
 
                 }
                 callback(null);
                 break;
 
             default :
-                this.socketManager.sendMessage(socket,eventEnum.leaveRoom , { id: data["id"], roomId: -1 } );
+                this.socketManager.sendMessage(socket,eventEnum.leaveRoom , { id: data.id, roomId: -1 } );
                 callback(err);
         }
 

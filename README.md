@@ -1,4 +1,4 @@
-# P4ng [![Build Status](https://travis-ci.org/jy95/P4ng.svg?branch=master)](https://travis-ci.org/jy95/P4ng)
+# P4ng [![Build Status](https://travis-ci.org/jy95/P4ng.svg?branch=master)](https://travis-ci.org/jy95/P4ng) [![Coverage Status](https://coveralls.io/repos/github/jy95/P4ng/badge.svg?branch=master)](https://coveralls.io/github/jy95/P4ng?branch=master) [![Dependency Status](https://david-dm.org/jy95/P4ng.svg)](https://david-dm.org/jy95/P4ng)  [![Dev Dependency Status](https://david-dm.org/jy95/P4ng/dev-status.svg)](https://david-dm.org/jy95/P4ng?type=dev)
 > P4ng is a 4 player off and online version of the classic pong game by Team JaEGT.
 
 ## Install
@@ -10,22 +10,28 @@ $ git clone https://github.com/jy95/P4ng.git
 ```
 Install with [npm](https://www.npmjs.com/)
 ```sh
-$ npm install path/To/Project
+$ npm install <path/To/Project> --production
 ```
 ## Running tests
 
 > Worry about the project stability ? Just use the tests  
-> NB :  Currently only server tests exists 
+> NB :  Currently only server tests exists
 
 Install dev dependencies:
 
 ```sh
 $ npm install --only=dev
 ```
-Run the test 
+
+Run the test
+
 ```sh
 $ npm test
 ```
+
+## Code Coverage
+> construction ongoing
+
 ## Contributing
 
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/jy95/P4ng/issues)
