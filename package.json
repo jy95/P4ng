@@ -12,15 +12,16 @@
     "winston": "^2.3.0"
   },
   "devDependencies": {
-    "grunt": "^1.0.1",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-coveralls": "^1.0.1",
-    "mocha": "^3.2.0"
+    "coveralls": "^2.11.15",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "mocha-lcov-reporter": "^1.2.0"
   },
   "scripts": {
     "test": "mocha test/test.js ",
-    "start": "electron src/app.js"
+    "start": "electron src/app.js",
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec test/test.js",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
