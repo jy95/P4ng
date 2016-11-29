@@ -1,4 +1,4 @@
-# P4ng
+# P4ng [![Build Status](https://travis-ci.org/jy95/P4ng.svg?branch=master)](https://travis-ci.org/jy95/P4ng)
 > P4ng is a 4 player off and online version of the classic pong game by Team JaEGT.
 
 ## Install
@@ -50,5 +50,5 @@ Pull requests and stars are always welcome. For bugs and feature requests, [plea
 
 ## License
 
-Copyright © 2016 [Team JaEGT](https://github.com/jonschlinkert)
+Copyright © 2016 [Team JaEGT](https://github.com/jy95/P4ng)
 Licensed under the MIT license.
