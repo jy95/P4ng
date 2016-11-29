@@ -1,4 +1,4 @@
-let eventsEnum = require('../../common/events.js');
+let eventsEnum = require('../../events.js');
 
 let Game = function (roomId,fps) {
     this.fps = fps;

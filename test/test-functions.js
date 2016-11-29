@@ -1,7 +1,7 @@
 /**
  * Created by jacques on 24-11-16.
  */
-let eventEnum = require("../src/common/events.js");
+let eventEnum = require("../src/events.js");
 const assert = require('assert');
 
 module.exports = {

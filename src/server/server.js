@@ -2,7 +2,7 @@
  * Created by jacques on 10-11-16.
  */
 let socketio = require('socket.io');
-let eventsEnum = require('../common/events.js');
+let eventsEnum = require('../events.js');
 
 module.exports.listen = function () {
     let io = socketio.listen(8080);
@@ -15,7 +15,7 @@ module.exports.listen = function () {
     let gameEventEmitter = require("./server-logic/gameEventEmitter.js").commonEmitter;
 
     gameEventEmitter.on( eventsEnum.gameStateUpdate, function (data) {
-        require("./server-logic/routes.js").GameState(data,io.sockets);
+        require("./server-logic/routes.js").gameStateUpdate(data,io.sockets);
 
     });
 

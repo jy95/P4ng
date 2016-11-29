@@ -22,8 +22,16 @@
     "type": "git",
     "url": "git+https://github.com/jy95/P4ng.git"
   },
+  "keywords": [
+    "pong",
+    "ping pong",
+    "Ping Pong game",
+    "game",
+    "socket.io game",
+    "Ping Pong"
+  ],
   "author": "Team JaEGT",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jy95/P4ng/issues"
   },

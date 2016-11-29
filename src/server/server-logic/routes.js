@@ -1,7 +1,7 @@
 /**
  * Created by jacques on 24-11-16.
  */
-let eventEnum = require("../../common/events.js");
+let eventEnum = require("../../events.js");
 let LobbyGenerator = require("./../game-manager/lobby-manager.js");
 let lobby = new LobbyGenerator();
 let winston = require("winston");
@@ -68,8 +68,8 @@ module.exports.gestionSocket = function(socket, IOsockets){
 
 };
 
-module.exports.GameState = function (data, IOsockets) {
+module.exports.gameStateUpdate = function (data, IOsockets) {
   lobby.gameState(IOsockets,data , function (err) {
-      winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.GameState + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+      winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.gameStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
   })
 };

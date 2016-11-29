@@ -1,4 +1,6 @@
 let Game = require('./gameState.js');
+let emitter = require('../server-logic/gameEventEmitter.js').commonEmitter;
+let eventEnum = require('../../events.js');
 
 function Room(playerId,gameId,roomName) {
     this.creatorId = playerId;
@@ -11,8 +13,11 @@ function Room(playerId,gameId,roomName) {
     
     // implement the onUpdate function of game
     this.game.onUpdate = function () {
-        var playerState = this.game.getPlayerState();
-        //TO DO : envoyer ce playerState à tous les joueurs (event => playerStateUpdate)
+
+        let playerState = this.game.getPlayerState();
+
+        // envoi de ce playerState à tous les joueurs (event => playerStateUpdate)
+        emitter.emit(eventEnum.playerStateUpdate , { gameId : this.gameId , state: playerState} );
     }.bind(this);
 }
 
@@ -20,7 +25,6 @@ Room.prototype.addPlayer = function(player,callback) {
     if (this.players.size < 4) {
 
         // add player in Players Map
-        // I prefer to store the player JSON and its socket - Just in case
         this.players.set(this.players.size, {user: player });
 
         //add player to game
@@ -48,18 +52,23 @@ Room.prototype.leaveRoom = function(player, callback) {
     let index = _findPlayer(player);
 
     // check index
-    if ( index === -1 ) {
-        callback(new Error("Player not registered in this room"), false, false,false);
+
+    switch(index) {
+        case -1 :
+            callback(new Error("Player not registered in this room"), false, false,false);
+            break;
+
+        default :
+            // remove player
+            this.players.delete(index);
+
+            //remove player from game
+            this.game.removePlayer(player);
+
+            // a New Master may be required , if enough players left
+            callback(null,  (creatorId === player["id"]) , this.players.size > 1 , this.players.size === 0);
     }
 
-    // remove player
-    this.players.delete(index);
-
-    //remove player from game
-    this.game.removePlayer(player);
-
-    // a New Master may be required , if enough players left
-    callback(null,  (creatorId === player["id"]) , this.players.size > 1 , this.players.size === 0);
 
 };
 
@@ -68,16 +77,25 @@ Room.prototype.newMaster = function(callback) {
     // first player key
     let firstPlayer = this.players.keys().next().value;
 
-    // get his socket
-    let userId = (this.players.get(firstPlayer))["user"];
+    switch(firstPlayer) {
 
-    // set creator
-    creatorId =  userId["id"];
+        case undefined :
+            callback(new Error('MAX LIMIT players reached'));
+            break;
 
-    // message for the new player
-    let message = {id: this.creatorId, roomId: this.gameId};
+        default :
+            // get his socket
+            let userId = (this.players.get(firstPlayer))["user"];
 
-    callback(null, userId,message);
+            // set creator
+            creatorId =  userId["id"];
+
+            // message for the new player
+            let message = {id: this.creatorId, roomId: this.gameId};
+
+            callback(null, userId,message);
+    }
+
 
 };
 
