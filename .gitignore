@@ -2,7 +2,4 @@ img_1.png
 orga_mvc_1.png
 /node_modules/*
 .idea/workspace.xml
-src/common/view/css/p4ng-style-browser.css
-src/common/view/js/script.js
-src/common/view/html/game-view-browser.html
-.gitignore
+/coverage
