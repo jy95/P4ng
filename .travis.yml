@@ -3,8 +3,9 @@ node_js:
   - "6.9.1"
   - "node"
 install:
-  - npm install -g mocha
   - npm install
+after_success:
+  - npm run coveralls
 notifications:
   slack:
       on_success: change

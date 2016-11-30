@@ -21,7 +21,7 @@ describe('Server tests : ' , function () {
         });
 
         // shup up winstom log
-        let winstom = require('../src/server/routes.js').winston;
+        let winstom = require('../src/server/server-logic/routes.js').winston;
         winstom.remove(winstom.transports.Console);
 
         it('Test n°2 : Should be possible for client to connect on this Server', function () {
@@ -215,7 +215,7 @@ describe('Server tests : ' , function () {
             });
 
             it('Test n°11 : Should be able to receive GameState ', function (done) {
-                this.timeout(100);
+                this.timeout(250);
                 let goodAnswer;
 
                 testFunctions.GameState([socket1,socket2], goodAnswer, function (err) {

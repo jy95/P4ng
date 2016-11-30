@@ -11,17 +11,32 @@
     "uuid": "^3.0.0",
     "winston": "^2.3.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "coveralls": "^2.11.15",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "mocha-lcov-reporter": "^1.2.0"
+  },
   "scripts": {
     "test": "mocha test/test.js ",
-    "start": "electron src/app.js"
+    "start": "electron src/app.js",
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec test/test.js",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jy95/P4ng.git"
   },
+  "keywords": [
+    "pong",
+    "ping pong",
+    "Ping Pong game",
+    "game",
+    "socket.io game",
+    "Ping Pong"
+  ],
   "author": "Team JaEGT",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jy95/P4ng/issues"
   },

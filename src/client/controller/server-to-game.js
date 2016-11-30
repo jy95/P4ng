@@ -1,4 +1,4 @@
-var eventsEnum = require('../events.js')
+var eventsEnum = require('../../events.js')
 var gameLogic = require('../model/game-logic/game-logic.js')
 var socket = require('../client-socket.js').socket
 
