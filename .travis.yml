@@ -16,4 +16,3 @@ branches:
 env:
   matrix:
   - TRAVIS_NODE_VERSION="6"
-  - TRAVIS_NODE_VERSION="7"

@@ -20,7 +20,7 @@
     "mocha-lcov-reporter": "^1.2.0"
   },
   "scripts": {
-    "test": "mocha test/test.js ",
+    "test": "mocha test/test.js",
     "startClient": "electron src/app.js",
     "startServer": "node src/server/launch-server.js",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec test/test.js",

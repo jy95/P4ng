@@ -14,26 +14,27 @@ let socket4;
 let roomId1;
 let playersRoomJson1;
 
+
 describe('Server tests : ' , function () {
 
     describe('Create and connect to a Server : ', function () {
 
-        it('Test n°1 : Should create a Server' , function () {
+        it('Test n°1 : Should create a Server' , function (done) {
             this.timeout(1500);
             require('../src/server/server.js').listen();
-
+            done();
         });
 
         // shup up winstom log
         let winstom = require('../src/server/server-logic/routes.js').winston;
         winstom.remove(winstom.transports.Console);
 
-        it('Test n°2 : Should be possible for client to connect on this Server', function () {
+        it('Test n°2 : Should be possible for client to connect on this Server', function (done) {
             this.timeout(250);
 
             let socket = io.connect('http://localhost:8080');
             socket.on('connect', function (socket) {
-                assert.equal(true,true);
+                done();
             });
         });
 
@@ -41,15 +42,16 @@ describe('Server tests : ' , function () {
 
     describe('Server tests :' , function () {
 
-        beforeEach(function() {
+        beforeEach(function(done) {
             // runs before each test in this block
 
             // removes previously listeners to this two sockets (seen in anothers test)
             for (let socketTest of [socket1,socket2,socket3,socket4] ) {
-                if (socketTest != undefined) {
+                if (socketTest !== undefined) {
                     socketTest.removeAllListeners();
                 }
             }
+            done();
         });
 
         describe('Test Cases n°1 : Register user test cases : ', function () {
