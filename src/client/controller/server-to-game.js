@@ -1,7 +1,7 @@
 var props = require('../../properties-loader.js')
 var eventsEnum = require(props.eventsEnumPath())
-var socket = require(props.socketPath()).socket
-var gameLogic = require(props.gameLogicPath()).socket
+var socket = require(props.socketPath())
+var gameLogic = require(props.gameLogicPath())
 
 
 socket.on(eventsEnum.playerStateUpdate, (playerStateArray)=>{

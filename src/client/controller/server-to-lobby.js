@@ -1,7 +1,7 @@
 const props = require('../../properties-loader.js')
 
 var eventsEnum = require(props.eventsEnumPath())
-//var socket = require(props.socketPath())
+var socket = require(props.socketPath())
 var lobbyLogic = require(props.lobbyLogicPath())
 
 socket.on(eventsEnum.startGame, ({angle})=>{
@@ -18,7 +18,7 @@ socket.on(eventsEnum.getAvailableRooms, (rooms)=>{
 })
 
 socket.on(eventsEnum.newPlayer, (player)=>{
-    lobbyLogic.setNewPlayer(player)
+    lobbyLogic.setLocalPlayer(player)
     console.log('serverToLobby - new player')
 })
 

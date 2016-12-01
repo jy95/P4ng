@@ -50,19 +50,22 @@ module.exports.joinRoom = function({roomId}){
 }
 
 module.exports.leaveRoom = function({roomId, id}){
-    roomId
-    if(!roomId){
+    if(!roomId && currentRoom){
+        console.log('first')
         lobbyToServer.leaveRoom(currentRoom)
-        lobbyEventEmitter.emit('lobbyUpdate')
-    }else if(roomId === currentRoom.roomId){
+        currentRoom = null
+        gameLogic.killGame()
+    }else if(currentRoom && roomId === currentRoom.roomId){
         if(id === localPlayer.id){
             currentRoom = null
             gameLogic.killGame()
-            lobbyEventEmitter.emit('lobbyUpdate')
         }else{
+            console.log('bad')
             currentRoom.removePlayer(id)
         }
     }
+    lobbyEventEmitter.emit('lobbyUpdate')
+    console.log('lobbyLogic - leave room')
 }
 
 module.exports.setCurrentRoom = function(room){
