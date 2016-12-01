@@ -95,13 +95,11 @@ Lobby.prototype.startGame = function (data,callback) {
     } else {
         room.startGame(currentPlayer, function (err,angle) {
             if (err) {
-
                 callback(err);
-
             } else {
-
-                callback(null, angle);
+                callback(null,angle);
             }
+
         });
     }
 
@@ -218,9 +216,14 @@ Lobby.prototype.electNewMaster = function (roomId, callback) {
 Lobby.prototype.findRoomsOfPlayers = function (players, callback) {
     let search = new Map();
 
-    for (let [key, value] of this.rooms) {
+    // iterate in all rooms
+    for (let [key, room] of this.rooms) {
+
+        // for each player
         for ( let aPlayer of players) {
-            if ( value.has(aPlayer) ) {
+
+            // if this user exists in this room
+            if ( room._findPlayer(aPlayer) != -1 ) {
                 search.set(aPlayer, key);
             }
         }
