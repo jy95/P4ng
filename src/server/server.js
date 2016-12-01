@@ -15,6 +15,7 @@ module.exports.listen = function () {
     server.listen(props.socketProps.port);
 
     // init Db connection
+
     mongoDb.createDatabase( (err) => {
         if (err) {
             console.log(err.message);
