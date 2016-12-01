@@ -54,6 +54,11 @@ Lobby.prototype.newPlayer = function (player,callback) {
     callback(null, player);
 };
 
+Lobby.prototype.removePlayer = function (playerId) {
+    // remove player from lobby players
+    this.players.delete( playerId );
+};
+
 Lobby.prototype.createRoom = function (data,callback) {
     // get player data
     let currentPlayer = this.players.get( data.id);
@@ -105,7 +110,6 @@ Lobby.prototype.startGame = function (data,callback) {
 Lobby.prototype.leaveRoom = function (data,callback) {
     // get player and room data
     let currentPlayer = this.players.get( data.id);
-
     let room = this.rooms.get( data.roomId );
 
     if (currentPlayer === undefined) {
@@ -124,9 +128,6 @@ Lobby.prototype.leaveRoom = function (data,callback) {
                 callback(err);
 
             } else {
-
-                // remove player from lobby players
-                this.players.delete( data.id );
 
                 callback(null, newMasterRequired , hasEnoughPlayers, lastPlayerQuit);
 

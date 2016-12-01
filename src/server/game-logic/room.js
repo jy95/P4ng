@@ -49,7 +49,7 @@ Room.prototype.startGame = function(playerId,callback) {
 Room.prototype.leaveRoom = function(player, callback) {
 
     // find the index of this player in players array
-    let index = _findPlayer(player);
+    let index = this._findPlayer(player);
 
     // check index
 
@@ -66,7 +66,7 @@ Room.prototype.leaveRoom = function(player, callback) {
             this.game.removePlayer(player);
 
             // a New Master may be required , if enough players left
-            callback(null,  (creatorId === player.id) , this.players.size > 1 , this.players.size === 0);
+            callback(null,  (this.creatorId === player.id) , this.players.size > 1 , this.players.size === 0);
     }
 
 
@@ -112,7 +112,7 @@ Room.prototype.listAllPlayer = function(callback) {
  */
 Room.prototype._findPlayer = function(player) {
     let index = -1;
-    players.forEach( (value,key) => {
+    this.players.forEach( (value,key) => {
         if (  ( (value.user).id ) === player.id ) {
             index = key;
         }

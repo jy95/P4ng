@@ -16,13 +16,19 @@ module.exports.listen = function () {
 
     // init Db connection
 
-    mongoDb.createDatabase( (err) => {
-        if (err) {
-            console.log(err.message);
-        } else {
-            console.log("MongoDb started");
-        }
+    app.use(function(req, res, next) {
+
+        // We lost connection! (Maybe due to IPL network XD)
+        mongoDb.connectToDatabase( (err) => {
+            if (err) {
+                console.log(err.message);
+                res.status(503);
+            }
+        });
+        next();
+
     });
+
 
     app.post("/registerUser", function (req,res) {
         let email = req.body.userName;

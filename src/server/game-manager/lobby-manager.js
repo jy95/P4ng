@@ -82,24 +82,26 @@ LobbyManager.prototype.newPlayer = function (IOsockets,socket,player,callback) {
 
 LobbyManager.prototype.createRoom = function (IOsockets,socket,data,callback) {
 
-    this.gameLogic.createRoom(data, (err,answer) => {
+    let self = this;
+
+    this.gameLogic.createRoom(data, function (err,answer)  {
 
         switch(err) {
             case null :
 
                 // notify the user that he correctly created a room
-                this.socketManager.sendMessage(socket,eventEnum.createRoom, answer);
+                self.socketManager.sendMessage(socket,eventEnum.createRoom, answer);
 
                 // add creator in this room player
 
-                this.joinRoom(IOsockets,socket,answer, function (err) {
+                self.joinRoom(IOsockets,socket,answer, function (err) {
                     callback(err);
                 });
                 break;
 
             default :
 
-                this.socketManager.sendMessage(socket,eventEnum.createRoom, {id: data.id, roomId: -1});
+                self.socketManager.sendMessage(socket,eventEnum.createRoom, {id: data.id, roomId: -1});
                 callback(err);
 
         }
@@ -150,25 +152,6 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
 
                 // send data
                 this.socketManager.sendMessage(socket,eventEnum.leaveRoom , data);
-
-                // remove the coward player id from idToSockets
-
-                let previousEntry = this.idToSockets.get(socket.id);
-
-                let index = previousEntry.indexOf(data.id);
-
-                if (index >= 0) {
-                    previousEntry.splice( index, 1 );
-                }
-
-                // set changes
-                if ( previousEntry.length == 0) {
-                    this.idToSockets.delete(socket.id);
-                } else {
-                    this.idToSockets.set(socket.id , previousEntry );
-                }
-
-                this.playersToSocket.delete(data.id);
 
                 // remove player from room , if required :
                 if ( ! this.idToSockets.has(socket.id ) ) {
@@ -242,41 +225,73 @@ LobbyManager.prototype.gameStateUpdate = function (IOsockets, data, callback) {
 LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket , callback) {
 
     // get the players Id from socket Id
-    let players = this.idToSockets.get(socket.id);
+    let playersStruct = this.idToSockets.get(socket.id);
 
-    // get for each one their room , if they are in
-    this.gameLogic.findRoomsOfPlayers(players, (err,answer) => {
+    switch(playersStruct) {
 
-        switch(err) {
-            case null :
+        case undefined :
+            callback(null);
+            break;
 
-                // remove the players that are in a room
-                for ( let [key, value] of answer) {
-                    this.leaveRoom(IOsockets,socket, { roomId : value , id : key} , (anotherErr) => {
+        default :
 
-                        switch(anotherErr) {
+            let players = playersStruct.players;
+            // get for each one their room , if they are in
+            this.gameLogic.findRoomsOfPlayers(players, function (err,answer) {
 
-                            // no problem sir :)
-                            case null :
-                                break;
+                switch(err) {
+                    case null :
 
-                            // never expected to got an error but let's handle this case :)
-                            default :
-                                callback(anotherErr);
+                        // remove the players that are in a room
+                        for ( let [key, value] of answer) {
+                            this.leaveRoom(IOsockets,socket, { roomId : value , id : key} , function (anotherErr)  {
+
+                                switch(anotherErr) {
+
+                                    // no problem sir :)
+                                    case null :
+
+                                        // remove the coward player id from idToSockets
+
+                                        let previousEntry = this.idToSockets.get(socket.id);
+                                        let index = previousEntry.players.indexOf(data.id);
+
+                                        if (index >= 0) {
+                                            previousEntry.players.splice( index, 1 );
+                                        }
+
+                                        // set changes
+                                        if ( previousEntry.players.length == 0) {
+                                            this.idToSockets.delete(socket.id);
+                                        } else {
+                                            this.idToSockets.set(socket.id , previousEntry );
+                                        }
+
+                                        // remove player from lobby players
+                                        this.gameLogic.removePlayer(data.id);
+                                        this.playersToSocket.delete(data.id);
+
+                                        break;
+
+                                    // never expected to got an error but let's handle this case :)
+                                    default :
+                                        callback(anotherErr);
+                                }
+
+                            });
                         }
 
-                    });
+                        // remove
+
+                        callback(null);
+                        break;
+
+                    default :
+                        callback(err);
                 }
+            });
+    }
 
-                // remove
-
-                callback(null);
-                break;
-
-            default :
-                callback(err);
-        }
-    });
 };
 
 module.exports = LobbyManager;

@@ -20,7 +20,9 @@ let User;
 module.exports = {
 
 
-    createDatabase : function (callback) {
+    connectToDatabase : function (callback) {
+
+        try {
 
         // connecte to the db
         mongoose.connect('mongodb://localhost/P4ng-Db');
@@ -35,6 +37,11 @@ module.exports = {
             User = mongoose.model('Player', PlayerSchema);
             callback(null);
         });
+
+        } catch (err) {
+            console.log(err);
+            callback(err);
+        }
 
     },
     
