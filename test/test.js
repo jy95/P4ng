@@ -41,6 +41,17 @@ describe('Server tests : ' , function () {
 
     describe('Server tests :' , function () {
 
+        beforeEach(function() {
+            // runs before each test in this block
+
+            // removes previously listeners to this two sockets (seen in anothers test)
+            for (let socketTest of [socket1,socket2,socket3,socket4] ) {
+                if (socketTest != undefined) {
+                    socketTest.removeAllListeners();
+                }
+            }
+        });
+
         describe('Test Cases n°1 : Register user test cases : ', function () {
 
             it('Test n°3 : Should be able to register a new user', function (done) {

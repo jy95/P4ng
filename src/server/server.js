@@ -1,12 +1,36 @@
 /**
  * Created by jacques on 10-11-16.
  */
-let socketio = require('socket.io');
-const props = require('../properties-loader.js')
+
+const props = require('../properties-loader.js');
 let eventsEnum = require(props.eventsEnumPath());
+let mongoDb = require('./database/database-mongodb.js');
 
 module.exports.listen = function () {
-    let io = socketio.listen(props.socketProps.port);
+
+    let app = require('express')();
+    let server = require('http').Server(app);
+    let io = require('socket.io')(server);
+
+    server.listen(props.socketProps.port);
+
+    // init Db connection
+    mongoDb.createDatabase( (err) => {
+        if (err) {
+            console.log(err.message);
+        } else {
+            console.log("MongoDb started");
+        }
+    });
+
+    app.post("/registerUser", function (req,res) {
+        let email = req.body.userName;
+        let pwd = req.body.pwd;
+    });
+
+    app.get("/scores" , function (req,res) {
+
+    });
 
     io.on("connection", function (socket) {
 

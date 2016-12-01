@@ -1,1 +1,1 @@
-require('./server.js').listen()
+require('./server.js').listen();

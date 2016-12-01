@@ -26,6 +26,6 @@
     "p4ngIcon": "./../ressources/P4ng_logo_1.png",
     "socketProps": {
         "url": "http://127.0.0.1",
-        "port": 9436
+        "port": 8080
     }
 }

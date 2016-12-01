@@ -175,10 +175,6 @@ module.exports = {
     
     RageExit : function (socketRageExit, socketAnotherPlayer , playerJson , callback) {
 
-        // removes previously listeners to this two sockets (seen in anothers test)
-        socketRageExit.removeAllListeners();
-        socketAnotherPlayer.removeAllListeners();
-
         socketRageExit.emit('disconnect');
 
         try {

@@ -7,7 +7,7 @@ function Lobby() {
     // all players
     this.players = new Map();
     // default room
-    this.primaryRoom = new RoomModule();
+    //this.primaryRoom = new RoomModule();
 }
 
 Lobby.prototype.joinRoom = function(data,callback) {
@@ -117,7 +117,7 @@ Lobby.prototype.leaveRoom = function (data,callback) {
         callback(new Error("Room doesn't exist "));
 
     } else {
-        room.leaveRoom(currentPlayer , (err, newMasterRequired , hasEnoughPlayers, lastPlayerQuit ) => {
+        room.leaveRoom(currentPlayer , function (err, newMasterRequired , hasEnoughPlayers, lastPlayerQuit )  {
 
             if (err) {
 
@@ -214,7 +214,7 @@ Lobby.prototype.electNewMaster = function (roomId, callback) {
 
 };
 
-Lobby.prototype.findRoomsOfPlayers = (players, callback) =>  {
+Lobby.prototype.findRoomsOfPlayers = function (players, callback) {
     let search = new Map();
 
     for (let [key, value] of this.rooms) {
