@@ -66,6 +66,12 @@ module.exports.gestionSocket = function(socket, IOsockets){
         });
     });
 
+    socket.on('disconnect', function () {
+        lobby.removeDisconnectedPlayers(IOsockets,socket, function (err) {
+            winston.log( (err) ? 'warn': 'info' , "Request disconnect handled : " + ( (err) ? " with message " + err.message : " successfully" ));
+        });
+    });
+
 };
 
 module.exports.gameStateUpdate = function (data, IOsockets) {

@@ -214,6 +214,19 @@ Lobby.prototype.electNewMaster = function (roomId, callback) {
 
 };
 
+Lobby.prototype.findRoomsOfPlayers = (players, callback) =>  {
+    let search = new Map();
+
+    for (let [key, value] of this.rooms) {
+        for ( let aPlayer of players) {
+            if ( value.has(aPlayer) ) {
+                search.set(aPlayer, key);
+            }
+        }
+    }
+    callback(null,search);
+};
+
 Lobby.prototype.removeRoom = function (roomId) {
     this.rooms.delete( roomId );
 };

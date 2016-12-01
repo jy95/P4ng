@@ -151,10 +151,32 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
                 // send data
                 this.socketManager.sendMessage(socket,eventEnum.leaveRoom , data);
 
-                // TODO remove inside the two map
+                // remove the coward player id from idToSockets
+
+                let previousEntry = this.idToSockets.get(socket.id);
+
+                let index = previousEntry.indexOf(data.id);
+
+                if (index >= 0) {
+                    previousEntry.splice( index, 1 );
+                }
+
+                // set changes
+                if ( previousEntry.length == 0) {
+                    this.idToSockets.delete(socket.id);
+                } else {
+                    this.idToSockets.set(socket.id , previousEntry );
+                }
+
+                this.playersToSocket.delete(data.id);
+
+                // remove player from room , if required :
+                if ( ! this.idToSockets.has(socket.id ) ) {
+                    this.socketManager.removePlayerFromRoom(socket,data.roomId);
+                }
 
                 // prevent another players in room
-                this.socketManager.broadcastMessageInRoom(IOsockets, data.roomId , eventEnum.leaveRoom,  data );
+                this.socketManager.broadcastMessageInRoomWithoutMe(data.roomId , socket, eventEnum.leaveRoom,  data );
 
                 if ( lastPlayerQuit) {
 
@@ -215,6 +237,46 @@ LobbyManager.prototype.endGame = function (IOsockets,socket,callback) {
 LobbyManager.prototype.gameStateUpdate = function (IOsockets, data, callback) {
     this.socketManager.broadcastMessageInRoom(IOsockets, data.gameId , eventEnum.gameStateUpdate, data.state );
     callback(null);
+};
+
+LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket , callback) {
+
+    // get the players Id from socket Id
+    let players = this.idToSockets.get(socket.id);
+
+    // get for each one their room , if they are in
+    this.gameLogic.findRoomsOfPlayers(players, (err,answer) => {
+
+        switch(err) {
+            case null :
+
+                // remove the players that are in a room
+                for ( let [key, value] of answer) {
+                    this.leaveRoom(IOsockets,socket, { roomId : value , id : key} , (anotherErr) => {
+
+                        switch(anotherErr) {
+
+                            // no problem sir :)
+                            case null :
+                                break;
+
+                            // never expected to got an error but let's handle this case :)
+                            default :
+                                callback(anotherErr);
+                        }
+
+                    });
+                }
+
+                // remove
+
+                callback(null);
+                break;
+
+            default :
+                callback(err);
+        }
+    });
 };
 
 module.exports = LobbyManager;
