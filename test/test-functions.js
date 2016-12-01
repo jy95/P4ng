@@ -4,7 +4,33 @@
 let eventEnum = require("../src/events.js");
 const assert = require('assert');
 
+/**
+ * Wrapper-Class for done-function
+ * @param {Function} fn
+ * @class {Done}
+ */
+
 module.exports = {
+
+    // Just in cast callbacks are called twice : Mocha has something strange problems with asynch function
+    doneWrapper : function (fn) {
+        let self   = this;
+        let called = false;
+
+        /**
+         *
+         * @param {*} params...
+         */
+        this.trigger = function (params) {
+            if(called) {
+                return;
+            }
+
+            fn.apply(self, arguments);
+            called = true;
+        };
+    },
+
     createPlayer : function(socket, playerJson , callback) {
 
         socket.emit(eventEnum.newPlayer ,  playerJson );
@@ -138,6 +164,37 @@ module.exports = {
                     // Je testerai le résultat quand j'aurai un exemple de gamestate
                     //assert.deepEqual( data, goodAnswer , 'Not the same GameState Received');
                 });
+            });
+            callback(null,null);
+
+        } catch (err) {
+            callback(err,null);
+        }
+
+    },
+    
+    RageExit : function (socketRageExit, socketAnotherPlayer , playerJson , callback) {
+
+        // removes previously listeners to this two sockets (seen in anothers test)
+        socketRageExit.removeAllListeners();
+        socketAnotherPlayer.removeAllListeners();
+
+        socketRageExit.emit('disconnect');
+
+        try {
+
+            // check if the player has leave the room
+            socketRageExit.on(eventEnum.leaveRoom , function (data) {
+                // {id: 47, roomId: -1}
+                assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
+                assert.notEqual( data.roomId,-1 , 'Not in this room');
+            });
+
+            // check if one of current player receives the current list of players of this room
+            socketAnotherPlayer.on(eventEnum.leaveRoom, function (data) {
+
+                assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
+                assert.notEqual( data.roomId,-1 , 'No same RoomId');
             });
             callback(null,null);
 
