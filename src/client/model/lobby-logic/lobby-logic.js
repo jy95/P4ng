@@ -93,7 +93,9 @@ module.exports.getState = function(){
 
 module.exports.startGame = function(){
     if(currentRoom){
-        lobbyToServer.startGame({angle: gameLogic.initGame()})
+        let startAngle = gameLogic.initGame()
+        lobbyToServer.startGame({angle: startAngle, roomId: currentRoom.roomId, id: localPlayer.id})
+        console.log(`lobbyLogic - startGame ${startAngle}`)
     }
 }
 
