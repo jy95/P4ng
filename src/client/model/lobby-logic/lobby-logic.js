@@ -1,70 +1,104 @@
-const EventEmitter = require('events')
+var lobbyEventEmitter = new (require('events'))()
+const props = require('../../../properties-loader.js')
+const eventsEnum = require(props.eventsEnumPath())
+var lobbyToServer = require(props.lobbyToServerPath())
+var gameLogic = require(props.gameLogicPath())
 
 let localPlayer = null
 let remotePlayers = {}
 let currentRoom = null
 let rooms = {}
-var lobbyEventEmitter = new EventEmitter()
 
 module.exports.setPlayerList = function(playerList){
     remotePlayers = {}
     for(let p of playerList)
-        if(!p.id === localPlayer.id) remotePlayers[p.id] = p
+    if(!p.id === localPlayer.id) remotePlayers[p.id] = p
 }
 
-module.exports.addRemotePlayer = function(player){
-    if(player.isLocal)addLocalPlayer(player)
-    else remotePlayers[player.id] = player
-    lobbyEventEmitter.emit('lobby-update')
-}
-
-module.exports.addLocalPlayer = function(player){
+module.exports.setLocalPlayer = function(player){
     localPlayer = player
-    lobbyEventEmitter.emit('lobby-update')
-}
-
-module.exports.removePlayer = function({id}){
-    if(! id === localPlayer.id) delete remotePlayers[id]
-    lobbyEventEmitter.emit('lobby-update')
-}
-
-module.exports.addRoom = function(room){
-    rooms[room.roomId] = room
-    lobbyEventEmitter.emit('lobby-update')
-}
-
-module.exports.removeRoom = function({roomId}){
-    delete rooms[roomId]
-    lobbyEventEmitter.emit('lobby-update')
+    lobbyEventEmitter.emit('lobbyUpdate')
 }
 
 module.exports.getLocalPlayer = function(){
     return localPlayer
 }
 
-module.exports.joinRoom = function({roomId}){
-    this.currentRoom = rooms[roomId]
+module.exports.removePlayer = function({id}){
+    if(! id === localPlayer.id) delete remotePlayers[id]
+    lobbyEventEmitter.emit('lobbyUpdate')
 }
 
-module.exports.leaveRoom = function({roomId}){
-    this.currentRoom = null
+module.exports.createRoom = function({roomName}){
+    if(localPlayer && roomName){
+        console.log('heeey')
+        lobbyToServer.createRoom({
+            'id': localPlayer.id,
+            'roomName': roomName
+        })
+        return 'request sent';
+    }
+    return localPlayer ? 'You need a room name!' : 'You need to create a player!'
+}
+
+module.exports.joinRoom = function({roomId}){
+    if(localPlayer && roomId)
+    lobbyToServer.joinRoom({
+        'id': localPlayer.id,
+        'roomId': roomId
+    })
+}
+
+module.exports.leaveRoom = function({roomId, id}){
+    roomId
+    if(!roomId){
+        lobbyToServer.leaveRoom(currentRoom)
+        lobbyEventEmitter.emit('lobbyUpdate')
+    }else if(roomId === currentRoom.roomId){
+        if(id === localPlayer.id){
+            currentRoom = null
+            gameLogic.killGame()
+            lobbyEventEmitter.emit('lobbyUpdate')
+        }else{
+            currentRoom.removePlayer(id)
+        }
+    }
+}
+
+module.exports.setCurrentRoom = function(room){
+    currentRoom = room
+    lobbyEventEmitter.emit('lobbyUpdate')
+}
+
+module.exports.setRooms = function(roomsList){
+    rooms = roomsList
+    lobbyEventEmitter.emit('lobbyUpdate')
 }
 
 module.exports.subscribe = function(callback){
-    lobbyEventEmitter.on('lobby-update', callback)
+    lobbyEventEmitter.on('lobbyUpdate', callback)
 }
 
 module.exports.getState = function(){
     return {
         'rooms': rooms,
+        'currentRoom': currentRoom,
         'localPlayer': localPlayer,
-        'remotePlayers': getRankedPlayersList()
+        'remotePlayers': remotePlayers//getRankedPlayersList()
+    }
+}
+
+module.exports.startGame = function(){
+    if(currentRoom){
+        lobbyToServer.startGame({angle: gameLogic.initGame()})
     }
 }
 
 // returns an array of players ordered by their total score
 function getRankedPlayersList(){
-    let playersArray = remotePlayers.values().sort(function(a,b){
-        return a.rank - b.rank
-    })
+    if(remotePlayers){
+        let playersArray = remotePlayers.sort(function(a,b){
+            return a.rank - b.rank
+        })
+    }
 }

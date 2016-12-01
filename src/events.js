@@ -8,7 +8,7 @@ module.exports = {
         The server registers the new player, gives him and ID and puts him in the main lobby
         The server sends back {name: "Jacques", id: 47}
         This event is also used for multiple players on the same client
-    */ 
+    */
     newPlayer : "newPlayer",
 
     /*
@@ -23,12 +23,13 @@ module.exports = {
 
         TO DISCUSS : to not overload the traffic, we perhaps shouldn't send the info that a new game is created to all players in the main lobby
         to keep their view up-to-date, but just send the list at key moments as mentioned above and add a refresh button in the client.
-        The room may contain a lot of other attributes, like a difficulty (casu, hardcore), a password, a max number of player etc that will be clarified 
+        The room may contain a lot of other attributes, like a difficulty (casu, hardcore), a password, a max number of player etc that will be clarified
         later in the development.
 
     */
     getAvailableRooms : "getAvailableRooms",
-    
+
+
     /*
         Event fired when the client lobby updates its available rooms list after a GetAvailableRooms
     */
@@ -66,7 +67,7 @@ module.exports = {
         If the player isn't in that room, the server sends back {id: 47, roomId: -1}
 
         EXTRA : In the case where the creator of the game chooses a random angle at the beginning of each round, if he leaves a running game,
-        a new player will have to be chosen as the new "master" of the game 
+        a new player will have to be chosen as the new "master" of the game
     */
     leaveRoom : "leaveRoom",
 
@@ -87,7 +88,7 @@ module.exports = {
     /*
         Event fired when the server response is received
     */
-    
+
     gotListEnrolledPlayers : "gotListEnrolledPlayers",
 
     /*
@@ -108,8 +109,8 @@ module.exports = {
                 "32":{"isLocal":true,"id":"32","score":2,"position":400}
             },
             "roomId":15487
-        } 
-        
+        }
+
         Witch each PlayerState, the server will be able to hold the general GameState
         Every x ms, the server sends the same json but with the position of all the players in the game
 
@@ -135,9 +136,8 @@ module.exports = {
         When a game ends, every client involved sends the same json as the one for PlayerSate but with all the players
         The server chooses the most commonly attributed score for each player to counter cheating
 
-        NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag 
+        NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag
         in a potential chat "EZ u all suk lel")
     */
     endGame : "endGame"
-    
 };

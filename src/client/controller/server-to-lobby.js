@@ -1,12 +1,9 @@
-//Used to share the client socket among the controllers
+const props = require('../../properties-loader.js')
 
-const props = require('../properties-loader.js')
-var io = require('socket.io-client')
-const eventsEnum = require(props.eventsEnumPath())
+var eventsEnum = require(props.eventsEnumPath())
+//var socket = require(props.socketPath())
 var lobbyLogic = require(props.lobbyLogicPath())
-var socket = io(props.socketProps.url+":"+props.socketProps.port)
 
-socket.on('connect', function(){console.log('success')})
 socket.on(eventsEnum.startGame, ({angle})=>{
     serverToLobbyEventEmitter.emit(eventsEnum.startGame, {'angle': angle})
 })
@@ -21,7 +18,7 @@ socket.on(eventsEnum.getAvailableRooms, (rooms)=>{
 })
 
 socket.on(eventsEnum.newPlayer, (player)=>{
-    lobbyLogic.setLocalPlayer(player)
+    lobbyLogic.setNewPlayer(player)
     console.log('serverToLobby - new player')
 })
 
@@ -35,8 +32,8 @@ socket.on(eventsEnum.joinRoom, (room)=>{
     console.log('serverToLobby - join room')
 })
 
-socket.on(eventsEnum.leaveRoom, (room)=>{
-    lobbyLogic.leaveRoom(room)
+socket.on(eventsEnum.leaveRoom, ({id, roomId})=>{
+    lobbyLogic.leaveRoom({})
     console.log('serverToLobby - leave room')
 })
 
@@ -44,10 +41,3 @@ socket.on(eventsEnum.gotListEnrolledPlayers, (playersList)=>{
     lobbyLogic.setPlayerList(playersList)
     console.log('serverToLobby - got list enrolled players')
 })
-
-module.exports.on = function(event, callback){
-    socket.on(event, callback)
-}
-module.exports.emit = function(event, data){
-    socket.emit(event, data)
-}

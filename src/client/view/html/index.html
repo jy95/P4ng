@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>P4ng!</title>
+    <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function(){
+        var props = require('../../../properties-loader.js')
+        /*// doesn't work for some unknown reason
+        require(props.gameViewPath())
+        require(props.lobbyViewPath())
+        require(props.gameControllerPath())
+        require(props.lobbyControllerPath())*/
+
+        // ORDER MATTERS
+        require('../js/game-view.js')
+        require('../js/lobby-view.js')
+        require('../../controller/game-controller.js')
+        require('../../controller/lobby-controller.js')
+
+
+    })
+    </script>
+    <link rel="stylesheet" type="text/css" href="../css/p4ng-style.css">
+</head>
+
+<body>
+    <h1>P4ng!</h1>
+    <div id="lobbyContainer" class="open">
+        <table id="lobbyPanel">
+            <thead>
+                <tr>
+                    <th>PLAYERS</th>
+                    <th>ROOMS</th>
+                </tr>
+            </thead>
+            <tr>
+                <!-- PLAYERS -->
+                <td id="players">
+                    <div id="74" class="localPlayer">
+                        <ul class="playerInfo">
+                            <li>
+                                <p>Your name: </p>
+                                <textarea rows="3" cols="6.5" id="localPlayerName"></textarea>
+                            </li>
+                            <li><p>Score: </p><p></p></li>
+                            <li><p>Rank: </p><p></p></li>
+                        </ul>
+                    </div>
+                    <button id="refreshPlayers">refresh</button>
+                    <ul id="remotePlayersList">
+
+
+                        <!-- PLAYAS GET IN HERE -->
+
+
+                    </ul>
+                </td>
+                <!-- GAMES -->
+                <td>
+                    <div id="newGame">
+                        <p>Room name:</p>
+                        <input type="text" size="9" id="newGameName">
+                        <button id="createGame">create</button>
+                    </div>
+                    <button id="refreshRooms">refresh</button>
+                    <table id="games">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>in</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="gameList">
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="gameContainer" class="closed">
+        <div id="gamePanel">
+            <canvas id="gameArea" width="500" height="500"></canvas>
+            <div id="controls">
+                <button id="startButton" class="control">Start!</button>
+                <button id="stopButton" class="control" onclick="">Stop.</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

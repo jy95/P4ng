@@ -1,4 +1,5 @@
-const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = require('../game-const.js')
+const props = require('../../../../properties-loader.js')
+const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = props.gameConsts
 
 module.exports = PongPaddle
 /*

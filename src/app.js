@@ -1,25 +1,30 @@
 const {app, BrowserWindow} = require('electron')
-const path = require('path')
 const url = require('url')
-const gameLogic = require('./client/model/game-logic/game-logic.js')
+const props = require('./properties-loader.js')
 
 // Global ref to window to avoid garbage collection
 let win
 
 function createWindow(){
-    win = new BrowserWindow({width: 700, height: 700, icon: path.resolve(`${__dirname}/../ressources/P4ng_logo_1.png`)})
+    win = new BrowserWindow({
+        width: 700,
+        height: 700,
+        icon: props.p4ngIcon
+    })
     win.loadURL(url.format({
-        pathname: path.join(__dirname, 'client/view/html/game-view.html'),
+        pathname: props.p4ngIndex,
         protocol: 'file:',
         slashes: true
     }))
+
+    win.once('ready-to-show', ()=>{
+        init()
+    })
 
     win.on('closed', ()=>{
         app.quit()
     })
 }
-
-
 
 app.on('ready', ()=>{
     createWindow()

@@ -1,4 +1,5 @@
-const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = require('../game-const.js')
+const props = require('../../../../properties-loader.js')
+const {NORTH, EAST, WEST, SOUTH, FIELD_WIDTH} = props.gameConsts
 const Ball = require('./Ball.js')
 const Paddle = require('./Paddle.js')
 
@@ -6,7 +7,8 @@ module.exports = PongGame
 /*
 * Game object
 */
-function PongGame ({ballDirection, updateCallback}){
+function PongGame ({ballDirection, id}){
+    this.id = id
     // P4ng field should be a square
     // this is the width of the field in pixels
     this.width = FIELD_WIDTH
@@ -18,7 +20,6 @@ function PongGame ({ballDirection, updateCallback}){
 
     // name is self-explanatory
     // this function is passed a JSON representation of the current state as arg
-    this.updateCallback = updateCallback
 
     // this is an array of paddles, ordered by side
     // north, east, south, west
@@ -111,6 +112,6 @@ PongGame.prototype.toJSON = function(){
 
     var theBall = this.ball.toJSON()
 
-    return {players : thePlayers, ball : theBall, isFinished: this.isFinished}
+    return {players : thePlayers, ball : theBall, isFinished: this.isFinished, roomId: this.id}
 
 }

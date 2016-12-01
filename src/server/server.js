@@ -2,10 +2,11 @@
  * Created by jacques on 10-11-16.
  */
 let socketio = require('socket.io');
-let eventsEnum = require('../events.js');
+const props = require('../properties-loader.js')
+let eventsEnum = require(props.eventsEnumPath());
 
 module.exports.listen = function () {
-    let io = socketio.listen(8080);
+    let io = socketio.listen(props.socketProps.port);
 
     io.on("connection", function (socket) {
 
@@ -20,5 +21,3 @@ module.exports.listen = function () {
     });
 
 };
-
-

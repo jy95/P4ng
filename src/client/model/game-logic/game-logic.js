@@ -1,65 +1,72 @@
-const {NORTH, EAST, WEST, SOUTH} = require('./game-const.js')
+const props = require('../../../properties-loader.js')
+const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 const Game = require('./objects/Game.js')
-const EventEmitter = require('events')
+
+var gameEventEmitter = new (require('events'))()
 
 var currentGame = null
-var gameEventEmitter = new EventEmitter()
 var intervalId = 0
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(beginningDirection){
-    currentGame = new Game({ballDirection: beginningDirection, updateCallback: ()=>{
-        gameEventEmitter.emit('game-update')
-    }})
+    currentGame = new Game({ballDirection: beginningDirection})
+    return currentGame.ball.direction;
 }
 
 // subscribe to state update
 module.exports.subscribe = function(callback){
-    gameEventEmitter.on('game-update', function(){
+    gameEventEmitter.on('gameStateUpdate', function(){
         callback()
     })
 }
 // this JSON player needs an id and a side
 // if he has no side, he is given a remaining side
 module.exports.addPlayer = function(player){
+    if(currentGame && !currentGame.isFinished)
     currentGame.addPlayer(player)
 }
 
-module.exports.startGame = function(){
+module.exports.startGame = function({angle}){
+    if(currentGame && !currentGame.isFinished)
+    currentGame.ball.direction = angle
     intervalId = setInterval(function(){
         currentGame.update()
+        gameEventEmitter.emit('gameStateUpdate')
     }, 17)
 }
 
 module.exports.killGame = function(){
-    clearInterval(intervalId)
-    delete currentGame.ball.game // I'm afraid of circular references
-    currentGame = null
+    if(currentGame){
+        clearInterval(intervalId)
+        delete currentGame.ball.game // I'm afraid of circular references
+        currentGame = null
+        gameEventEmitter.emit('gameStateUpdate')
+    }
 }
 // returns a JSON with all the data needed to display the game
 module.exports.getState = function(){
-    return currentGame.toJSON()
+    return currentGame ? currentGame.toJSON() : null
 }
 
 module.exports.updatePlayer = function({id,position}){
-    let p = currentGame.players[id]
-    if(!p.islocal)
+    if(currentGame){
+        let p = currentGame.players[id]
+        if(!p.islocal)
         p.position = position
+    }
 }
 
-module.exports.movePlayerLeft = function({id}){
-    currentGame.players[id].movingLeft()
+module.exports.movePlayerLeft = function({side}){
+    if(currentGame)
+    currentGame.sides[side].movingLeft()
 }
 
-module.exports.movePlayerRight = function({id}){
-    currentGame.players[id].movingRight()
+module.exports.movePlayerRight = function({side}){
+    if(currentGame)
+    currentGame.sides[side].movingRight()
 }
 
-module.exports.stopPlayer = function({id}){
-    currentGame.players[id].stop()
-}
-
-module.exports.ballCorrection = function(paddlePosition, playerId){
-
-    currentGame.ball.move()
+module.exports.stopPlayer = function({side}){
+    if(currentGame)
+    currentGame.sides[side].stop()
 }

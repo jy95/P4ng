@@ -1,0 +1,31 @@
+{
+    "gameConsts": {
+        "NORTH": 0,
+        "EAST" : 1,
+        "SOUTH": 2,
+        "WEST": 3
+    },
+    "gameProp": {
+        "fieldWidth": 500
+    },
+    "p4ngModules":{
+        "eventsEnum": "./events.js",
+        "gameLogic": "./client/model/game-logic/game-logic.js",
+        "gameController": "./client/controller/game-controller.js",
+        "gameView": "./client/view/js/game-view.js",
+        "lobbyLogic": "./client/model/lobby-logic/lobby-logic.js",
+        "lobbyController": "./client/controller/lobby-controller.js",
+        "lobbyView": "./client/view/js/lobby-view.js",
+        "gameToServer": "./client/controller/game-to-server.js",
+        "serverToGame": "./client/controller/server-to-game.js",
+        "lobbyToServer": "./client/controller/lobby-to-server.js",
+        "serverToLobby": "./client/controller/server-to-lobby.js",
+        "socket": "./client/client-socket.js"
+    },
+    "p4ngIndex": "./client/view/html/index.html",
+    "p4ngIcon": "./../ressources/P4ng_logo_1.png",
+    "socketProps": {
+        "url": "http://127.0.0.1",
+        "port": 9436
+    }
+}

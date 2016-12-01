@@ -1,10 +1,10 @@
-var eventsEnum = require('../../events.js')
-var gameLogic = require('../model/game-logic/game-logic.js')
-var socket = require('../client-socket.js').socket
+var props = require('../../properties-loader.js')
+var eventsEnum = require(props.eventsEnumPath())
+var socket = require(props.socketPath()).socket
+var gameLogic = require(props.gameLogicPath()).socket
 
 
-socket.on(eventsEnum.GameState, function(data){
-    for(key in data.players){
-        gameLogic.updatePlayer(data.players[key])
-    }
+socket.on(eventsEnum.playerStateUpdate, (playerStateArray)=>{
+    for(let p of playerStateArray)
+    gameLogic.playerStateUpdate(p)
 })
