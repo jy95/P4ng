@@ -43,7 +43,7 @@ describe('Server tests : ' , function () {
     describe('Server tests :' , function () {
 
         beforeEach(function(done) {
-            // runs before each test in this block
+            // runs after each test in this block
 
             // removes previously listeners to this two sockets (seen in anothers test)
             for (let socketTest of [socket1,socket2,socket3,socket4] ) {
@@ -165,6 +165,28 @@ describe('Server tests : ' , function () {
                 it('Test n°1 : Should not be able to join a room', function (done) {
                     this.timeout(250);
 
+                    let wrong = player2;
+                    wrong.id = -1;
+                    playersRoomJson1 = [
+                        {
+                            "playerName": "Jacques",
+                            "playerId": player1.id,
+                            "playerNumber": 0
+                        }
+                    ];
+
+                    testFunctions.joinRoom(socket2, wrong, playersRoomJson1, function (err) {
+                        if (err) {
+                            done();
+                        } else {
+                            done(err);
+                        }
+                    });
+                });
+
+                it('Test n°2 : Should not be able to join a room', function (done) {
+                    this.timeout(250);
+
                     player2.roomId = -1;
                     playersRoomJson1 = [
                         {
@@ -250,37 +272,38 @@ describe('Server tests : ' , function () {
                     testFunctions.createPlayer(socketTest, playerTest, function (err, data) {
 
                         if (err) {
-                            console.log(err.message);
                             done(err);
                         } else {
                             playerTest.id = data.id;
-                        }
 
+                            // set other player added in previous test
+                            playerTest.roomId = roomId1;
+                            playersRoomJson1.push(
+                                {
+                                    "playerName": player3.name,
+                                    "playerId": player3.id,
+                                    "playerNumber": 2
+                                }
+                            );
+
+                            testFunctions.joinRoom(socketTest, playerTest, playersRoomJson1, function (err) {
+                                if (err) {
+                                    done(err);
+                                }
+
+                                testFunctions.leaveRoom(socketTest,playerTest,socket1, function (err) {
+                                    if (err) {
+                                        done(err);
+                                    } else {
+                                        done();
+                                    }
+                                });
+
+                            });
+
+                        }
                     });
 
-                    // set other player added in previous test
-                    playerTest.roomId = roomId1;
-                    playersRoomJson1.push(
-                        {
-                            "playerName": player3.name,
-                            "playerId": player3.id,
-                            "playerNumber": 2
-                        }
-                    );
-
-                    testFunctions.joinRoom(socketTest, playerTest, playersRoomJson1, function (err) {
-                        if (err) {
-                            done(err);
-                        }
-                    });
-
-                    testFunctions.leaveRoom(socketTest,playerTest,socket1, function (err) {
-                        if (err) {
-                            done(err);
-                        } else {
-                            done();
-                        }
-                    });
                 });
             });
 
@@ -302,7 +325,37 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°2 : Should be able to start the game', function (done) {
+                it('Test n°2 : Should not be able to start the game', function (done) {
+                    this.timeout(250);
+                    let wrong = player2;
+                    wrong.id = -1;
+
+                    testFunctions.startGame([socket1, socket2], socket2, wrong, function (err) {
+                        if (err) {
+                            done(err);
+                        } else {
+                            done();
+                        }
+                    });
+
+                });
+
+                it('Test n°3 : Should not be able to start the game', function (done) {
+                    this.timeout(250);
+                    let wrong = player2;
+                    wrong.roomId = -1;
+
+                    testFunctions.startGame([socket1, socket2], socket2, wrong, function (err) {
+                        if (err) {
+                            done(err);
+                        } else {
+                            done();
+                        }
+                    });
+
+                });
+
+                it('Test n°4 : Should be able to start the game', function (done) {
                     this.timeout(250);
 
                     testFunctions.startGame([socket1, socket2], socket1, player1, function (err) {
@@ -318,10 +371,21 @@ describe('Server tests : ' , function () {
 
             describe("Test case n°3 B : GameState", function () {
                 it('Test n°1 : Should be able to receive GameState ', function (done) {
-                    this.timeout(250);
-                    let goodAnswer;
+                    this.timeout(350);
 
-                    testFunctions.GameState([socket1,socket2], goodAnswer, function (err) {
+                    let keyPlayer1 = player1.id.toString();
+                    let keyPlayer2 = player2.id.toString();
+
+                    let someScoreStuff = {
+                      roomId : roomId1,
+                        players : {
+                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
+                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18}
+                        }
+                    };
+
+
+                    testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
                         if (err) {
                             done(err);
                         } else {

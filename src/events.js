@@ -120,19 +120,6 @@ module.exports = {
 
 
     /*
-        !!!!!!!!!!!! FORGET ABOUT IT FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        Every x ms, each client will be sent the game state (same json structure as PlayerState) containing the latest players' state present on the server
-        of all the players in the game so that it can render the game
-
-        NOTE : this methodology is subject to change, for performance purposes
-
-        !!!!!!!!!!!! FORGET ABOUT IT FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    */
-    gameStateUpdate : "gameStateUpdate",
-
-
-    /*
         When a game ends, every client involved sends the same json as the one for PlayerSate but with all the players
         The server chooses the most commonly attributed score for each player to counter cheating
 

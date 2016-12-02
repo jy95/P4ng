@@ -54,6 +54,7 @@ module.exports.gestionSocket = function(socket, IOsockets){
         });
     });
 
+    // client send its PlayerState to server
     socket.on(eventEnum.playerStateUpdate , function (data) {
         lobby.playerState(IOsockets,socket,data, function (err) {
             winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.playerStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
@@ -75,7 +76,7 @@ module.exports.gestionSocket = function(socket, IOsockets){
 };
 
 module.exports.gameStateUpdate = function (data, IOsockets) {
-  lobby.gameState(IOsockets,data , function (err) {
+  lobby.gameStateUpdate(IOsockets,data , function (err) {
       winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.gameStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
   });
 };
