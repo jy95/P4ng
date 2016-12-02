@@ -158,13 +158,23 @@ module.exports = {
     GameState : function (sockets, goodAnswer, callback) {
 
         try {
-
+            // each player sends example state :
             sockets.forEach( (socket) => {
-                socket.on(eventEnum.GameState, function (data) {
-                    // Je testerai le résultat quand j'aurai un exemple de gamestate
-                    //assert.deepEqual( data, goodAnswer , 'Not the same GameState Received');
+                socket.emit(eventEnum.playerStateUpdate, goodAnswer);
+            });
+
+            // wait some time to let server prepare answer
+            setTimeout(function () {
+
+            }, 20);
+            
+            // check server answer
+            sockets.forEach( (socket) => {
+                socket.on(eventEnum.playerStateUpdate, function (data) {
+                    assert.deepEqual(data,goodAnswer, "Not the same GameState Received" );
                 });
             });
+
             callback(null,null);
 
         } catch (err) {

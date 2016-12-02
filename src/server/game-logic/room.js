@@ -1,5 +1,4 @@
 let Game = require('./gameState.js');
-let emitter = require('../server-logic/gameEventEmitter.js').commonEmitter;
 let eventEnum = require('../../events.js');
 
 function Room(playerId,gameId,roomName) {
@@ -10,14 +9,16 @@ function Room(playerId,gameId,roomName) {
     this.isFinished = false;
     this.players= new Map();
     this.game = new Game(this.gameId,60);
-    
+    this.emitter = require('../server-logic/gameEventEmitter.js').commonEmitter;
+
     // implement the onUpdate function of game
     this.game.onUpdate = function () {
 
         let playerState = this.game.getPlayerState();
 
         // envoi de ce playerState à tous les joueurs (event => playerStateUpdate)
-        emitter.emit(eventEnum.playerStateUpdate , { gameId : this.gameId , state: playerState} );
+        this.emitter.emit(eventEnum.gameStateUpdate ,  playerState );
+
     }.bind(this);
 }
 
@@ -37,10 +38,11 @@ Room.prototype.addPlayer = function(player,callback) {
 };
 
 Room.prototype.startGame = function(playerId,callback) {
+
     if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished) {
         isStarted = true;
         this.game.start();
-        callback(null , 0.8);
+        callback(null);
     } else {
         callback(new Error("You don't have the right to start the game (only master can)"));
     }

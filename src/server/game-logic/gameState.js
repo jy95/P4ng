@@ -1,4 +1,3 @@
-let eventsEnum = require('../../events.js');
 
 let Game = function (roomId,fps) {
     this.fps = fps;
@@ -6,6 +5,7 @@ let Game = function (roomId,fps) {
     this.roomId = roomId;
     this.players = {};
     this.loopFunction;
+    this.gameEventEmitter = require("../server-logic/gameEventEmitter.js").commonEmitter;
     this.onUpdate = function () {
 
     };
