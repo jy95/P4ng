@@ -64,7 +64,6 @@ PongGame.prototype.update = function (){
         paddle.move()
     // moves the ball
     this.ball.move()
-    this.updateCallback(this.toJSON())
 }
 
 PongGame.prototype.getCollisionOffset = function(stateID, side, position){

@@ -3,9 +3,10 @@ const props = require('../../properties-loader.js')
 var eventsEnum = require(props.eventsEnumPath())
 var socket = require(props.socketPath())
 var lobbyLogic = require(props.lobbyLogicPath())
+var gameLogic = require(props.gameLogicPath())
 
 socket.on(eventsEnum.startGame, ({angle})=>{
-    serverToLobbyEventEmitter.emit(eventsEnum.startGame, {'angle': angle})
+    gameLogic.startGame({'angle': angle})
 })
 
 socket.on(eventsEnum.gotAvailableRooms, (rooms)=>{
