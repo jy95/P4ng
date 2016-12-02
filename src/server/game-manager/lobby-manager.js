@@ -209,8 +209,6 @@ LobbyManager.prototype.getAvailableRooms = function (IOsockets,socket,callback) 
 
 LobbyManager.prototype.playerState = function (IOsockets,socket,data,callback) {
 
-    let self = this;
-
     this.gameLogic.playerState(data, function (err,answer) {
 
         callback( (err) ? null : err );
@@ -224,7 +222,7 @@ LobbyManager.prototype.endGame = function (IOsockets,socket,callback) {
 };
 
 LobbyManager.prototype.gameStateUpdate = function (IOsockets, data, callback) {
-    this.socketManager.broadcastMessageInRoom(IOsockets, data.gameId , eventEnum.gameStateUpdate, data.state );
+    this.socketManager.broadcastMessageInRoom(IOsockets, data.roomId , eventEnum.playerStateUpdate, data );
     callback(null);
 };
 

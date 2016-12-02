@@ -47,6 +47,7 @@ module.exports.listen = function () {
     let gameEventEmitter = require("./server-logic/gameEventEmitter.js").commonEmitter;
 
     gameEventEmitter.on( eventsEnum.gameStateUpdate, function (data) {
+
         require("./server-logic/routes.js").gameStateUpdate(data,io.sockets);
 
     });

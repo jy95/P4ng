@@ -163,10 +163,10 @@ Lobby.prototype.playerState = function (data,callback) {
         callback(new Error("Room doesn't exist"));
     } else {
 
-        room.playerState(data, function (callback) {
-            // si message à envoyer
+        room.playerState(data.players, function (err) {
+            callback(err ? err : null);
         });
-        callback(null);
+
     }
 
 };
@@ -179,25 +179,12 @@ Lobby.prototype.endGame = function (IOsockets,socket,callback) {
         callback(new Error("Room doesn't exist"));
     } else {
 
-        room.endGame(data, function (callback) {
-            // si message à envoyer
+        room.endGame(data, function (err) {
+            callback(err ? err : null);
         });
-        callback(null);
+
     }
 
-};
-
-Lobby.prototype.gameState = function (IOsockets, data, callback) {
-
-    let room = this.rooms.get( data.gameId );
-
-    if (room === undefined) {
-        callback(new Error("Room doesn't exist"));
-    } else {
-
-        room.broadcastMessageInRoom(IOsockets, data.gameId, eventEnum.GameState , data );
-        callback(null);
-    }
 };
 
 Lobby.prototype.electNewMaster = function (roomId, callback) {
