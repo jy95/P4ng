@@ -21,7 +21,7 @@
         "socket": "./client/client-socket.js"
     },
     "p4ngIndex": "./client/view/html/index.html",
-    "p4ngIcon": "./../ressources/P4ng_logo_1.png",
+    "p4ngIcon": "./client/view/P4ng-logo.png",
     "socketProps": {
         "url": "http://127.0.0.1",
         "port": 8080

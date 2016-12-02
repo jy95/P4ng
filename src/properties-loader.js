@@ -4,6 +4,7 @@ var callsite = require('callsite')
 
 module.exports.gameConsts = props.gameConsts
 module.exports.p4ngIndex = Path.join(__dirname,props.p4ngIndex)
+module.exports.p4ngIcon = Path.join(__dirname,props.p4ngIcon)
 module.exports.socketProps = props.socketProps
 
 for(let m in props.p4ngModules)
