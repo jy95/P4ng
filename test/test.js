@@ -272,37 +272,38 @@ describe('Server tests : ' , function () {
                     testFunctions.createPlayer(socketTest, playerTest, function (err, data) {
 
                         if (err) {
-                            console.log(err.message);
                             done(err);
                         } else {
                             playerTest.id = data.id;
-                        }
 
+                            // set other player added in previous test
+                            playerTest.roomId = roomId1;
+                            playersRoomJson1.push(
+                                {
+                                    "playerName": player3.name,
+                                    "playerId": player3.id,
+                                    "playerNumber": 2
+                                }
+                            );
+
+                            testFunctions.joinRoom(socketTest, playerTest, playersRoomJson1, function (err) {
+                                if (err) {
+                                    done(err);
+                                }
+
+                                testFunctions.leaveRoom(socketTest,playerTest,socket1, function (err) {
+                                    if (err) {
+                                        done(err);
+                                    } else {
+                                        done();
+                                    }
+                                });
+
+                            });
+
+                        }
                     });
 
-                    // set other player added in previous test
-                    playerTest.roomId = roomId1;
-                    playersRoomJson1.push(
-                        {
-                            "playerName": player3.name,
-                            "playerId": player3.id,
-                            "playerNumber": 2
-                        }
-                    );
-
-                    testFunctions.joinRoom(socketTest, playerTest, playersRoomJson1, function (err) {
-                        if (err) {
-                            done(err);
-                        }
-                    });
-
-                    testFunctions.leaveRoom(socketTest,playerTest,socket1, function (err) {
-                        if (err) {
-                            done(err);
-                        } else {
-                            done();
-                        }
-                    });
                 });
             });
 

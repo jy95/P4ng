@@ -15,6 +15,7 @@
         // ORDER MATTERS
         require('../js/game-view.js')
         require('../js/lobby-view.js')
+        require('../js/app-rest.js')
         require('../../controller/game-controller.js')
         require('../../controller/lobby-controller.js')
 
@@ -26,7 +27,46 @@
 
 <body>
     <h1>P4ng!</h1>
-    <div id="lobbyContainer" class="open">
+
+
+    <div id ="formsContainer" class="open">
+
+        <form method ="POST" id ="createAccountForm">
+            <fieldset>
+                <legend>Create account</legend>
+                <label for="usernameCreateAccountForm">Username :</label><br>
+                <input type="text" name="username" id = "usernameCreateAccountForm"><br>
+                <label for="emailCreateAccountForm">Email :</label><br>
+                <input type="text" name="email" id = "emailCreateAccountForm"><br>
+                <label for="pwdCreateAccountForm">Password :</label><br>
+                <input type="password" name="pwd" id = "pwdCreateAccountForm"><br>
+                <label for="verifyPwdCreateAccountForm">Confirm password :</label><br>
+                <input type="password" name="confirmPwd" id = "verifyPwdCreateAccountForm"><br><br>
+                <p class ="alert" id ="alertCreateAccountForm"> </p><br>
+                <input type="submit" value="Submit" id ="submitCreateAccountForm">
+            </fieldset>
+        </form>
+
+
+        <form method ="POST" id ="authenticateForm">
+            <fieldset>
+                <legend>Authenticate</legend>
+                <label for="emailAuthenticateForm">Email :</label><br>
+                <input type="text" name="email" id = "emailAuthenticateForm"><br>
+                <label for="pwdAccountForm">Password :</label><br>
+                <input type="password" name="pwd" id = "pwdAuthenticateForm"><br>
+                <p class ="alert" id ="alertAuthenticateForm"> </p><br>
+                <input type="submit" value="Connect" id ="submitAuthenticateForm">
+            </fieldset>
+        </form>
+
+    </div>
+
+
+
+
+
+    <div id="lobbyContainer" class="closed">
         <table id="lobbyPanel">
             <thead>
                 <tr>

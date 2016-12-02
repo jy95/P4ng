@@ -2,6 +2,8 @@ language: node_js
 node_js:
   - "6.9.1"
   - "node"
+services:
+  - mongodb
 install:
   - npm install
 after_success:
@@ -16,3 +18,4 @@ branches:
 env:
   matrix:
   - TRAVIS_NODE_VERSION="6"
+
