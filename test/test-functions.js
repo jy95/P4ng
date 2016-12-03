@@ -33,9 +33,11 @@ module.exports = {
 
     createPlayer : function(socket, playerJson , callback) {
 
-        socket.emit(eventEnum.newPlayer ,  playerJson );
+        socket.emit(eventEnum.newPlayer ,  JSON.stringify(playerJson) );
 
         socket.on(eventEnum.newPlayer, function (data) {
+
+            data = JSON.parse(data);
 
             try {
                 assert.notEqual( data.id,-1 , 'No UserId');
@@ -49,10 +51,10 @@ module.exports = {
 
     createRoom : function(socket, playerJson, callback) {
 
-        socket.emit(eventEnum.createRoom , playerJson );
+        socket.emit(eventEnum.createRoom , JSON.stringify(playerJson) );
 
         socket.on(eventEnum.createRoom, function (data) {
-
+            data = JSON.parse(data);
             try {
                 assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
                 assert.notEqual( data.roomId,-1 , 'No RoomId ');
@@ -66,19 +68,19 @@ module.exports = {
 
     joinRoom : function(socket, playerJson , playersRoomJson , callback) {
 
-        socket.emit(eventEnum.joinRoom , playerJson );
+        socket.emit(eventEnum.joinRoom , JSON.stringify(playerJson) );
 
         try {
             // check if the player has joined the room
             socket.on(eventEnum.joinRoom , function (data) {
-
+                data = JSON.parse(data);
                 assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
                 assert.notEqual( data.roomId,-1 , 'No RoomId ');
             });
 
             // check if the player receives the current list of players of this room
             socket.on(eventEnum.ListEnrolledPlayers, function (players) {
-
+                players = JSON.parse(players);
                 assert.deepEqual( players, playersRoomJson, 'Not same players arrays');
             });
             callback(null,null);
@@ -90,7 +92,7 @@ module.exports = {
 
     getAvailableRooms : function (socket, roomsJson, callback) {
 
-        socket.emit(eventEnum.getAvailableRooms , {});
+        socket.emit(eventEnum.getAvailableRooms , JSON.stringify({}));
 
         try {
 
@@ -98,7 +100,7 @@ module.exports = {
 
             socket.on(eventEnum.getAvailableRooms , function (receivedRoomsJson) {
 
-                assert.deepEqual(receivedRoomsJson, roomsJson, "Wrong Rooms List");
+                assert.deepEqual( receivedRoomsJson, JSON.stringify(roomsJson), "Wrong Rooms List");
                 callback(null,null);
             });
 
@@ -110,13 +112,14 @@ module.exports = {
 
     startGame : function (sockets, masterSocket, masterJson, callback) {
 
-        masterSocket.emit(eventEnum.startGame , masterJson);
+        masterSocket.emit(eventEnum.startGame , JSON.stringify(masterJson) );
 
         try {
 
             sockets.forEach( (socket) => {
 
                 socket.on(eventEnum.startGame , function (data) {
+                    data = JSON.parse(data);
                     assert.deepEqual(data.id, masterJson.id, "Wrong User Id");
                     assert.deepEqual(data.roomId, masterJson.roomId, "Wrong Room Id");
                     assert.notEqual(data.angle, undefined , "No angle");
@@ -132,19 +135,19 @@ module.exports = {
 
     leaveRoom : function(socketRageExit, playerJson , anotherPlayer, callback) {
 
-        socketRageExit.emit(eventEnum.leaveRoom , playerJson );
+        socketRageExit.emit(eventEnum.leaveRoom , JSON.stringify(playerJson) );
 
         try {
             // check if the player has joined the room
             socketRageExit.on(eventEnum.leaveRoom , function (data) {
-                // {id: 47, roomId: -1}
+                data = JSON.parse(data);
                 assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
                 assert.notEqual( data.roomId,-1 , 'Not in this room');
             });
 
             // check if one of current player receives the current list of players of this room
             anotherPlayer.on(eventEnum.leaveRoom, function (data) {
-
+                data = JSON.parse(data);
                 assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
                 assert.notEqual( data.roomId,-1 , 'No same RoomId');
             });
@@ -160,7 +163,7 @@ module.exports = {
         try {
             // each player sends example state :
             sockets.forEach( (socket) => {
-                socket.emit(eventEnum.playerStateUpdate, goodAnswer);
+                socket.emit(eventEnum.playerStateUpdate, JSON.stringify(goodAnswer) );
             });
 
             // wait some time to let server prepare answer
@@ -171,7 +174,8 @@ module.exports = {
             // check server answer
             sockets.forEach( (socket) => {
                 socket.on(eventEnum.playerStateUpdate, function (data) {
-                    assert.deepEqual(data,goodAnswer, "Not the same GameState Received" );
+                    data = JSON.parse(data);
+                    assert.deepEqual(data,JSON.stringify(goodAnswer), "Not the same GameState Received" );
                 });
             });
 
@@ -191,14 +195,14 @@ module.exports = {
 
             // check if the player has leave the room
             socketRageExit.on(eventEnum.leaveRoom , function (data) {
-                // {id: 47, roomId: -1}
+                data = JSON.parse(data);
                 assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
                 assert.notEqual( data.roomId,-1 , 'Not in this room');
             });
 
             // check if one of current player receives the current list of players of this room
             socketAnotherPlayer.on(eventEnum.leaveRoom, function (data) {
-
+                data = JSON.parse(data);
                 assert.deepEqual( data.id, playerJson.id , 'Not same UserId');
                 assert.notEqual( data.roomId,-1 , 'No same RoomId');
             });

@@ -1,4 +1,6 @@
 const assert = require('assert');
+const http = require('http');
+const props = require('../src/properties-loader.js');
 let io = require('socket.io-client');
 let testFunctions = require("./test-functions.js");
 
@@ -38,6 +40,200 @@ describe('Server tests : ' , function () {
             });
         });
 
+    });
+
+    describe('Rest API test :' , function () {
+
+        describe("Test Case n°1 : /registerUser tests", function () {
+
+            it("Test n°1 : Should not registerUser : Wrong email ", function (done) {
+                this.timeout(350);
+
+                let data = {
+                    "username": "TEST",
+                    "pwd": "TEST",
+                    "email": "TEST"
+                };
+
+                let options = {
+                    host: 'localhost',
+                    path: '/registerUser',
+                    //since we are listening on a custom port, we need to specify it by hand
+                    port: props.socketProps.port,
+                    //This is what changes the request to a POST request
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.notEqual(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+
+            });
+
+            it("Test n°2 : Should be able to registerUser ", function (done) {
+                this.timeout(350);
+
+                let data = {
+                    "username": "TEST",
+                    "pwd": "TEST",
+                    "email": "TEST@ipl.be"
+                };
+
+                let options = {
+                    host: 'localhost',
+                    path: '/registerUser',
+                    //since we are listening on a custom port, we need to specify it by hand
+                    port: props.socketProps.port,
+                    //This is what changes the request to a POST request
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+
+            });
+
+            it("Test n°3 : Should not be able to registerUser with same Email", function (done) {
+                this.timeout(350);
+
+                let data = {
+                    "username": "TEST",
+                    "pwd": "TEST",
+                    "email": "TEST@ipl.be"
+                };
+
+                let options = {
+                    host: 'localhost',
+                    path: '/registerUser',
+                    //since we are listening on a custom port, we need to specify it by hand
+                    port: props.socketProps.port,
+                    //This is what changes the request to a POST request
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.notEqual(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+            });
+
+
+        });
+
+        describe("Test Case n°1 : /checkUserCredentials tests", function () {
+            it("Test n°1 : Should not be able to /checkUserCredentials : Wrong Email", function (done) {
+                this.timeout(350);
+
+                let data = {
+                    "username": "TEST",
+                    "pwd": "TEST",
+                    "email": "TEST@KKKL.be"
+                };
+
+                let options = {
+                    host: 'localhost',
+                    path: '/checkUserCredentials',
+                    //since we are listening on a custom port, we need to specify it by hand
+                    port: props.socketProps.port,
+                    //This is what changes the request to a POST request
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.notEqual(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+            });
+
+            it("Test n°2 : Should not be able to /checkUserCredentials : Wrong Password", function (done) {
+                this.timeout(350);
+
+                let data = {
+                    "username": "TEST",
+                    "pwd": "HACKEDPWD",
+                    "email": "TEST@ipl.be"
+                };
+
+                let options = {
+                    host: 'localhost',
+                    path: '/checkUserCredentials',
+                    //since we are listening on a custom port, we need to specify it by hand
+                    port: props.socketProps.port,
+                    //This is what changes the request to a POST request
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.notEqual(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+            });
+
+            it("Test n°2 : Should  be able to /checkUserCredentials", function (done) {
+                this.timeout(350);
+
+                let data = {
+                    "username": "TEST",
+                    "pwd": "TEST",
+                    "email": "TEST@ipl.be"
+                };
+
+                let options = {
+                    host: 'localhost',
+                    path: '/checkUserCredentials',
+                    //since we are listening on a custom port, we need to specify it by hand
+                    port: props.socketProps.port,
+                    //This is what changes the request to a POST request
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+            });
+
+
+        });
     });
 
     describe('Server tests :' , function () {
@@ -397,8 +593,9 @@ describe('Server tests : ' , function () {
             });
 
             describe("Test case n°3 C : Leave Game", function () {
+
                 it('Test n°1 : Should be able to rage exit ', function (done) {
-                    this.timeout(250);
+                    this.timeout(500);
 
                     testFunctions.RageExit(socket2,socket1,player2 , function (err) {
                         if (err) {
@@ -411,7 +608,7 @@ describe('Server tests : ' , function () {
                 });
 
                 it('Test n°2 : Should be able to change the master of the room - To BE MODIFIED', function (done) {
-                    this.timeout(300);
+                    this.timeout(500);
 
                     testFunctions.RageExit(socket1,socket3,player1 , function (err) {
                         if (err) {

@@ -18,32 +18,32 @@ module.exports.winston = winston;
 module.exports.gestionSocket = function(socket, IOsockets){
 
     socket.on(eventEnum.newPlayer, function(data) {
-        lobby.newPlayer(IOsockets,socket, data, function (err) {
+        lobby.newPlayer(IOsockets,socket, JSON.parse(data), function (err) {
             winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.newPlayer + " handled : " + ( (err) ? " with message " + err.message : " successfully") );
         });
 
     });
 
     socket.on(eventEnum.createRoom, function (data) {
-        lobby.createRoom(IOsockets,socket, data, function (err) {
+        lobby.createRoom(IOsockets,socket, JSON.parse(data), function (err) {
             winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.createRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
     socket.on(eventEnum.joinRoom , function (data) {
-        lobby.joinRoom(IOsockets,socket, data, function (err) {
+        lobby.joinRoom(IOsockets,socket, JSON.parse(data), function (err) {
             winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.joinRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
     socket.on(eventEnum.startGame , function (data) {
-        lobby.startGame(IOsockets,socket,data, function (err) {
+        lobby.startGame(IOsockets,socket,JSON.parse(data), function (err) {
             winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.startGame + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
     socket.on(eventEnum.leaveRoom, function (data) {
-        lobby.leaveRoom(IOsockets,socket,data, function (err) {
+        lobby.leaveRoom(IOsockets,socket,JSON.parse(data), function (err) {
             winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.leaveRoom + " handled : " + ( (err) ? " with message " + err.message : " successfully" ) );
         });
     });
@@ -56,13 +56,13 @@ module.exports.gestionSocket = function(socket, IOsockets){
 
     // client send its PlayerState to server
     socket.on(eventEnum.playerStateUpdate , function (data) {
-        lobby.playerState(IOsockets,socket,data, function (err) {
+        lobby.playerState(IOsockets,socket,JSON.parse(data), function (err) {
             winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.playerStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
 
     socket.on(eventEnum.endGame , function (data) {
-        lobby.endGame(IOsockets,socket,data, function (err) {
+        lobby.endGame(IOsockets,socket,JSON.parse(data), function (err) {
             winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.endGame + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
         });
     });
@@ -76,7 +76,7 @@ module.exports.gestionSocket = function(socket, IOsockets){
 };
 
 module.exports.gameStateUpdate = function (data, IOsockets) {
-  lobby.gameStateUpdate(IOsockets,data , function (err) {
+  lobby.gameStateUpdate(IOsockets,JSON.parse(data) , function (err) {
       winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.gameStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
   });
 };
