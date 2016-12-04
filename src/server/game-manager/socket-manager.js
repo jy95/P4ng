@@ -1,18 +1,18 @@
 module.exports = {
     sendMessage: function (socket, event, message) {
-        socket.emit(event, JSON.stringify(message));
+        socket.emit(event, message);
     },
 
     broadcastMessageInRoomWithoutMe: function (roomId, socket, event, data) {
-        socket.broadcast.to('Room' + roomId).emit(event, JSON.stringify(data) );
+        socket.broadcast.to('Room' + roomId).emit(event, data );
     },
 
     broadcastMessageInRoom : function (IOsockets, roomId, event, data) {
-        IOsockets.in('Room' + roomId).emit(event, JSON.stringify(data) );
+        IOsockets.in('Room' + roomId).emit(event, data );
     },
 
     broadcastMessageToEveryone : function (IOsockets, event, data) {
-        IOsockets.emit(event, JSON.stringify(data) );
+        IOsockets.emit(event, data );
     },
     
     registerNewPlayerInsideARoom : function (socket,roomId) {
