@@ -7,6 +7,7 @@ services:
 install:
   - npm install
 after_success:
+  - mongo P4ngDb --eval "db.dropDatabase()"
   - npm run coveralls
 notifications:
   slack:

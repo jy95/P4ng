@@ -76,7 +76,7 @@ module.exports.gestionSocket = function(socket, IOsockets){
 };
 
 module.exports.gameStateUpdate = function (data, IOsockets) {
-  lobby.gameStateUpdate(IOsockets,JSON.parse(data) , function (err) {
+  lobby.gameStateUpdate(IOsockets,data , function (err) {
       winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.gameStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
   });
 };
