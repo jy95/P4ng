@@ -232,6 +232,7 @@ LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket ,
     let playersStruct = this.idToSockets.get(socket.id);
     let self = this;
 
+
     switch(playersStruct) {
 
         case undefined :
@@ -248,7 +249,9 @@ LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket ,
                     case null :
 
                         // remove the players that are in a room
+
                         for ( let [key, value] of answer) {
+
                             self.leaveRoom(IOsockets,socket, { roomId : value , id : key} , function (anotherErr)  {
 
                                 switch(anotherErr) {
@@ -259,7 +262,7 @@ LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket ,
                                         // remove the coward player id from idToSockets
 
                                         let previousEntry = self.idToSockets.get(socket.id);
-                                        let index = previousEntry.players.indexOf(data.id);
+                                        let index = previousEntry.players.indexOf(key);
 
                                         if (index >= 0) {
                                             previousEntry.players.splice( index, 1 );
@@ -273,8 +276,8 @@ LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket ,
                                         }
 
                                         // remove player from lobby players
-                                        self.gameLogic.removePlayer(data.id);
-                                        self.playersToSocket.delete(data.id);
+                                        self.gameLogic.removePlayer(key);
+                                        self.playersToSocket.delete(key);
 
                                         break;
 

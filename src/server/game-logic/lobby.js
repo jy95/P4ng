@@ -210,7 +210,7 @@ Lobby.prototype.findRoomsOfPlayers = function (players, callback) {
         for ( let aPlayer of players) {
 
             // if this user exists in this room
-            if ( room._findPlayer(aPlayer) != -1 ) {
+            if ( room.findPlayer( {id : aPlayer}) != -1 ) {
                 search.set(aPlayer, key);
             }
         }
