@@ -434,26 +434,28 @@ describe('Server tests : ' , function () {
                             done(err);
                         } else {
                             player3.id = data.id;
+
+                            player2.roomId = roomId1;
+                            playersRoomJson1.push(
+                                {
+                                    "playerName": player2.name,
+                                    "playerId": player2.id,
+                                    "playerNumber": 1
+                                }
+                            );
+
+                            testFunctions.joinRoom(socket3, player3, playersRoomJson1, function (err) {
+                                if (err) {
+                                    done(err);
+                                } else {
+                                    done();
+                                }
+                            });
+
                         }
 
                     });
 
-                    player2.roomId = roomId1;
-                    playersRoomJson1.push(
-                        {
-                            "playerName": player2.name,
-                            "playerId": player2.id,
-                            "playerNumber": 1
-                        }
-                    );
-
-                    testFunctions.joinRoom(socket3, player3, playersRoomJson1, function (err) {
-                        if (err) {
-                            done(err);
-                        } else {
-                            done();
-                        }
-                    });
 
                 });
             });
@@ -607,7 +609,7 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°2 : Should be able to change the master of the room - To BE MODIFIED', function (done) {
+                it('Test n°2 : Should be able to change the master of the room - TEST TO BE MODIFIED', function (done) {
                     this.timeout(500);
 
                     testFunctions.RageExit(socket1,socket3,player1 , function (err) {
