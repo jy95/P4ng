@@ -141,7 +141,7 @@ describe('Server tests : ' , function () {
 
         });
 
-        describe("Test Case n°1 : /checkUserCredentials tests", function () {
+        describe("Test Case n°2 : /checkUserCredentials tests", function () {
             it("Test n°1 : Should not be able to /checkUserCredentials : Wrong Email", function (done) {
                 this.timeout(350);
 
