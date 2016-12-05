@@ -146,6 +146,7 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
         switch(err) {
             case null:
 
+
                 // A new Master is required
                 if ( hasEnoughPlayers && newMasterRequired) {
 
@@ -162,9 +163,8 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
                 self.socketManager.sendMessage(socket,eventEnum.leaveRoom , data);
 
                 // remove player from room , if required :
-                if ( ! self.idToSockets.has(socket.id ) ) {
-                    self.socketManager.removePlayerFromRoom(socket,data.roomId);
-                }
+
+                self.socketManager.removePlayerFromRoom(socket,data.roomId);
 
                 // prevent another players in room
                 self.socketManager.broadcastMessageInRoomWithoutMe(data.roomId , socket, eventEnum.leaveRoom,  data );

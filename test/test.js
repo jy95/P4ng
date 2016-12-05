@@ -12,7 +12,6 @@ let player4 = {name: "CHEATER"};
 let socket1;
 let socket2;
 let socket3;
-let socket4;
 let roomId1;
 let playersRoomJson1;
 
@@ -242,7 +241,7 @@ describe('Server tests : ' , function () {
             // runs after each test in this block
 
             // removes previously listeners to this two sockets (seen in anothers test)
-            for (let socketTest of [socket1,socket2,socket3,socket4] ) {
+            for (let socketTest of [socket1,socket2,socket3] ) {
                 if (socketTest !== undefined) {
                     socketTest.removeAllListeners();
                 }
@@ -252,7 +251,7 @@ describe('Server tests : ' , function () {
 
         describe('Test Cases n°1 : Register user test cases : ', function () {
 
-            it('Test n°1 : Should be able to register a new user', function (done) {
+            it('Test n°1 : Should be able to register a new user: Player 1', function (done) {
                 this.timeout(250);
 
                 socket1 = io.connect('http://localhost:8080');
@@ -268,7 +267,7 @@ describe('Server tests : ' , function () {
 
             });
 
-            it('Test n°2 : Should be able to register a another new user', function (done) {
+            it('Test n°2 : Should be able to register a another new user : Player 2', function (done) {
                 this.timeout(250);
 
                 socket2 = io.connect('http://localhost:8080');
@@ -306,7 +305,7 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°2 : Should be able to create a room', function (done) {
+                it('Test n°2 : Should be able to create a room - Mast: Player1', function (done) {
                     this.timeout(250);
                     player1.roomId = -1;
                     player1.roomName = "TestRoom";
@@ -401,7 +400,7 @@ describe('Server tests : ' , function () {
                     });
                 });
 
-                it('Test n°3 : Should be able to join a room ', function (done) {
+                it('Test n°3 : Should be able to join a room : Player2 joins Player1 room', function (done) {
                     this.timeout(250);
 
                     player2.roomId = roomId1;
@@ -423,7 +422,7 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°4 : Should be able for another player to join a room', function (done) {
+                it('Test n°4 : Should be able for another player to join a room : Player3 joins Player1 room', function (done) {
                     this.timeout(500);
 
                     socket3 = io.connect('http://localhost:8080');
@@ -435,7 +434,7 @@ describe('Server tests : ' , function () {
                         } else {
                             player3.id = data.id;
 
-                            player2.roomId = roomId1;
+                            player3.roomId = roomId1;
                             playersRoomJson1.push(
                                 {
                                     "playerName": player2.name,
@@ -456,11 +455,47 @@ describe('Server tests : ' , function () {
 
                     });
 
-
                 });
+                /*
+                it('Test n°5 : Should be able for last player to join a room', function (done) {
+                    this.timeout(500);
+
+                    // player 4 uses socket2;
+
+                    testFunctions.createPlayer(socket2, player4, function (err, data) {
+
+                        if (err) {
+                            done(err);
+                        } else {
+                            console.log("DFP");
+                            player4.id = data.id;
+
+                            player4.roomId = roomId1;
+                            playersRoomJson1.push(
+                                {
+                                    "playerName": player3.name,
+                                    "playerId": player3.id,
+                                    "playerNumber": 2
+                                }
+                            );
+
+                            testFunctions.joinRoom(socket2, player4, playersRoomJson1, function (err) {
+                                if (err) {
+                                    done(err);
+                                } else {
+                                    done();
+                                }
+                            });
+
+                        }
+
+                    });
+                });
+                */
             });
 
             describe("Test case n°2 D : Leave Room", function () {
+
                 it('Test n°1 : Should be able to leave the game' , function (done) {
                     this.timeout(1000);
 
@@ -503,6 +538,7 @@ describe('Server tests : ' , function () {
                     });
 
                 });
+
             });
 
         });
@@ -553,7 +589,20 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°4 : Should be able to start the game', function (done) {
+                it('Test n°4 : Should not be able to start the game', function (done) {
+                    this.timeout(250);
+
+                    testFunctions.startGame([socket1, socket2], socket2, player2, function (err) {
+                        if (err) {
+                            done();
+                        } else {
+                            done(err);
+                        }
+                    });
+
+                });
+
+                it('Test n°5 : Should be able to start the game', function (done) {
                     this.timeout(250);
 
                     testFunctions.startGame([socket1, socket2], socket1, player1, function (err) {
@@ -596,6 +645,7 @@ describe('Server tests : ' , function () {
 
             describe("Test case n°3 C : Leave Game", function () {
 
+
                 it('Test n°1 : Should be able to rage exit ', function (done) {
                     this.timeout(500);
 
@@ -609,18 +659,6 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°2 : Should be able to change the master of the room - TEST TO BE MODIFIED', function (done) {
-                    this.timeout(500);
-
-                    testFunctions.RageExit(socket1,socket3,player1 , function (err) {
-                        if (err) {
-                            done(err);
-                        } else {
-                            done();
-                        }
-                    });
-
-                });
             });
 
 
