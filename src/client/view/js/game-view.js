@@ -1,14 +1,19 @@
 
 const props = require('../../../properties-loader.js')
+const gameLogic = require(props.gameLogicPath())
 const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
-const EventEmitter = require('events')
-var gameViewEventEmitter = new EventEmitter()
 
 // context
 var c = document.getElementById('gameArea').getContext('2d')
 c.font = '30px earlygameboy'
 
-module.exports.updateView = function(state){
+gameLogic.subscribe(()=>{
+    updateView(gameLogic.getState())
+    console.log('gameView - update')
+    console.log(gameLogic.getState())
+})
+
+function updateView (state){
     requestAnimationFrame(()=>{
         c.clearRect(0,0,500,500)
 

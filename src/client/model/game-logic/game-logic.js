@@ -27,12 +27,14 @@ module.exports.addPlayer = function(player){
 }
 
 module.exports.startGame = function({angle}){
-    if(currentGame && !currentGame.isFinished)
-    currentGame.ball.direction = angle
-    intervalId = setInterval(function(){
-        currentGame.update()
-        gameEventEmitter.emit('gameStateUpdate')
-    }, 17)
+    if(currentGame && !currentGame.isFinished){
+        console.log('gameogic - startGame')
+        currentGame.ball.direction = angle
+        intervalId = setInterval(function(){
+            currentGame.update()
+            gameEventEmitter.emit('gameStateUpdate')
+        }, 17)
+    }
 }
 
 module.exports.killGame = function(){

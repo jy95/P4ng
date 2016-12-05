@@ -5,10 +5,6 @@ var socket = require(props.socketPath())
 var lobbyLogic = require(props.lobbyLogicPath())
 var gameLogic = require(props.gameLogicPath())
 
-socket.on(eventsEnum.startGame, ({angle})=>{
-    gameLogic.startGame({'angle': angle})
-})
-
 socket.on(eventsEnum.gotAvailableRooms, (rooms)=>{
     lobbyLogic.setRooms(rooms)
     console.log('serverToLobby - got available rooms')

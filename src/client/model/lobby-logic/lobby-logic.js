@@ -17,6 +17,7 @@ module.exports.setPlayerList = function(playerList){
 
 module.exports.setLocalPlayer = function(player){
     localPlayer = player
+    localPlayer.isLocal = true
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
@@ -30,8 +31,7 @@ module.exports.removePlayer = function({id}){
 }
 
 module.exports.createRoom = function({roomName}){
-    if(localPlayer && roomName){
-        console.log('heeey')
+    if(localPlayer && roomName && !currentRoom){
         lobbyToServer.createRoom({
             'id': localPlayer.id,
             'roomName': roomName
@@ -51,7 +51,6 @@ module.exports.joinRoom = function({roomId}){
 
 module.exports.leaveRoom = function({roomId, id}){
     if(!roomId && currentRoom){
-        console.log('first')
         lobbyToServer.leaveRoom(currentRoom)
         currentRoom = null
         gameLogic.killGame()
@@ -60,7 +59,6 @@ module.exports.leaveRoom = function({roomId, id}){
             currentRoom = null
             gameLogic.killGame()
         }else{
-            console.log('bad')
             currentRoom.removePlayer(id)
         }
     }
@@ -70,6 +68,8 @@ module.exports.leaveRoom = function({roomId, id}){
 
 module.exports.setCurrentRoom = function(room){
     currentRoom = room
+    currentRoom.angle = gameLogic.initGame()
+    gameLogic.addPlayer(localPlayer)
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
@@ -93,9 +93,8 @@ module.exports.getState = function(){
 
 module.exports.startGame = function(){
     if(currentRoom){
-        let startAngle = gameLogic.initGame()
-        lobbyToServer.startGame({angle: startAngle, roomId: currentRoom.roomId, id: localPlayer.id})
-        console.log(`lobbyLogic - startGame ${startAngle}`)
+        lobbyToServer.startGame({angle: currentRoom.angle, roomId: currentRoom.roomId, id: localPlayer.id})
+        console.log(`lobbyLogic - startGame ${currentRoom.angle}`)
     }
 }
 

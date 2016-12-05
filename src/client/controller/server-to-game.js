@@ -5,8 +5,14 @@ var gameLogic = require(props.gameLogicPath())
 
 console.log('serverToGame required')
 
-socket.on(eventsEnum.playerStateUpdate, (playerStateArray)=>{
-    console.log('playerStateUpdate')
+socket.on(eventsEnum.playerStateUpdate, (state)=>{
+    console.log(state)
+    //console.log('playerStateUpdate')
     for(let p of playerStateArray)
     gameLogic.playerStateUpdate(p)
+})
+
+socket.on(eventsEnum.startGame, ({angle, roomId})=>{
+    console.log(`serverToGame - startGame --- ${angle}`)
+    if(roomId !== -1) gameLogic.startGame({'angle': angle})
 })

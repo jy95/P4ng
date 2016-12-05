@@ -4,7 +4,7 @@
         "EAST" : 1,
         "SOUTH": 2,
         "WEST": 3,
-        "fieldWidth": 500
+        "FIELD_WIDTH": 500
     },
     "p4ngModules":{
         "eventsEnum": "./events.js",
