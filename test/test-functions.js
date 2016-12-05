@@ -189,7 +189,7 @@ module.exports = {
     
     RageExit : function (socketRageExit, socketAnotherPlayer , playerJson , callback) {
 
-        socketRageExit.emit('disconnect');
+        socketRageExit.disconnect();
 
         try {
 

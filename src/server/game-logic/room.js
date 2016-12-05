@@ -51,7 +51,7 @@ Room.prototype.startGame = function(playerId,callback) {
 Room.prototype.leaveRoom = function(player, callback) {
 
     // find the index of this player in players array
-    let index = this._findPlayer(player);
+    let index = this.findPlayer(player);
 
     // check index
 
@@ -108,17 +108,18 @@ Room.prototype.listAllPlayer = function(callback) {
     });
 };
 
+
 /**
- * Return index of player
- * @param player
+ * Checks if player exists in this room
+ * Returns -1 if not.
  */
-Room.prototype._findPlayer = function(player) {
+Room.prototype.findPlayer = function(player) {
     let index = -1;
-    this.players.forEach( (value,key) => {
-        if (  ( (value.user).id ) === player.id ) {
+    for ( let [key,value] of this.players ) {
+        if (  value.user.id === player.id ) {
             index = key;
         }
-    });
+    }
     return index;
 };
 
