@@ -72,7 +72,7 @@ module.exports = {
                     }
                 }
             });
-        }   
+        } 
     },
 
     checkUserCredentials : function (data,callback){
@@ -156,6 +156,10 @@ module.exports = {
             }
         );
 
+    },
+
+    closeConnection : function(){
+        db.close();
     }
 
 

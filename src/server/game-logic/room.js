@@ -15,7 +15,6 @@ function Room(playerId,gameId,roomName) {
     this.game.onUpdate = function () {
 
         let playerState = this.game.getPlayerState();
-
         // envoi de ce playerState à tous les joueurs (event => playerStateUpdate)
         this.emitter.emit(eventEnum.gameStateUpdate ,  playerState );
 

@@ -44,6 +44,7 @@ module.exports.listen = function () {
             else{
                 res.status(200).send('Successfully created');
             }
+            mongoDb.closeConnection();
         });
     });
 
@@ -55,6 +56,7 @@ module.exports.listen = function () {
             else{
                 res.status(200).send(user);
             }
+            mongoDb.closeConnection();
         });
     });
 
