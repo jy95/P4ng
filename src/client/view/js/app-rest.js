@@ -1,3 +1,5 @@
+const props = require('../../../properties-loader.js').socketProps;
+
 var submitCreateAccountForm = document.getElementById('submitCreateAccountForm');
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
 var usernameCreateAccountForm = document.getElementById('usernameCreateAccountForm');
@@ -92,7 +94,7 @@ function registerUser(username, email, pwd){
         }
     };
 
-    xmlhttp.open("POST", "http://localhost:8080/registerUser");
+    xmlhttp.open("POST", props.url + ":" + props.port + "/registerUser");
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.send(JSON.stringify({username: username, pwd: pwd, email: email}));
 
@@ -118,7 +120,7 @@ function authenticate(email, pwd){
         }
     };
 
-    xmlhttp.open("POST", "http://localhost:8080/checkUserCredentials");
+    xmlhttp.open("POST", props.url + ":" + props.port + "/checkUserCredentials");
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.send(JSON.stringify({pwd: pwd, email: email}));
 

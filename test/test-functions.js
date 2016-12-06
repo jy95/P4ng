@@ -212,6 +212,21 @@ module.exports = {
             callback(err,null);
         }
 
+    },
+
+    NewMaster : function (socket,playerJson,callback) {
+
+        try {
+            socket.on(eventEnum.newMaster, function (data) {
+                assert.equals(data.roomId,playerJson.roomId,"Not Same RoomId");
+                assert.equals(playerJson.id,data.id,"Not the expected Master Id");
+
+            });
+
+            callback(null);
+        } catch (err) {
+            callback(err);
+        }
     }
 
 };

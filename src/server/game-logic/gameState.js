@@ -45,10 +45,11 @@ Game.prototype.updatePlayers = function({players}){
 
 Game.prototype.getPlayerState = function(){
     let playerState = {};
-    playerState.roomId = this.roomId;
-    playerState.players = {};
     for(let id in this.players){
-        playerState.players[id] = this.players[id].shift();
+        let player = this.players[id].shift();
+        if(player !== undefined){
+             playerState[id] = player.position;
+        }    
     }
     return playerState;
 
