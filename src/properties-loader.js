@@ -1,5 +1,7 @@
 const Path = require('path')
-var props = require('./properties.json')
+process.argv.forEach(function(val, i){console.log(`${i}: ${val}`)})
+var propertiesPath = process.argv[2]
+var props = require(propertiesPath ? propertiesPath : './properties.json')
 var callsite = require('callsite')
 
 module.exports.gameConsts = props.gameConsts
