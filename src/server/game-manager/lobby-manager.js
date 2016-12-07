@@ -119,7 +119,7 @@ LobbyManager.prototype.startGame = function (socket,data,callback) {
         switch(err) {
             case null :
 
-                self.socketManager.broadcastMessageInRoom(self.socketsInsideARoom(),
+                self.socketManager.broadcastMessageInRoom(self.socketsInsideARoom(data.roomId),
                     eventEnum.startGame, {id: data.id, roomId: data.roomId, angle: answer} );
                 callback(null);
                 break;
