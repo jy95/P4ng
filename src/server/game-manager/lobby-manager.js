@@ -241,8 +241,10 @@ LobbyManager.prototype.endGame = function (socket,callback) {
 
 LobbyManager.prototype.gameStateUpdate = function (data, callback) {
 
+    let self = this;
+
     this.socketsInsideARoom(data.roomId , function (sockets) {
-        this.socketManager.broadcastMessageInRoom(sockets, eventEnum.playerStateUpdate, data );
+        self.socketManager.broadcastMessageInRoom(sockets, eventEnum.playerStateUpdate, data );
     });
     callback(null);
 };
