@@ -8,7 +8,7 @@ function LobbyManager() {
     // gameLogic Module
     this.gameLogic = new LobbyModule();
     // sockets manager
-    this.socketManager = require("../game-manager/socket-manager.js");
+    this.socketManager = require("./socket-manager.js");
     //  Map [Int, List(Int)] - Key : Socket Id , Value : List of players Id
     this.idToSockets = new Map();
     // Map [Int, Socket] - Key : Player Id , Value : Its socket
@@ -301,6 +301,11 @@ LobbyManager.prototype.removeDisconnectedPlayers = function ( socket , callback)
 
 LobbyManager.prototype.socketsInsideARoom = function (roomId) {
     let room = this.gameLogic.getRoom(roomId);
+
+    if ( room === undefined) {
+        return [];
+    }
+
     let playerIds = [];
     let alreadyVisitedSockets = new Set();
     let playersSockets = [];
