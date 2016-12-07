@@ -93,11 +93,11 @@ Lobby.prototype.startGame = function (data,callback) {
     } else if (room === undefined) {
         callback(new Error("Room doesn't exist "));
     } else {
-        room.startGame(currentPlayer, function (err,angle) {
+        room.startGame(currentPlayer, function (err) {
             if (err) {
                 callback(err);
             } else {
-                callback(null,angle);
+                callback(null,data.angle);
             }
 
         });

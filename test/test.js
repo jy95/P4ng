@@ -620,6 +620,8 @@ describe('Server tests : ' , function () {
                 it('Test n°5 : Should be able to start the game', function (done) {
                     this.timeout(250);
 
+                    player1.angle = 1.3;
+
                     testFunctions.startGame([socket1, socket2], socket1, player1, function (err) {
                         if (err) {
                             done(err);
