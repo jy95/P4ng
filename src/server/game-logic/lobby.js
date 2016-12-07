@@ -171,7 +171,7 @@ Lobby.prototype.playerState = function (data,callback) {
 
 };
 
-Lobby.prototype.endGame = function (IOsockets,socket,callback) {
+Lobby.prototype.endGame = function (socket,callback) {
 
     let room = this.rooms.get( data.roomId );
 
@@ -220,6 +220,10 @@ Lobby.prototype.findRoomsOfPlayers = function (players, callback) {
 
 Lobby.prototype.removeRoom = function (roomId) {
     this.rooms.delete( roomId );
+};
+
+Lobby.prototype.getRoom = function (roomId) {
+    return this.rooms.get(roomId);
 };
 
 module.exports = Lobby;

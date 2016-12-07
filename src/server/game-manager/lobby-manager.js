@@ -15,21 +15,18 @@ function LobbyManager() {
     this.playersToSocket = new Map();
 }
 
-LobbyManager.prototype.joinRoom = function(IOsockets,socket,data,callback) {
+LobbyManager.prototype.joinRoom = function(socket,data,callback) {
 
     let self = this;
 
-    this.gameLogic.joinRoom(data, function (err,json) {
+    self.gameLogic.joinRoom(data, function (err,json) {
 
         switch(err) {
 
             case null :
 
-                // add the player inside the room ( Socket part )
-                self.socketManager.registerNewPlayerInsideARoom(socket, data.roomId);
-
                 // notify all the player that new player is registered
-                self.socketManager.broadcastMessageInRoom(IOsockets,data.roomId ,eventEnum.joinRoom,data);
+                self.socketManager.broadcastMessageInRoom(self.socketsInsideARoom(data.roomId) ,eventEnum.joinRoom,data);
 
                 // sends to new player an array of players
                 self.socketManager.sendMessage(socket, data.roomId ,eventEnum.ListEnrolledPlayers,json);
@@ -47,10 +44,10 @@ LobbyManager.prototype.joinRoom = function(IOsockets,socket,data,callback) {
 
 };
 
-LobbyManager.prototype.newPlayer = function (IOsockets,socket,player,callback) {
+LobbyManager.prototype.newPlayer = function (socket,player,callback) {
 
     let self = this;
-    this.gameLogic.newPlayer(player, function (err,data)  {
+    self.gameLogic.newPlayer(player, function (err,data)  {
 
         switch(err) {
             case null :
@@ -83,7 +80,7 @@ LobbyManager.prototype.newPlayer = function (IOsockets,socket,player,callback) {
 
 };
 
-LobbyManager.prototype.createRoom = function (IOsockets,socket,data,callback) {
+LobbyManager.prototype.createRoom = function (socket,data,callback) {
 
     let self = this;
 
@@ -97,7 +94,7 @@ LobbyManager.prototype.createRoom = function (IOsockets,socket,data,callback) {
 
                 // add creator in this room player
 
-                self.joinRoom(IOsockets,socket,answer, function (err) {
+                self.joinRoom(socket,answer, function (err) {
                     callback(err);
                 });
                 break;
@@ -113,16 +110,16 @@ LobbyManager.prototype.createRoom = function (IOsockets,socket,data,callback) {
 
 };
 
-LobbyManager.prototype.startGame = function (IOsockets,socket,data,callback) {
+LobbyManager.prototype.startGame = function (socket,data,callback) {
 
     let self = this;
 
-    this.gameLogic.startGame( data, function (err,answer) {
+    self.gameLogic.startGame( data, function (err,answer) {
 
         switch(err) {
             case null :
 
-                self.socketManager.broadcastMessageInRoom(IOsockets, data.gameId ,
+                self.socketManager.broadcastMessageInRoom(self.socketsInsideARoom(),
                     eventEnum.startGame, {id: data.id, roomId: data.roomId, angle: answer} );
                 callback(null);
                 break;
@@ -137,11 +134,11 @@ LobbyManager.prototype.startGame = function (IOsockets,socket,data,callback) {
 
 };
 
-LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
+LobbyManager.prototype.leaveRoom = function (socket,data,callback) {
 
     let self = this;
 
-    this.gameLogic.leaveRoom(data, (err, newMasterRequired , hasEnoughPlayers, lastPlayerQuit) => {
+    self.gameLogic.leaveRoom(data, (err, newMasterRequired , hasEnoughPlayers, lastPlayerQuit) => {
 
         switch(err) {
             case null:
@@ -153,21 +150,35 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
                     self.gameLogic.electNewMaster( data.roomId , (error,userId, message) => {
                         if (!error) {
                             let newMasterSocket = self.playersToSocket.get(userId);
-                            self.socketManager.sendMessage(newMasterSocket,eventEnum.NewMaster, message);
+                            self.socketManager.sendMessage(newMasterSocket,eventEnum.newMaster, message);
                         }
                     });
 
                 }
 
-                // send data
-                self.socketManager.sendMessage(socket,eventEnum.leaveRoom , data);
+                // send data +  prevent another players in room
+                self.socketManager.broadcastMessageInRoom(self.socketsInsideARoom(data.roomId) , eventEnum.leaveRoom,  data );
 
-                // remove player from room , if required :
+                // remove socket from room , if required :
+                if ( self.idToSockets.has(socket.id ) ) {
 
-                self.socketManager.removePlayerFromRoom(socket,data.roomId);
+                    // removes player ID from idToSockets
 
-                // prevent another players in room
-                self.socketManager.broadcastMessageInRoomWithoutMe(data.roomId , socket, eventEnum.leaveRoom,  data );
+                    let previousEntry = self.idToSockets.get(socket.id);
+                    let index = previousEntry.players.indexOf(data.id);
+
+                    if (index >= 0) {
+                        previousEntry.players.splice( index, 1 );
+                    }
+
+                    // set changes
+                    if ( previousEntry.players.length == 0) {
+                        self.idToSockets.delete(socket.id);
+                    } else {
+                        self.idToSockets.set(socket.id , previousEntry );
+                    }
+
+                }
 
                 if ( lastPlayerQuit) {
 
@@ -187,7 +198,7 @@ LobbyManager.prototype.leaveRoom = function (IOsockets,socket,data,callback) {
 
 };
 
-LobbyManager.prototype.getAvailableRooms = function (IOsockets,socket,callback) {
+LobbyManager.prototype.getAvailableRooms = function (socket,callback) {
 
     let self = this;
 
@@ -208,7 +219,7 @@ LobbyManager.prototype.getAvailableRooms = function (IOsockets,socket,callback) 
     });
 };
 
-LobbyManager.prototype.playerState = function (IOsockets,socket,data,callback) {
+LobbyManager.prototype.playerState = function (socket,data,callback) {
 
     this.gameLogic.playerState(data, function (err,answer) {
 
@@ -218,16 +229,17 @@ LobbyManager.prototype.playerState = function (IOsockets,socket,data,callback) {
 
 };
 
-LobbyManager.prototype.endGame = function (IOsockets,socket,callback) {
+LobbyManager.prototype.endGame = function (socket,callback) {
 
 };
 
-LobbyManager.prototype.gameStateUpdate = function (IOsockets, data, callback) {
-    this.socketManager.broadcastMessageInRoom(IOsockets, data.roomId , eventEnum.playerStateUpdate, data );
+LobbyManager.prototype.gameStateUpdate = function (data, callback) {
+
+    this.socketManager.broadcastMessageInRoom(this.socketsInsideARoom(data.roomId), eventEnum.playerStateUpdate, data );
     callback(null);
 };
 
-LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket , callback) {
+LobbyManager.prototype.removeDisconnectedPlayers = function ( socket , callback) {
 
     // get the players Id from socket Id
     let playersStruct = this.idToSockets.get(socket.id);
@@ -253,28 +265,12 @@ LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket ,
 
                         for ( let [key, value] of answer) {
 
-                            self.leaveRoom(IOsockets,socket, { roomId : value , id : key} , function (anotherErr)  {
+                            self.leaveRoom(socket, { roomId : value , id : key} , function (anotherErr)  {
 
                                 switch(anotherErr) {
 
                                     // no problem sir :)
                                     case null :
-
-                                        // remove the coward player id from idToSockets
-
-                                        let previousEntry = self.idToSockets.get(socket.id);
-                                        let index = previousEntry.players.indexOf(key);
-
-                                        if (index >= 0) {
-                                            previousEntry.players.splice( index, 1 );
-                                        }
-
-                                        // set changes
-                                        if ( previousEntry.players.length == 0) {
-                                            self.idToSockets.delete(socket.id);
-                                        } else {
-                                            self.idToSockets.set(socket.id , previousEntry );
-                                        }
 
                                         // remove player from lobby players
                                         self.gameLogic.removePlayer(key);
@@ -301,6 +297,39 @@ LobbyManager.prototype.removeDisconnectedPlayers = function (IOsockets, socket ,
             });
     }
 
+};
+
+LobbyManager.prototype.socketsInsideARoom = function (roomId) {
+    let room = this.gameLogic.getRoom(roomId);
+    let playerIds = [];
+    let alreadyVisitedSockets = new Set();
+    let playersSockets = [];
+
+    let self = this;
+
+    room.listAllPlayer( function (err,data) {
+        // neverExpected to be here
+        if (!err) {
+
+            // get playersId
+            data.roomPlayers.forEach( function(playerIndex) {
+                playerIds.push(playerIndex.playerId);
+            });
+
+            // get sockets from players Id
+            playerIds.forEach(function (playerId) {
+
+                let key = self.playersToSocket.get(playerId);
+
+                if ( ! alreadyVisitedSockets.has(key)) {
+                    playersSockets.push(key);
+                    alreadyVisitedSockets.add(key);
+                }
+
+            });
+            return playersSockets;
+        }
+    });
 };
 
 module.exports = LobbyManager;

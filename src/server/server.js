@@ -66,14 +66,14 @@ module.exports.listen = function () {
 
     io.on("connection", function (socket) {
 
-        require("./server-logic/routes.js").gestionSocket(socket,io.sockets);
+        require("./server-logic/routes.js").gestionSocket(socket);
     });
 
     let gameEventEmitter = require("./server-logic/gameEventEmitter.js").commonEmitter;
 
     gameEventEmitter.on( eventsEnum.gameStateUpdate, function (data) {
 
-        require("./server-logic/routes.js").gameStateUpdate(data,io.sockets);
+        require("./server-logic/routes.js").gameStateUpdate(data);
 
     });
 

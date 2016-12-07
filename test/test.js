@@ -11,7 +11,6 @@ let player4 = {name: "CHEATER"};
 
 let socket1;
 let socket2;
-let socket3;
 let roomId1;
 let playersRoomJson1;
 
@@ -241,7 +240,7 @@ describe('Server tests : ' , function () {
             // runs after each test in this block
 
             // removes previously listeners to this two sockets (seen in anothers test)
-            for (let socketTest of [socket1,socket2,socket3] ) {
+            for (let socketTest of [socket1,socket2] ) {
                 if (socketTest !== undefined) {
                     socketTest.removeAllListeners();
                 }
@@ -283,6 +282,37 @@ describe('Server tests : ' , function () {
                 });
 
             });
+
+            it('Test n°3 : Should be able to register a another new user : Player 3 (on socket 2)', function (done) {
+                this.timeout(250);
+
+                testFunctions.createPlayer(socket2, player3, function (err, data) {
+
+                    if (err) {
+                        done(err);
+                    } else {
+                        player3.id = data.id;
+                        done();
+                    }
+
+                });
+
+            });
+
+            it('Test n°4 : Should be able to register a new user: Player 4 (on socket 1)', function (done) {
+                this.timeout(250);
+
+                testFunctions.createPlayer(socket1, player4, function (err, data) {
+
+                    if (!err) {
+                        player4.id = data.id;
+                        done();
+                    } else {
+                        done(err);
+                    }
+                });
+
+            });
         });
 
         describe('Test Cases n°2 : Room test cases : ', function () {
@@ -291,9 +321,7 @@ describe('Server tests : ' , function () {
                 it('Test n°1 : Should not be able to create a room', function (done) {
                     this.timeout(400);
 
-                    let socketTest = io.connect('http://localhost:8080');
-
-                    testFunctions.createRoom(socketTest, { id : -1 ,roomName : "TEST" , roomId : -1} , function (err, data) {
+                    testFunctions.createRoom(socket1, { id : -1 ,roomName : "TEST" , roomId : -1} , function (err, data) {
 
                         if (err) {
                             done();
@@ -422,37 +450,24 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°4 : Should be able for another player to join a room : Player3 joins Player1 room', function (done) {
+                it('Test n°4 : Should be able for another player to join a room : Player3 on Player 2 socket joins Player1 room', function (done) {
                     this.timeout(500);
 
-                    socket3 = io.connect('http://localhost:8080');
+                    player3.roomId = roomId1;
+                    playersRoomJson1.push(
+                        {
+                            "playerName": player2.name,
+                            "playerId": player2.id,
+                            "playerNumber": 1
+                        }
+                    );
 
-                    testFunctions.createPlayer(socket3, player3, function (err, data) {
-
+                    testFunctions.joinRoom(socket2, player3, playersRoomJson1, function (err) {
                         if (err) {
                             done(err);
                         } else {
-                            player3.id = data.id;
-
-                            player3.roomId = roomId1;
-                            playersRoomJson1.push(
-                                {
-                                    "playerName": player2.name,
-                                    "playerId": player2.id,
-                                    "playerNumber": 1
-                                }
-                            );
-
-                            testFunctions.joinRoom(socket3, player3, playersRoomJson1, function (err) {
-                                if (err) {
-                                    done(err);
-                                } else {
-                                    done();
-                                }
-                            });
-
+                            done();
                         }
-
                     });
 
                 });

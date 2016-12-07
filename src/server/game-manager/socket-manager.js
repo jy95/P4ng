@@ -1,25 +1,25 @@
+let async = require("async");
+
 module.exports = {
+
     sendMessage: function (socket, event, message) {
         socket.emit(event, message);
     },
 
-    broadcastMessageInRoomWithoutMe: function (roomId, socket, event, data) {
-        socket.broadcast.to('Room' + roomId).emit(event, data );
-    },
+    broadcastMessageInRoom : function (sockets, roomId, event, data) {
 
-    broadcastMessageInRoom : function (IOsockets, roomId, event, data) {
-        IOsockets.in('Room' + roomId).emit(event, data );
-    },
+        async.forEach(sockets, function (socket, callback){
+            socket.emit(event, data );
+            callback(); // tell async that the iterator has completed
+            console.log("TEST");
+        }, function(err) {
 
+        });
+    }
+    /*
+    For future use
     broadcastMessageToEveryone : function (IOsockets, event, data) {
         IOsockets.emit(event, data );
     },
-    
-    registerNewPlayerInsideARoom : function (socket,roomId) {
-        socket.join('Room' + roomId);
-    },
-    
-    removePlayerFromRoom : function (socket,roomId) {
-        socket.leave('Room'+  roomId);
-    }
+    */
 };

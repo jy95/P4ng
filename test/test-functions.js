@@ -4,6 +4,7 @@
 let eventEnum = require("../src/events.js");
 const assert = require('assert');
 
+
 /**
  * Wrapper-Class for done-function
  * @param {Function} fn
@@ -115,22 +116,20 @@ module.exports = {
         masterSocket.emit(eventEnum.startGame , masterJson );
 
         try {
-
-            sockets.forEach( (socket) => {
-
-                socket.on(eventEnum.startGame , function (data) {
-                    
+            sockets.forEach( function(socket) {
+                socket.on(eventEnum, function (data) {
+                    console.log(data);
                     assert.deepEqual(data.id, masterJson.id, "Wrong User Id");
                     assert.deepEqual(data.roomId, masterJson.roomId, "Wrong Room Id");
-                    assert.notEqual(data.angle, undefined , "No angle");
-
+                    assert.notEqual(data.angle, undefined, "No angle");
                 });
-
             });
             callback(null);
         } catch (err) {
             callback(err);
         }
+
+
     },
 
     leaveRoom : function(socketRageExit, playerJson , anotherPlayer, callback) {

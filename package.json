@@ -4,6 +4,7 @@
   "description": "A realtime Node.js pong game",
   "main": "src/app.js",
   "dependencies": {
+    "async": "^2.1.4",
     "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
     "callsite": "^1.0.0",
