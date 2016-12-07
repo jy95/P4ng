@@ -6,7 +6,7 @@ module.exports = {
         socket.emit(event, message);
     },
 
-    broadcastMessageInRoom : function (sockets, roomId, event, data) {
+    broadcastMessageInRoom : function (sockets, event, data) {
 
         async.forEach(sockets, function (socket, callback){
             socket.emit(event, data );
