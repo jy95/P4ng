@@ -1,4 +1,9 @@
 const props = require('../../../properties-loader.js').socketProps;
+const lobbyToServerPath = require('../../../properties-loader.js').lobbyToServerPath();
+
+var newPlayer = require(lobbyToServerPath).newPlayer;
+
+console.log(newPlayer);
 
 var submitCreateAccountForm = document.getElementById('submitCreateAccountForm');
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
@@ -86,7 +91,11 @@ function registerUser(username, email, pwd){
         if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
            if (xmlhttp.status == 200) {
                alertCreateAccountForm.innerText =xmlhttp.responseText;
-               //should change the class of alertCreateAccountForm to display it in a positive color
+               displayLobby();
+               var user = {};
+               user.name = username;
+               newPlayer(user);
+
            }
            else {
                alertCreateAccountForm.innerText =xmlhttp.responseText;
@@ -110,9 +119,10 @@ function authenticate(email, pwd){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
            if (xmlhttp.status == 200) {
-                document.getElementById('formsContainer').className = 'closed';
-                document.getElementById('lobbyContainer').className = 'open';
-                console.log(JSON.parse(xmlhttp.responseText));
+               displayLobby();
+               var user = JSON.parse(xmlhttp.responseText);
+               user.name = user.username;
+               newPlayer(user);
            }
            else {
                alertAuthenticateForm.innerText =xmlhttp.responseText;
@@ -137,4 +147,9 @@ function isEmpty(s){
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
+}
+
+function displayLobby(){
+     document.getElementById('formsContainer').className = 'closed';
+     document.getElementById('lobbyContainer').className = 'open';
 }
