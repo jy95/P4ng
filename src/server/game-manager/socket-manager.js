@@ -11,7 +11,6 @@ module.exports = {
         async.forEach(sockets, function (socket, callback){
             socket.emit(event, data );
             callback(); // tell async that the iterator has completed
-            console.log("TEST");
         }, function(err) {
 
         });
