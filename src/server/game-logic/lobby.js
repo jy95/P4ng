@@ -171,7 +171,7 @@ Lobby.prototype.playerState = function (data,callback) {
 
 };
 
-Lobby.prototype.endGame = function (socket,callback) {
+Lobby.prototype.endGame = function (data,callback) {
 
     let room = this.rooms.get( data.roomId );
 
@@ -219,7 +219,14 @@ Lobby.prototype.findRoomsOfPlayers = function (players, callback) {
 };
 
 Lobby.prototype.removeRoom = function (roomId) {
+    // stop the game if still running
+    this.rooms.get(roomId).stopGame();
     this.rooms.delete( roomId );
+};
+
+Lobby.prototype.stopGame = function (roomId) {
+    // stop the game if still running
+    this.rooms.get(roomId).stopGame();
 };
 
 Lobby.prototype.getRoom = function (roomId) {

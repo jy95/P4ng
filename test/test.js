@@ -471,47 +471,43 @@ describe('Server tests : ' , function () {
                     });
 
                 });
-                /*
-                it('Test n°5 : Should be able for last player to join a room', function (done) {
-                    this.timeout(500);
 
-                    // player 4 uses socket2;
 
-                    testFunctions.createPlayer(socket2, player4, function (err, data) {
-
-                        if (err) {
-                            done(err);
-                        } else {
-                            console.log("DFP");
-                            player4.id = data.id;
-
-                            player4.roomId = roomId1;
-                            playersRoomJson1.push(
-                                {
-                                    "playerName": player3.name,
-                                    "playerId": player3.id,
-                                    "playerNumber": 2
-                                }
-                            );
-
-                            testFunctions.joinRoom(socket2, player4, playersRoomJson1, function (err) {
-                                if (err) {
-                                    done(err);
-                                } else {
-                                    done();
-                                }
-                            });
-
-                        }
-
-                    });
-                });
-                */
             });
 
             describe("Test case n°2 D : Leave Room", function () {
 
-                it('Test n°1 : Should be able to leave the game' , function (done) {
+                it('Test n°1 : Should not be able to leave the game', function (done) {
+                    this.timeout(250);
+
+                    let playerTest = { id : -1};
+
+                    testFunctions.leaveRoom(socket2,playerTest,socket1, function (err) {
+                        if (err) {
+                            done();
+                        } else {
+                            done(err);
+                        }
+                    });
+
+                });
+
+                it('Test n°2 : Should not be able to leave the game', function (done) {
+                    this.timeout(250);
+
+                    let playerTest = { id : player2.id , roomId : -1};
+
+                    testFunctions.leaveRoom(socket2,playerTest,socket1, function (err) {
+                        if (err) {
+                            done();
+                        } else {
+                            done(err);
+                        }
+                    });
+
+                });
+
+                it('Test n°3 : Should be able to leave the game' , function (done) {
                     this.timeout(1000);
 
                     let socketTest = io.connect('http://localhost:8080');
@@ -553,6 +549,7 @@ describe('Server tests : ' , function () {
                     });
 
                 });
+
 
             });
 
@@ -634,6 +631,7 @@ describe('Server tests : ' , function () {
             });
 
             describe("Test case n°3 B : GameState", function () {
+
                 it('Test n°1 : Should be able to receive GameState ', function (done) {
                     this.timeout(350);
 
@@ -658,9 +656,34 @@ describe('Server tests : ' , function () {
                     });
 
                 });
+
+                it('Test n°2 : Should not be able to receive GameState ', function (done) {
+                    this.timeout(350);
+
+                    let keyPlayer1 = player1.id.toString();
+                    let keyPlayer2 = player2.id.toString();
+
+                    let someScoreStuff = {
+                        roomId : -1,
+                        players : {
+                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
+                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18}
+                        }
+                    };
+
+
+                    testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
+                        if (err) {
+                            done();
+                        } else {
+                            done(err);
+                        }
+                    });
+
+                });
             });
 
-            describe("Test case n°3 C : Leave Game", function () {
+            describe("Test case n°3 C : Misc Test cases", function () {
 
 
                 it('Test n°1 : Should be able to rage exit ', function (done) {
@@ -678,6 +701,30 @@ describe('Server tests : ' , function () {
 
             });
 
+            describe("Test case n°4 D : End Game", function () {
+                it("Test n°1 : Wrong room", function (done) {
+                    this.timeout(250);
+
+                    let keyPlayer1 = player1.id.toString();
+                    let keyPlayer2 = player2.id.toString();
+
+                    let someScoreStuff = {
+                        roomId : roomId1,
+                        players : {
+                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
+                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18}
+                        }
+                    };
+
+                    testFunctions.EndGame(socket2,someScoreStuff, function (err) {
+                       if (err) {
+                         done();
+                       } else {
+                           done(err);
+                       }
+                    });
+                });
+            });
 
         });
 

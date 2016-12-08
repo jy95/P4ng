@@ -235,8 +235,10 @@ LobbyManager.prototype.playerState = function (socket,data,callback) {
 
 };
 
-LobbyManager.prototype.endGame = function (socket,callback) {
-
+LobbyManager.prototype.endGame = function (socket,data,callback) {
+    this.gameLogic.endGame(data, function (err) {
+        callback(err ? err : null);
+    });
 };
 
 LobbyManager.prototype.gameStateUpdate = function (data, callback) {

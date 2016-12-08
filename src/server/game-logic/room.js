@@ -142,10 +142,17 @@ Room.prototype.playerState = function(data, callback){
 };
 
 Room.prototype.endGame = function (data,callback) {
-
+    this.game.updatePlayers(data.players);
+    callback(null);
 };
 
+Room.prototype.stopGame = function () {
+    if (this.isStarted && this.isFinished) {
+        this.game.stop();
+        this.isFinished = true;
+    }
 
+};
 
 
 module.exports = Room;
