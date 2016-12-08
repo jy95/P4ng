@@ -5,7 +5,6 @@ let Game = function (roomId,fps) {
     this.roomId = roomId;
     this.players = {};
     this.loopFunction;
-    this.gameEventEmitter = require("../server-logic/gameEventEmitter.js").commonEmitter;
     this.onUpdate = function () {
 
     };
@@ -41,6 +40,12 @@ Game.prototype.updatePlayers = function({players}){
     for(let id in players){
         this.players[id].push(players[id]);
     }
+};
+
+Game.prototype.endGame = function (callback) {
+    // emettre event quand on a tout recu
+    // null si rien
+    callback(null);
 };
 
 Game.prototype.getPlayerState = function(){

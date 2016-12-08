@@ -42,6 +42,7 @@ module.exports.listen = function () {
                 res.status(409).send(err.message);
             }
             else{
+                // tell the server that SocketID X is player PK Y
                 res.status(200).send('Successfully created');
             }
             mongoDb.closeConnection();
@@ -55,6 +56,7 @@ module.exports.listen = function () {
             }
             else{
                 res.status(200).send(user);
+                // tell the server that SocketID X is player PK Y
             }
             mongoDb.closeConnection();
         });
@@ -66,6 +68,9 @@ module.exports.listen = function () {
 
     io.on("connection", function (socket) {
 
+        // send client its socket ID
+        socket.emit(eventsEnum.gotSocketId , socket.id);
+
         require("./server-logic/routes.js").gestionSocket(socket);
     });
 
@@ -74,6 +79,60 @@ module.exports.listen = function () {
     gameEventEmitter.on( eventsEnum.gameStateUpdate, function (data) {
 
         require("./server-logic/routes.js").gameStateUpdate(data);
+
+    });
+
+    gameEventEmitter.on( eventsEnum.updateScores, function (data) {
+
+        require("./server-logic/routes.js").getRequiredDataForScore( function (lobbyData) {
+
+            let sockets = new Set();
+            let bestRecordScore = -1;
+            let bestRecordUserKey;
+            let bestRecordSocketKey;
+
+            // get the sockets of all players from this game
+            for ( let [key,value] of data.players ) {
+
+                // store the user socket
+                let mySocket = lobbyData.playersToSocket.get(key);
+                sockets.add(mySocket);
+
+                // check if current player has the best score
+                if ( bestRecordScore < value.score) {
+                    bestRecordScore = value.score;
+                    bestRecordUserKey = key;
+                    bestRecordSocketKey = mySocket.id;
+                }
+
+            }
+
+            // check if there is a winner
+            // if there are two or more players on the same socket ,
+            // => No winner
+            // Resume : the winner should be the first user on the socket
+            if ( (lobbyData.idToSockets.get(bestRecordSocketKey).players)[0] === bestRecordUserKey ) {
+
+                let UserIdDatabase = lobbyData.socketIdtoIdDb.get(bestRecordSocketKey);
+
+                // mongoDb , fais ton boulot par la fonction : updateScoreAndAddVictory
+
+            }
+
+            // Others players get their participation incremented :)
+            for ( let key of monSet.keys() ) {
+
+                // except the one who probably wins
+                if (key !== bestRecordSocketKey) {
+
+                    let UserIdDatabase = lobbyData.socketIdtoIdDb.get(key);
+
+                    // mongoDb , fais ton boulot par la fonction : updateScore
+                }
+
+            }
+
+        });
 
     });
 

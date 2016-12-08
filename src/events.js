@@ -131,5 +131,10 @@ module.exports = {
     /*
         Event fired when the socket id of the client is received
      */
-    gotSocketId : "gotSocketId"
+    gotSocketId : "gotSocketId",
+
+    /*
+        Event fired when the server wants to update players score on the database
+     */
+    updateScores : "updateScores"
 };
