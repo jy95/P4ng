@@ -2,6 +2,7 @@ var props = require('../../properties-loader.js')
 var eventsEnum = require(props.eventsEnumPath())
 var socket = require(props.socketPath())
 var gameLogic = require(props.gameLogicPath())
+var lobbyLogic = require(props.lobbyLogicPath())
 
 console.log('serverToGame required')
 
