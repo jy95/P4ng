@@ -28,7 +28,7 @@ module.exports.addPlayer = function(player){
 
 module.exports.startGame = function({angle}){
     if(currentGame && !currentGame.isFinished){
-        console.log('gameogic - startGame')
+        console.log('gameLogic - startGame')
         currentGame.ball.direction = angle
         intervalId = setInterval(function(){
             currentGame.update()

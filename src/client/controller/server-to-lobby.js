@@ -9,10 +9,6 @@ socket.on(eventsEnum.gotAvailableRooms, (rooms)=>{
     lobbyLogic.setRooms(rooms)
     console.log('serverToLobby - got available rooms')
 })
-socket.on(eventsEnum.getAvailableRooms, (rooms)=>{
-    lobbyLogic.setRooms(rooms)
-    console.log('serverToLobby - got available rooms')
-})
 
 socket.on(eventsEnum.newPlayer, (player)=>{
     lobbyLogic.setLocalPlayer(player)
@@ -24,9 +20,10 @@ socket.on(eventsEnum.createRoom, (room)=>{
     console.log('serverToLobby - create room')
 })
 
-socket.on(eventsEnum.joinRoom, (room)=>{
-    lobbyLogic.setCurrentRoom(room)
+socket.on(eventsEnum.joinRoom, (data)=>{
     console.log('serverToLobby - join room')
+    console.log(data)
+    lobbyLogic.setCurrentRoom(data)
 })
 
 socket.on(eventsEnum.leaveRoom, ({id, roomId})=>{

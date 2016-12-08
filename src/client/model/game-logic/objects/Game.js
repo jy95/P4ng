@@ -38,6 +38,9 @@ function PongGame ({ballDirection, id}){
 }
 
 PongGame.prototype.addPlayer = function (player){
+    // if the player doesn't have a side, we give him a free one
+    if(player.side === undefined) player.side = this.sides.length
+
     // we give the player a paddle
     var paddle = new Paddle({
         side: player.side,
@@ -48,9 +51,6 @@ PongGame.prototype.addPlayer = function (player){
 
     // we store him using his ID in the game list of players
     this.players[player.id] = paddle
-
-    // if the player doesn't have a side, we give him a free one
-    if(player.side === undefined) player.side = this.sides.length
     // then we store his paddle on array storing the sides of the field
     this.sides[player.side] = paddle
 
@@ -61,7 +61,7 @@ PongGame.prototype.update = function (){
     // magically moves only the local players :-O I'm David Blaine yo!
     // (I'm kidding, I used an isLocal boolean in the move method)
     for (let paddle of this.sides)
-        paddle.move()
+    paddle.move()
     // moves the ball
     this.ball.move()
 }
@@ -107,7 +107,7 @@ PongGame.prototype.toJSON = function(){
     var thePlayers = {}
 
     for(let paddle of this.sides)
-        thePlayers[paddle.id] = paddle.toJSON()
+    thePlayers[paddle.id] = paddle.toJSON()
 
     var theBall = this.ball.toJSON()
 

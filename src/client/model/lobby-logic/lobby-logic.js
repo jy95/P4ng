@@ -4,7 +4,8 @@ const eventsEnum = require(props.eventsEnumPath())
 var lobbyToServer = require(props.lobbyToServerPath())
 var gameLogic = require(props.gameLogicPath())
 
-let localPlayer = null
+let localPlayers = null
+let tempLocal = {}
 let remotePlayers = {}
 let currentRoom = null
 let rooms = {}
@@ -41,7 +42,7 @@ module.exports.createRoom = function({roomName}){
     return localPlayer ? 'You need a room name!' : 'You need to create a player!'
 }
 
-module.exports.joinRoom = function({roomId}){
+module.exports.askToJoinRoom = function({roomId}){
     if(localPlayer && roomId)
     lobbyToServer.joinRoom({
         'id': localPlayer.id,
@@ -67,9 +68,17 @@ module.exports.leaveRoom = function({roomId, id}){
 }
 
 module.exports.setCurrentRoom = function(room){
-    currentRoom = room
-    currentRoom.angle = gameLogic.initGame()
-    gameLogic.addPlayer(localPlayer)
+    if(!currentRoom){
+        room.angle = gameLogic.initGame()
+    }
+    currentRoom = room.roomId
+    if(!rooms[currentRoom]){
+        rooms[currentRoom] = room
+        room.roomPlayers = []
+        room.roomPlayers.push(localPlayer)
+    }else{
+        rooms[currentRoom].roomPlayers.push({id: room.id})
+    }
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 

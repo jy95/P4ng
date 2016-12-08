@@ -34,6 +34,6 @@ function addJoinRoomListeners(){
     let rooms = lobbyLogic.getState().rooms
     for(let i in rooms){
         console.log(rooms[i])
-        document.getElementById(rooms[i].roomId).addEventListener('click', function(){lobbyLogic.joinRoom({roomId: rooms[i].roomId})})
+        document.getElementById(rooms[i].roomId).addEventListener('click', function(){lobbyLogic.askToJoinRoom({roomId: rooms[i].roomId})})
     }
 }
