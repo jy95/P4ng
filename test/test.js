@@ -33,7 +33,7 @@ describe('Server tests : ' , function () {
         it('Test n°2 : Should be possible for client to connect on this Server', function (done) {
             this.timeout(250);
 
-            let socket = io.connect('http://localhost:8080');
+            let socket = io.connect(props.socketProps.url+":"+props.socketProps.port);
             socket.on('connect', function (socket) {
                 done();
             });
@@ -54,11 +54,9 @@ describe('Server tests : ' , function () {
                 };
 
                 let options = {
-                    host: 'localhost',
+                    host: props.socketProps.url.replace("http://", ""),
                     path: '/registerUser',
-                    //since we are listening on a custom port, we need to specify it by hand
                     port: props.socketProps.port,
-                    //This is what changes the request to a POST request
                     method: 'POST',
                     headers: {
                         "Content-Type" : "application/json;charset=UTF-8"
@@ -78,17 +76,15 @@ describe('Server tests : ' , function () {
             it("Test n°2 : Should be able to registerUser ", function (done) {
 
                 let data = {
-                    "username": "TEST",
+                    "username": "Jacques",
                     "pwd": "TEST",
                     "email": "TEST@ipl.be"
                 };
 
                 let options = {
-                    host: 'localhost',
+                    host: props.socketProps.url.replace("http://", ""),
                     path: '/registerUser',
-                    //since we are listening on a custom port, we need to specify it by hand
                     port: props.socketProps.port,
-                    //This is what changes the request to a POST request
                     method: 'POST',
                     headers: {
                         "Content-Type" : "application/json;charset=UTF-8"
@@ -114,7 +110,7 @@ describe('Server tests : ' , function () {
                 };
 
                 let options = {
-                    host: 'localhost',
+                    host: props.socketProps.url.replace("http://", ""),
                     path: '/registerUser',
                     //since we are listening on a custom port, we need to specify it by hand
                     port: props.socketProps.port,
@@ -139,7 +135,6 @@ describe('Server tests : ' , function () {
 
         describe("Test Case n°2 : /checkUserCredentials tests", function () {
             it("Test n°1 : Should not be able to /checkUserCredentials : Wrong Email", function (done) {
-                this.timeout(350);
 
                 let data = {
                     "username": "TEST",
@@ -148,11 +143,9 @@ describe('Server tests : ' , function () {
                 };
 
                 let options = {
-                    host: 'localhost',
+                    host: props.socketProps.url.replace("http://", ""),
                     path: '/checkUserCredentials',
-                    //since we are listening on a custom port, we need to specify it by hand
                     port: props.socketProps.port,
-                    //This is what changes the request to a POST request
                     method: 'POST',
                     headers: {
                         "Content-Type" : "application/json;charset=UTF-8"
@@ -169,7 +162,6 @@ describe('Server tests : ' , function () {
             });
 
             it("Test n°2 : Should not be able to /checkUserCredentials : Wrong Password", function (done) {
-                this.timeout(350);
 
                 let data = {
                     "username": "TEST",
@@ -178,11 +170,9 @@ describe('Server tests : ' , function () {
                 };
 
                 let options = {
-                    host: 'localhost',
+                    host: props.socketProps.url.replace("http://", ""),
                     path: '/checkUserCredentials',
-                    //since we are listening on a custom port, we need to specify it by hand
                     port: props.socketProps.port,
-                    //This is what changes the request to a POST request
                     method: 'POST',
                     headers: {
                         "Content-Type" : "application/json;charset=UTF-8"
@@ -199,20 +189,17 @@ describe('Server tests : ' , function () {
             });
 
             it("Test n°2 : Should  be able to /checkUserCredentials", function (done) {
-                this.timeout(350);
 
                 let data = {
-                    "username": "TEST",
+                    "username": "Jacques",
                     "pwd": "TEST",
                     "email": "TEST@ipl.be"
                 };
 
                 let options = {
-                    host: 'localhost',
+                    host: props.socketProps.url.replace("http://", ""),
                     path: '/checkUserCredentials',
-                    //since we are listening on a custom port, we need to specify it by hand
                     port: props.socketProps.port,
-                    //This is what changes the request to a POST request
                     method: 'POST',
                     headers: {
                         "Content-Type" : "application/json;charset=UTF-8"
@@ -248,19 +235,16 @@ describe('Server tests : ' , function () {
 
         describe('Test Cases n°1 : Register user test cases : ', function () {
 
-            it('Test n°1 : Should be able to register a new user: Player 1', function (done) {
-                this.timeout(250);
+            it('Test n°1 : Should be able to register a new user: Player 1 - With sign in', function (done) {
 
-                socket1 = io.connect('http://localhost:8080');
+                socket1 = io.connect(props.socketProps.url+":"+props.socketProps.port);
 
-                testFunctions.createPlayer(socket1, player1, function (err, data) {
+                socket1.emit(eventEnum.SignIn, {email : "TEST@ipl.be",  password : "TEST" } );
 
-                    if (!err) {
-                        player1.id = data.id;
-                        done();
-                    } else {
-                        done(err);
-                    }
+                socket1.on(eventEnum.newPlayer, function (data) {
+                    assert.notDeepEqual(data.id,-1,"Wrong email/passwd");
+                    player1.id = data.id;
+                    done();
                 });
 
             });
@@ -268,7 +252,7 @@ describe('Server tests : ' , function () {
             it('Test n°2 : Should be able to register a another new user : Player 2', function (done) {
                 this.timeout(250);
 
-                socket2 = io.connect('http://localhost:8080');
+                socket2 = io.connect(props.socketProps.url+":"+props.socketProps.port);
                 testFunctions.createPlayer(socket2, player2, function (err, data) {
 
                     if (err) {
@@ -509,7 +493,7 @@ describe('Server tests : ' , function () {
                 it('Test n°3 : Should be able to leave the game' , function (done) {
                     this.timeout(1000);
 
-                    let socketTest = io.connect('http://localhost:8080');
+                    let socketTest = io.connect(props.socketProps.url+":"+props.socketProps.port);
                     let playerTest = {name: "RAGE EXITZ" };
 
                     testFunctions.createPlayer(socketTest, playerTest, function (err, data) {

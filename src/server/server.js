@@ -42,10 +42,9 @@ module.exports.listen = function () {
                 res.status(409).send(err.message);
             }
             else{
-                // tell the server that SocketID X is player PK Y
                 res.status(200).send('Successfully created');
             }
-            mongoDb.closeConnection();
+            //mongoDb.closeConnection(); NE PAS ACTIVER : DANGER
         });
     });
 
@@ -56,21 +55,34 @@ module.exports.listen = function () {
             }
             else{
                 res.status(200).send(user);
-                // tell the server that SocketID X is player PK Y
             }
-            mongoDb.closeConnection();
+            //mongoDb.closeConnection(); NE PAS ACTIVER : DANGER
         });
     });
 
+    /*
     app.get("/scores" , function (req,res) {
 
     });
+    */
 
     io.on("connection", function (socket) {
 
-        // send client its socket ID
-        socket.emit(eventsEnum.gotSocketId , socket.id);
+        // NB : I do it here because mongoDb cannot be anywhere than HERE (just not trying asking, response is NO)
+        // trigger when someone wants to connect to our Game Server
+        socket.on(eventsEnum.SignIn, function (data)  {
+            mongoDb.checkUserCredentials( { email : data.email , pwd : data.password } , (err, user) =>{
 
+                if(!err){
+                    require("./server-logic/routes.js").newPlayerWhenSignIn(socket,user._id,{name: user.username });
+                } else {
+                    socket.emit(eventsEnum.newPlayer, { id : -1} );
+                }
+                //mongoDb.closeConnection(); NE PAS ACTIVER : DANGER
+            });
+        });
+
+        // another socket events listeners
         require("./server-logic/routes.js").gestionSocket(socket);
     });
 
@@ -82,6 +94,8 @@ module.exports.listen = function () {
 
     });
 
+    // still cannot use that because the end gameState is currently missing :
+    // emit eventsEnum.updateScores with gameEventEmitter to arrive here
     gameEventEmitter.on( eventsEnum.updateScores, function (data) {
 
         require("./server-logic/routes.js").getRequiredDataForScore( function (lobbyData) {
@@ -115,8 +129,10 @@ module.exports.listen = function () {
 
                 let UserIdDatabase = lobbyData.socketIdtoIdDb.get(bestRecordSocketKey);
 
-                // mongoDb , fais ton boulot par la fonction : updateScoreAndAddVictory
-
+                // mongoDb , do your job : updateScoreAndAddVictory
+                mongoDb.updateScoreAndAddVictory({score : bestRecordScore , id : UserIdDatabase }, function (err) {
+                    require("./server-logic/routes.js").winston.log( (err) ? 'warn': 'info', "Save the winner inside the database " + ( (err) ? " with message " + err.message : " successfully") );
+                });
             }
 
             // Others players get their participation incremented :)
@@ -127,7 +143,11 @@ module.exports.listen = function () {
 
                     let UserIdDatabase = lobbyData.socketIdtoIdDb.get(key);
 
-                    // mongoDb , fais ton boulot par la fonction : updateScore
+                    // mongoDb , do your job : updateScore
+                    mongoDb.updateScore({id : UserIdDatabase }, function (err) {
+                        require("./server-logic/routes.js").winston.log( (err) ? 'warn': 'info', "Save the winner inside the database " + ( (err) ? " with message " + err.message : " successfully") );
+                    });
+
                 }
 
             }

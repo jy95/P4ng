@@ -120,12 +120,12 @@ module.exports = {
 
     },
     
-    updateScoreAndAddVictory : function (user,data,callback) {
+    updateScoreAndAddVictory : function (data,callback) {
 
-        user.findByIdAndUpdate(
+        User.findByIdAndUpdate(
             data.id,
             {
-                $push: {"scores": data.score },
+                //$push: {"scores": data.score },
                 $inc : { participation : 1 }
             },
             function(err, model) {
@@ -139,12 +139,12 @@ module.exports = {
 
     },
 
-    updateScore : function (user,data,callback) {
+    updateScore : function (data,callback) {
 
-        user.findByIdAndUpdate(
+        User.findByIdAndUpdate(
             data.id,
             {
-                $push: {"scores": data.score },
+                //$push: {"scores": data.score },
                 $inc : { participation : 1 , partiesGagnees: 1 }
             },
             function(err, model) {

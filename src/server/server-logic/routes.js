@@ -82,8 +82,16 @@ module.exports.gameStateUpdate = function (data) {
   });
 };
 
-module.exports.registerSocketIdAndId = function (socketId, idDb) {
-    lobby.registerSocketIdAndId(socketId,idDb);
+module.exports.newPlayerWhenSignIn = function (socket, idDb,data) {
+
+    // tell the server that SocketID X is player PK Y
+    lobby.registerSocketIdAndId(socket.id,idDb);
+
+    // register him directly , like normal player
+    lobby.newPlayer(socket, data, function (err) {
+        winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.newPlayer + " with connection handled : " + ( (err) ? " with message " + err.message : " successfully") );
+    });
+
 };
 
 module.exports.getRequiredDataForScore = function (callback) {
@@ -91,3 +99,4 @@ module.exports.getRequiredDataForScore = function (callback) {
        callback(data);
     });
 };
+
