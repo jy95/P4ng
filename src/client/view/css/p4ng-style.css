@@ -114,6 +114,13 @@ canvas{
     margin: auto;
     width: 500px;
 }
+
+#controls #addPlayerButton {
+    font-size: 1em;
+    width: 10%;
+    height: 5%;
+    border-radius: 3px
+}
 .control{
 	width: auto;
 	margin-top: 0.25em;

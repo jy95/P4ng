@@ -51,6 +51,7 @@ PongGame.prototype.addPlayer = function (player){
 
     // we store him using his ID in the game list of players
     this.players[player.id] = paddle
+
     // then we store his paddle on array storing the sides of the field
     this.sides[player.side] = paddle
 
