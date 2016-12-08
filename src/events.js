@@ -126,5 +126,10 @@ module.exports = {
         NOTE : the state of the game is thus "finished", we can then let the room alive while not everyone has left it (so the winner can brag
         in a potential chat "EZ u all suk lel")
     */
-    endGame : "endGame"
+    endGame : "endGame",
+
+    /*
+        Event fired when the socket id of the client is received
+     */
+    gotSocketId : "gotSocketId"
 };
