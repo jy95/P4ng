@@ -228,7 +228,7 @@ module.exports = {
         }
     },
     
-    EndGame : function (socket,playerState,callback) {
+    EndGame : function (sockets,playerState,callback) {
 
         socket.emit(eventEnum.endGame, playerState);
 

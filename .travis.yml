@@ -20,6 +20,11 @@ branches:
   only:
   - master
 env:
-  matrix:
-  - TRAVIS_NODE_VERSION="6"
-
+  global :
+      - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8

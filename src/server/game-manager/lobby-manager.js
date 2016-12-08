@@ -13,6 +13,8 @@ function LobbyManager() {
     this.idToSockets = new Map();
     // Map [Int, Socket] - Key : Player Id , Value : Its socket
     this.playersToSocket = new Map();
+    // Map [Int, Int] : SocketId , IdDb
+    this.socketIdtoIdDb = new Map();
 }
 
 LobbyManager.prototype.joinRoom = function(socket,data,callback) {
@@ -309,6 +311,15 @@ LobbyManager.prototype.removeDisconnectedPlayers = function ( socket , callback)
             });
     }
 
+};
+
+LobbyManager.prototype.registerSocketIdAndId = function (socketId, idDb) {
+    this.socketIdtoIdDb.set(socketId,idDb);
+};
+
+LobbyManager.prototype.getRequiredDataForScore = function (callback) {
+
+    callback({ playersToSocket : this.playersToSocket , idToSockets : this.idToSockets , socketIdtoIdDb : this.socketIdtoIdDb });
 };
 
 LobbyManager.prototype.socketsInsideARoom = function (roomId, callback) {

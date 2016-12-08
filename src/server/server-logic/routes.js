@@ -81,3 +81,13 @@ module.exports.gameStateUpdate = function (data) {
       winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.playerStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
   });
 };
+
+module.exports.registerSocketIdAndId = function (socketId, idDb) {
+    lobby.registerSocketIdAndId(socketId,idDb);
+};
+
+module.exports.getRequiredDataForScore = function (callback) {
+    lobby.getRequiredDataForScore( function (data) {
+       callback(data);
+    });
+};

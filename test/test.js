@@ -3,6 +3,7 @@ const http = require('http');
 const props = require('../src/properties-loader.js');
 let io = require('socket.io-client');
 let testFunctions = require("./test-functions.js");
+let eventEnum = require('../src/events.js');
 
 let player1 = {name: "Jacques" };
 let player2 = {name: "TRUMP" };
@@ -45,7 +46,6 @@ describe('Server tests : ' , function () {
         describe("Test Case n°1 : /registerUser tests", function () {
 
             it("Test n°1 : Should not registerUser : Wrong email ", function (done) {
-                this.timeout(350);
 
                 let data = {
                     "username": "TEST",
@@ -76,7 +76,6 @@ describe('Server tests : ' , function () {
             });
 
             it("Test n°2 : Should be able to registerUser ", function (done) {
-                this.timeout(350);
 
                 let data = {
                     "username": "TEST",
@@ -107,7 +106,6 @@ describe('Server tests : ' , function () {
             });
 
             it("Test n°3 : Should not be able to registerUser with same Email", function (done) {
-                this.timeout(350);
 
                 let data = {
                     "username": "TEST",
@@ -254,6 +252,7 @@ describe('Server tests : ' , function () {
                 this.timeout(250);
 
                 socket1 = io.connect('http://localhost:8080');
+
                 testFunctions.createPlayer(socket1, player1, function (err, data) {
 
                     if (!err) {
@@ -683,25 +682,7 @@ describe('Server tests : ' , function () {
                 });
             });
 
-            describe("Test case n°3 C : Misc Test cases", function () {
-
-
-                it('Test n°1 : Should be able to rage exit ', function (done) {
-                    this.timeout(500);
-
-                    testFunctions.RageExit(socket2,socket1,player2 , function (err) {
-                        if (err) {
-                            done(err);
-                        } else {
-                            done();
-                        }
-                    });
-
-                });
-
-            });
-
-            describe("Test case n°4 D : End Game", function () {
+            describe("Test case n°4 C : End Game + newMaster", function () {
                 it("Test n°1 : Wrong room", function (done) {
                     this.timeout(250);
 
@@ -716,14 +697,43 @@ describe('Server tests : ' , function () {
                         }
                     };
 
-                    testFunctions.EndGame(socket2,someScoreStuff, function (err) {
-                       if (err) {
-                         done();
-                       } else {
-                           done(err);
-                       }
-                    });
+                    socket2.emit(eventEnum.endGame, someScoreStuff);
+
+                    try {
+                        socket2.on(eventEnum.endGame, function (data) {
+                            assert.equal(JSON.stringify(data),JSON.stringify(someScoreStuff),"No same playerState");
+                        });
+                        done();
+                    } catch (err) {
+                        done(err);
+                    }
+
                 });
+
+                it("Test n°2 : Typisch way to end Game" , function (done) {
+                    done();
+                });
+
+                it("Test n°3 : newMaster  ", function (done) {
+
+                        this.timeout(500);
+
+                        testFunctions.RageExit(socket1,socket2,player1 , function (err) {
+                            if (err) {
+                                done(err);
+                            } else {
+                                testFunctions.NewMaster(socket2,player2 , function (err) {
+                                    if (err) {
+                                        done(err);
+                                    } else {
+                                        done();
+                                    }
+                                });
+                            }
+                        });
+
+                });
+
             });
 
         });
