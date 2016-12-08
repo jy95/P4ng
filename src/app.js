@@ -2,6 +2,16 @@ const {app, BrowserWindow} = require('electron')
 const url = require('url')
 const props = require('./properties-loader.js')
 
+const exec = require('child_process').exec
+const gamepad_cmd = 'node ./src/client/controller/gamepad-controller.js'
+
+exec(gamepad_cmd, function(error, stdout, stderr) {
+    console.log('executing..')
+    if (error) {
+        console.log('oops..')
+    }
+})
+
 // Global ref to window to avoid garbage collection
 let win
 
