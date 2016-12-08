@@ -38,6 +38,9 @@ function PongGame ({ballDirection, id}){
 }
 
 PongGame.prototype.addPlayer = function (player){
+    // if the player doesn't have a side, we give him a free one
+    if(player.side === undefined) player.side = this.sides.length
+
     // we give the player a paddle
     var paddle = new Paddle({
         side: player.side,
@@ -49,8 +52,6 @@ PongGame.prototype.addPlayer = function (player){
     // we store him using his ID in the game list of players
     this.players[player.id] = paddle
 
-    // if the player doesn't have a side, we give him a free one
-    if(player.side === undefined) player.side = this.sides.length
     // then we store his paddle on array storing the sides of the field
     this.sides[player.side] = paddle
 

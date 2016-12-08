@@ -2,7 +2,7 @@ const props = require('../../properties-loader.js')
 const gameLogic = require(props.gameLogicPath())
 const lobbyLogic = require(props.lobbyLogicPath())
 const lobbyToServer = require(props.lobbyToServerPath())
-const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
+//const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 
 const io = require('socket.io')(3000)
 const kbc = require('./keyboard-controller.js')
@@ -15,18 +15,14 @@ const KEYBOARD = 1
 const LEFT = -1
 const RIGHT = 1
 
-// default values for controls
-var playersControls = {
-    NORTH: {left: 'a', right: 'e'},
-    EAST: {left: 'p', right: 'm'},
-    SOUTH: {left: 'ArrowLeft', right: 'ArrowRight'},
-    WEST: {left: 'y', right: 'h'}
-}
-
-//var pc = playersControls
+let controllerMap = {} // maps deviceIds to players
+let controllerQueue = [] // list of players (temporarily using the keyboard) who await available gamepads
+let assignmentFailures = {} // a support structure that helps avoid infinite callback loops
+let socket // communication socket for the gamepad-controller
 
 document.getElementById('stopButton').addEventListener('click', onStopGame)
 document.getElementById('startButton').addEventListener('click', onStart)
+document.getElementById('addPlayerButton').addEventListener('click', onAddPlayer);
 
 /*
 document.addEventListener('keydown', function(e){
@@ -45,10 +41,10 @@ document.addEventListener('keyup', function(e){
 
 function onStart() {
 
-    assignController(GAMEPAD, NORTH) //pas a faire ici
-    assignController(KEYBOARD, EAST) // ..
-    assignController(KEYBOARD, WEST)
-    assignController(GAMEPAD, SOUTH)
+    //assignController(GAMEPAD, NORTH) //ne pas faire ici
+    //assignController(KEYBOARD, EAST) // ..
+    //assignController(KEYBOARD, WEST)
+    //assignController(GAMEPAD, SOUTH)
     lobbyLogic.startGame()
 }
 
@@ -56,15 +52,17 @@ function onStopGame(){
     lobbyLogic.leaveRoom({roomId: false, id: false})
 }
 
-module.exports.setControls = function({side, left, right}){
-    playersControls[side]['left'] = left
-    playersControls[side]['right'] = right
+function onAddPlayer() {
+    let inputZone = document.getElementById('playerName')
+    if (inputZone.style.visibility == 'hidden') {
+        inputZone.style.visibility = 'visible'
+    } else {
+        let playerName = inputZone.value
+        inputZone.value = ''
+        lobbyToServer.newPlayer({name: playerName})
+        inputZone.style.visibility = 'hidden'
+    }
 }
-
-let controllerMap = {} // maps deviceIds to players
-let controllerQueue = [] // list of players (temporarily using the keyboard) who await available gamepads
-let assignmentFailures = {} // a support structure that helps avoid infinite callback loops
-let socket // communication socket for the gamepad-controller
 
 /**
 * assigns a controller to the given player
@@ -117,6 +115,8 @@ function assignFromQueue() {
 function init() {
     kbc.init(handleMove)
 
+    document.getElementById('playerName').style.visibility = 'hidden'
+
     io.on('connect', function(_socket) {
         socket = _socket
         socket.on('move', function(data) {
@@ -149,7 +149,7 @@ function init() {
 **/
 function handleMove(data) {
     if (data.value != 0) {
-        if (controllerMap[data.deviceId].inMovement) {
+        if (controllerMap[data.deviceId].inMovement) { //not really doing anything at the moment
             gameLogic.stopPlayer({side: controllerMap[data.deviceId].side})
             controllerMap[data.deviceId].skippingStop = true
         }
@@ -163,7 +163,6 @@ function handleMove(data) {
             controllerMap[data.deviceId].inMovement = false
             gameLogic.stopPlayer({side: controllerMap[data.deviceId].side})
         } else {
-            console.log('skipping sto !!!!')
             controllerMap[data.deviceId].skippingStop = false
         }
     }
@@ -219,5 +218,7 @@ function deassignAll(side) {
 
 module.exports.init = init
 module.exports.assignController = assignController
-module.exports.LEFT = LEFT
-module.exports.RIGHT = RIGHT
+//module.exports.LEFT = LEFT
+//module.exports.RIGHT = RIGHT
+module.exports.GAMEPAD = GAMEPAD
+module.exports.KEYBOARD = KEYBOARD

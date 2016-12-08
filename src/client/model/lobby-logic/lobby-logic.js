@@ -3,9 +3,11 @@ const props = require('../../../properties-loader.js')
 const eventsEnum = require(props.eventsEnumPath())
 var lobbyToServer = require(props.lobbyToServerPath())
 var gameLogic = require(props.gameLogicPath())
+const gameController = require(props.gameControllerPath())
 
 let localPlayer = null
 let remotePlayers = {}
+let localPlayers = {}
 let currentRoom = null
 let rooms = {}
 
@@ -15,9 +17,15 @@ module.exports.setPlayerList = function(playerList){
     if(!p.id === localPlayer.id) remotePlayers[p.id] = p
 }
 
-module.exports.setLocalPlayer = function(player){
-    localPlayer = player
-    localPlayer.isLocal = true
+module.exports.setLocalPlayer = function(player) {
+    if (!localPlayer) {
+        localPlayer = player
+        localPlayer.isLocal = true
+        localPlayers[localPlayer.id] = localPlayer
+    } else {
+        localPlayers[player.id] = player
+        localPlayers[player.id].isLocal = true
+    }
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
@@ -87,18 +95,26 @@ module.exports.getState = function(){
         'rooms': rooms,
         'currentRoom': currentRoom,
         'localPlayer': localPlayer,
+        'localPlayers': localPlayers,
         'remotePlayers': remotePlayers//getRankedPlayersList()
     }
 }
 
-module.exports.startGame = function(){
-    if(currentRoom){
+module.exports.startGame = function() {
+    if(currentRoom) {
+        for (let playerID in localPlayers) { //add players to the Game instance
+            gameLogic.addPlayer(localPlayers[playerID])
+            //this is ideally where the game-controller should be asked to assign a
+            //controller device to the players
+            gameController.assignController(gameController.GAMEPAD, localPlayers[playerID].side)
+        }
         lobbyToServer.startGame({angle: currentRoom.angle, roomId: currentRoom.roomId, id: localPlayer.id})
         console.log(`lobbyLogic - startGame ${currentRoom.angle}`)
     }
 }
 
 // returns an array of players ordered by their total score
+//TODO: adapt to localPlayers
 function getRankedPlayersList(){
     if(remotePlayers){
         let playersArray = remotePlayers.sort(function(a,b){
