@@ -1,3 +1,5 @@
+let u = require('underscore');
+
 
 let Game = function (roomId,fps) {
     this.fps = fps;
@@ -5,6 +7,8 @@ let Game = function (roomId,fps) {
     this.roomId = roomId;
     this.players = {};
     this.loopFunction;
+    this.scores = {};
+    this.nbEndGameReceived = 0;
     this.onUpdate = function () {
 
     };
@@ -30,10 +34,12 @@ Game.prototype.stop = function () {
 
 Game.prototype.addPlayer = function(player){
     this.players[player.id] = [];
+    this.scores[player.id] = [];
 };
 
 Game.prototype.removePlayer = function(player){
     delete this.players[player.id];
+    delete this.scores[player.id];
 };
 
 Game.prototype.updatePlayers = function({players}){
@@ -42,10 +48,27 @@ Game.prototype.updatePlayers = function({players}){
     }
 };
 
-Game.prototype.endGame = function (callback) {
-    // emettre event quand on a tout recu
-    // null si rien
-    callback(null);
+Game.prototype.endGame = function (players, callback) {
+    this.nbEndGameReceived++;
+    for(let id in players){
+        this.scores[id].push(players[id].score);
+    }
+    if(this.nbEndGameReceived == Object.keys(this.players).length){
+        callback(true);
+    }
+    else{
+        callback(false);
+    }
+
+
+};
+
+Game.prototype.getFinalScores = function(){
+    var finalScores = {};
+    for(let id in this.scores){
+        finalScores[id] = u.chain(this.scores[id]).countBy().pairs().max(u.last).head().value();
+    }
+    return finalScores;
 };
 
 Game.prototype.getPlayerState = function(){
