@@ -151,7 +151,7 @@ Room.prototype.playerState = function(data, callback){
 
 Room.prototype.endGame = function (data,callback) {
     this.stopGame();
-    this.game.updatePlayers(data.players, (receivedAll) => {
+    this.game.endGame(data.players, (receivedAll) => {
         if(!receivedAll){
             callback(null);
         }
