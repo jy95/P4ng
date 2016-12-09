@@ -10,6 +10,7 @@ module.exports.gameConsts = props.gameConsts
 module.exports.p4ngIndex = Path.join(__dirname,props.p4ngIndex)
 module.exports.p4ngIcon = Path.join(__dirname,props.p4ngIcon)
 module.exports.socketProps = props.socketProps
+module.exports.MongoDb = props.MongoDb
 
 for(let m in props.p4ngModules)
     module.exports[m+'Path'] = makePathSolver(Path.resolve(__dirname, props.p4ngModules[m]),Path)

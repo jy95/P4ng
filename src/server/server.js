@@ -18,23 +18,12 @@ module.exports.listen = function () {
     // parse application/json
     app.use(bodyParser.json());
 
-    // init Db connection
-
+    /*
+     Middleware express : plus très utile
     app.use(function(req, res, next) {
 
-        // We lost connection! (Maybe due to IPL network XD)
-        mongoDb.connectToDatabase( (err) => {
-            if (err) {
-                console.log(err.message);
-                res.status(503);
-            }
-            else{
-                next();
-            }
-        });
-
     });
-
+    */
 
     app.post("/registerUser", function (req,res) {
         mongoDb.registerUser(req.body, (err) =>{
@@ -44,7 +33,6 @@ module.exports.listen = function () {
             else{
                 res.status(200).send('Successfully created');
             }
-            //mongoDb.closeConnection(); NE PAS ACTIVER : DANGER
         });
     });
 
@@ -56,7 +44,6 @@ module.exports.listen = function () {
             else{
                 res.status(200).send(user);
             }
-            //mongoDb.closeConnection(); NE PAS ACTIVER : DANGER
         });
     });
 
@@ -78,7 +65,7 @@ module.exports.listen = function () {
                 } else {
                     socket.emit(eventsEnum.newPlayer, { id : -1} );
                 }
-                //mongoDb.closeConnection(); NE PAS ACTIVER : DANGER
+
             });
         });
 
