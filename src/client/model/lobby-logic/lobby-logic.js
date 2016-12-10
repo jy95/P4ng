@@ -5,7 +5,7 @@ var lobbyToServer = require(props.lobbyToServerPath())
 var gameLogic = require(props.gameLogicPath())
 const gameController = require(props.gameControllerPath())
 
-let localPlayers = null
+let localPlayer = null
 let tempLocal = {}
 let remotePlayers = {}
 let localPlayers = {}
@@ -115,10 +115,10 @@ module.exports.startGame = function() {
             gameLogic.addPlayer(localPlayers[playerID])
             //this is ideally where the game-controller should be asked to assign a
             //controller device to the players
-            gameController.assignController(gameController.GAMEPAD, localPlayers[playerID].side)
+            gameController.assignController(gameController.KEYBOARD, localPlayers[playerID].side)
         }
-        lobbyToServer.startGame({angle: currentRoom.angle, roomId: currentRoom.roomId, id: localPlayer.id})
-        console.log(`lobbyLogic - startGame ${currentRoom.angle}`)
+        lobbyToServer.startGame({angle: rooms[currentRoom].angle, roomId: rooms[currentRoom].roomId, id: localPlayer.id})
+        console.log(`lobbyLogic - startGame --- ${rooms[currentRoom].angle}`)
     }
 }
 
