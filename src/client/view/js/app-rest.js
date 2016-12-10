@@ -1,9 +1,10 @@
-const props = require('../../../properties-loader.js').socketProps;
-const lobbyToServerPath = require('../../../properties-loader.js').lobbyToServerPath();
+const props = require('../../../properties-loader.js');
+const socketProps = props.socketProps;
+const lobbyToServerPath = props.lobbyToServerPath();
 
+var eventsEnum = require(props.eventsEnumPath());
+var socket = require(props.socketPath());
 var newPlayer = require(lobbyToServerPath).newPlayer;
-
-console.log(newPlayer);
 
 var submitCreateAccountForm = document.getElementById('submitCreateAccountForm');
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
@@ -16,6 +17,7 @@ var submitAuthenticate = document.getElementById('submitAuthenticate');
 var alertAuthenticateForm = document.getElementById('alertAuthenticateForm');
 var pwdAuthenticateForm = document.getElementById('pwdAuthenticateForm');
 var emailAuthenticateForm = document.getElementById('emailAuthenticateForm');
+
 
 
 
@@ -90,11 +92,11 @@ function registerUser(username, email, pwd){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
            if (xmlhttp.status == 200) {
-               alertCreateAccountForm.innerText =xmlhttp.responseText;
-               displayLobby();
-               var user = {};
+               var rep = JSON.parse(xmlhttp.responseText);
+               signIn(rep.jwt);
+               /*var user = {};
                user.name = username;
-               newPlayer(user);
+               newPlayer(user);*/
 
            }
            else {
@@ -103,7 +105,7 @@ function registerUser(username, email, pwd){
         }
     };
 
-    xmlhttp.open("POST", props.url + ":" + props.port + "/registerUser");
+    xmlhttp.open("POST", socketProps.url + ":" + socketProps.port + "/registerUser");
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.send(JSON.stringify({username: username, pwd: pwd, email: email}));
 
@@ -119,10 +121,8 @@ function authenticate(email, pwd){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
            if (xmlhttp.status == 200) {
-               displayLobby();
-               var user = JSON.parse(xmlhttp.responseText);
-               user.name = user.username;
-               newPlayer(user);
+                var rep = JSON.parse(xmlhttp.responseText);
+                signIn(rep.jwt);
            }
            else {
                alertAuthenticateForm.innerText =xmlhttp.responseText;
@@ -130,7 +130,7 @@ function authenticate(email, pwd){
         }
     };
 
-    xmlhttp.open("POST", props.url + ":" + props.port + "/checkUserCredentials");
+    xmlhttp.open("POST", socketProps.url + ":" + socketProps.port + "/checkUserCredentials");
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.send(JSON.stringify({pwd: pwd, email: email}));
 
@@ -153,3 +153,14 @@ function displayLobby(){
      document.getElementById('formsContainer').className = 'closed';
      document.getElementById('lobbyContainer').className = 'open';
 }
+
+function signIn(jwt){
+    socket.emit(eventsEnum.signIn, jwt);
+}
+
+socket.on(eventsEnum.newPlayer, (player)=>{
+    console.log(player);
+    if(!player.id === -1){
+        displayLobby();
+    }
+})

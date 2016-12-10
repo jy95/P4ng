@@ -96,7 +96,7 @@ module.exports.gestionSocket = function(socket){
                 newPlayerWhenSignIn(socket,user._id,{name: user.username });
 
             } else {
-                socket.emit(eventsEnum.newPlayer, { id : -1} );
+                socket.emit(eventEnum.newPlayer, { id : -1} );
             }
 
         });

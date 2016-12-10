@@ -53,14 +53,7 @@ Game.prototype.endGame = function (players, callback) {
     for(let id in players){
         this.scores[id].push(players[id].score);
     }
-    if(this.nbEndGameReceived == Object.keys(this.players).length){
-        callback(true);
-    }
-    else{
-        callback(false);
-    }
-
-
+    callback(this.nbEndGameReceived == Object.keys(this.players).length);
 };
 
 Game.prototype.getFinalScores = function(){

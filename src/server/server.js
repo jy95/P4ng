@@ -33,8 +33,8 @@ module.exports.listen = function () {
                 res.status(409).send(err.message);
             }
             else{
-                res.cookie('jwt', jwt.sign({idDb: user._id, email: user.email}, secretJwtKey));
-                res.status(200).send('Successfully created');
+                var rep = {'jwt': jwt.sign({password: user._id, email: user.email}, secretJwtKey)};
+                res.status(200).send(JSON.stringify(rep));
             }
         });
     });
@@ -45,8 +45,8 @@ module.exports.listen = function () {
                 res.status(422).send(err.message);
             }
             else{
-                res.cookie('jwt', jwt.sign({idDb: user._id, email: user.email}, secretJwtKey));
-                res.status(200).send(user);
+                var rep = {'jwt': jwt.sign({password: user._id, email: user.email}, secretJwtKey)};
+                res.status(200).send(JSON.stringify(rep));
             }
         });
     });
