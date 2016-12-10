@@ -55,20 +55,6 @@ module.exports.listen = function () {
 
     io.on("connection", function (socket) {
 
-        // NB : I do it here because mongoDb cannot be anywhere than HERE (just not trying asking, response is NO)
-        // trigger when someone wants to connect to our Game Server
-        socket.on(eventsEnum.SignIn, function (data)  {
-            mongoDb.checkUserCredentials( { email : data.email , pwd : data.password } , (err, user) =>{
-
-                if(!err){
-                    require("./server-logic/routes.js").newPlayerWhenSignIn(socket,user._id,{name: user.username });
-                } else {
-                    socket.emit(eventsEnum.newPlayer, { id : -1} );
-                }
-
-            });
-        });
-
         // another socket events listeners
         require("./server-logic/routes.js").gestionSocket(socket);
     });
@@ -100,8 +86,8 @@ module.exports.listen = function () {
                 sockets.add(mySocket);
 
                 // check if current player has the best score
-                if ( bestRecordScore < value.score) {
-                    bestRecordScore = value.score;
+                if ( bestRecordScore < value) {
+                    bestRecordScore = value;
                     bestRecordUserKey = key;
                     bestRecordSocketKey = mySocket.id;
                 }

@@ -131,7 +131,7 @@ module.exports = {
     /*
         When the client wants to sign in to the server
      */
-    SignIn : "SignIn",
+    signIn : "signIn",
 
     /*
         Event fired when the server wants to update players score on the database

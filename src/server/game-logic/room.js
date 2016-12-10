@@ -19,14 +19,7 @@ function Room(playerId,gameId,roomName) {
         this.emitter.emit(eventEnum.gameStateUpdate ,  playerState );
 
     }.bind(this);
-    /*
-    A CORRIGER , PAS TERRIBLE DE BIND THIS ICI
-    this.game.endGame( function(data) {
-        if (data !== null) {
-            this.emitter.emit(eventEnum.updateScores ,  data );
-        }
-    }).bind(this);
-    */
+
 }
 
 Room.prototype.addPlayer = function(player,callback) {
@@ -150,14 +143,18 @@ Room.prototype.playerState = function(data, callback){
 };
 
 Room.prototype.endGame = function (data,callback) {
-    this.stopGame();
-    this.game.endGame(data.players, (receivedAll) => {
+
+    let self = this;
+
+    self.stopGame();
+    self.game.endGame(data.players, (receivedAll) => {
         if(!receivedAll){
             callback(null);
         }
         else{
-            var finalScores = this.game.getFinalScores();
-            // fais ce que t'as à faire en db
+            let finalScores = self.game.getFinalScores();
+            self.emitter.emit(eventEnum.updateScores ,  finalScores );
+            callback(null);
         }
     });
 };
