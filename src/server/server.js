@@ -3,8 +3,10 @@
  */
 
 const props = require('../properties-loader.js');
+const secretJwtKey = 'Inyoursnatchfitspleasurebroomshapedpleasure';
 let eventsEnum = require(props.eventsEnumPath());
 let mongoDb = require('./database/database-mongodb.js');
+let jwt = require('jsonwebtoken');
 
 module.exports.listen = function () {
 
@@ -26,11 +28,12 @@ module.exports.listen = function () {
     */
 
     app.post("/registerUser", function (req,res) {
-        mongoDb.registerUser(req.body, (err) =>{
+        mongoDb.registerUser(req.body, (err, user) =>{
             if(err){
                 res.status(409).send(err.message);
             }
             else{
+                res.cookie('jwt', jwt.sign({idDb: user._id, email: user.email}, secretJwtKey));
                 res.status(200).send('Successfully created');
             }
         });
@@ -42,6 +45,7 @@ module.exports.listen = function () {
                 res.status(422).send(err.message);
             }
             else{
+                res.cookie('jwt', jwt.sign({idDb: user._id, email: user.email}, secretJwtKey));
                 res.status(200).send(user);
             }
         });
