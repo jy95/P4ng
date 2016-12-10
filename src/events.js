@@ -129,9 +129,9 @@ module.exports = {
     endGame : "endGame",
 
     /*
-        Event fired when the socket id of the client is received
+        When the client wants to sign in to the server
      */
-    gotSocketId : "gotSocketId",
+    SignIn : "SignIn",
 
     /*
         Event fired when the server wants to update players score on the database

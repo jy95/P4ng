@@ -1,5 +1,8 @@
 let bcrypt = require('bcryptjs');
 let mongoose = require('mongoose');
+const props = require('../../properties-loader.js');
+
+mongoose.Promise = global.Promise;
 
 let Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
@@ -13,37 +16,11 @@ let PlayerSchema = new Schema({
     partiesFinies : Number
 });
 
-
-let db;
-let User;
+let db = mongoose.createConnection('mongodb://' + props.MongoDb.url + '/' + props.MongoDb.database);
+let User = db.model('Player', PlayerSchema);
 
 module.exports = {
 
-
-    connectToDatabase : function (callback) {
-
-        try {
-        mongoose.Promise = global.Promise;
-        // connect to the db
-        db = mongoose.createConnection('mongodb://localhost/P4ngDb');
-      
-
-        db.on('error', function () {
-            callback(new Error("Failed to connect to the DB"));
-        });
-        db.on('open', function() {
-            // register the model
-            User = db.model('Player', PlayerSchema);
-            callback(null);
-        });
-
-        } catch (err) {
-            console.log(err);
-            callback(err);
-        }
-
-    },
-    
     registerUser : function (data,callback) {
         if(!validateEmail(data.email)){
             callback(new Error('Incorrect email'));
@@ -55,9 +32,8 @@ module.exports = {
                 }
                 else{
                     if(user === null){
-                        var salt = bcrypt.genSaltSync(10);
-                        var hash = bcrypt.hashSync(data.pwd, salt);
-                        data.pwd = hash;
+                        let salt = bcrypt.genSaltSync(10);
+                        data.pwd = bcrypt.hashSync(data.pwd, salt);
                         this.createUser(data, (err) =>{
                             if(err){
                                 callback(err.message);
@@ -120,12 +96,12 @@ module.exports = {
 
     },
     
-    updateScoreAndAddVictory : function (user,data,callback) {
+    updateScoreAndAddVictory : function (data,callback) {
 
-        user.findByIdAndUpdate(
+        User.findByIdAndUpdate(
             data.id,
             {
-                $push: {"scores": data.score },
+                //$push: {"scores": data.score },
                 $inc : { participation : 1 }
             },
             function(err, model) {
@@ -139,12 +115,12 @@ module.exports = {
 
     },
 
-    updateScore : function (user,data,callback) {
+    updateScore : function (data,callback) {
 
-        user.findByIdAndUpdate(
+        User.findByIdAndUpdate(
             data.id,
             {
-                $push: {"scores": data.score },
+                //$push: {"scores": data.score },
                 $inc : { participation : 1 , partiesGagnees: 1 }
             },
             function(err, model) {
@@ -158,18 +134,11 @@ module.exports = {
 
     },
 
-    closeConnection : function(){
-        db.close();
-    }
-
-
-
-
 };
 
 
 
 let validateEmail = function (email) {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
-}
+};

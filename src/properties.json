@@ -25,5 +25,9 @@
     "socketProps": {
         "url": "http://127.0.0.1",
         "port": 8080
+    },
+    "MongoDb" : {
+        "url" : "127.0.0.1",
+        "database" : "P4ngDb"
     }
 }
