@@ -1,7 +1,6 @@
 const props = require('../../properties-loader.js')
 const gameLogic = require(props.gameLogicPath())
 const lobbyLogic = require(props.lobbyLogicPath())
-const lobbyToServer = require(props.lobbyToServerPath())
 //const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 
 const io = require('socket.io')(3000)
@@ -45,7 +44,7 @@ function onStart() {
     //assignController(KEYBOARD, EAST) // ..
     //assignController(KEYBOARD, WEST)
     //assignController(GAMEPAD, SOUTH)
-    lobbyLogic.startGame()
+    lobbyLogic.askToStartGame()
 }
 
 function onStopGame(){
@@ -59,7 +58,7 @@ function onAddPlayer() {
     } else {
         let playerName = inputZone.value
         inputZone.value = ''
-        lobbyToServer.newPlayer({name: playerName})
+        lobbyLogic.newPlayer({name: playerName})
         inputZone.style.visibility = 'hidden'
     }
 }

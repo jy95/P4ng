@@ -6,32 +6,35 @@ var lobbyLogic = require(props.lobbyLogicPath())
 var gameLogic = require(props.gameLogicPath())
 
 socket.on(eventsEnum.gotAvailableRooms, (rooms)=>{
-    lobbyLogic.setRooms(rooms)
     console.log('serverToLobby - got available rooms')
+    lobbyLogic.setRooms(rooms)
+})
+socket.on(eventsEnum.getAvailableRooms, (rooms)=>{
+    console.log('serverToLobby - got available rooms')
+    lobbyLogic.setRooms(rooms)
 })
 
 socket.on(eventsEnum.newPlayer, (player)=>{
-    lobbyLogic.setLocalPlayer(player)
     console.log('serverToLobby - new player')
+    lobbyLogic.setLocalPlayer(player)
 })
 
-socket.on(eventsEnum.createRoom, (room)=>{
-    lobbyLogic.setCurrentRoom(room)
-    console.log('serverToLobby - create room')
-})
-
-socket.on(eventsEnum.joinRoom, (data)=>{
-    console.log('serverToLobby - join room')
-    console.log(data)
+socket.on(eventsEnum.createRoom, (data)=>{
+    console.log(`serverToLobby - create room`)
     lobbyLogic.setCurrentRoom(data)
 })
 
-socket.on(eventsEnum.leaveRoom, ({id, roomId})=>{
-    lobbyLogic.leaveRoom({})
+socket.on(eventsEnum.joinRoom, (data)=>{
+    console.log(`serverToLobby - join room`)
+    lobbyLogic.setCurrentRoom(data)
+})
+
+socket.on(eventsEnum.leaveRoom, (data)=>{
     console.log('serverToLobby - leave room')
+    lobbyLogic.leaveRoom(data)
 })
 
 socket.on(eventsEnum.gotListEnrolledPlayers, (playersList)=>{
-    lobbyLogic.setPlayerList(playersList)
     console.log('serverToLobby - got list enrolled players')
+    lobbyLogic.setPlayerList(playersList)
 })

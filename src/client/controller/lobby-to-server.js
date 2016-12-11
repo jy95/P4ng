@@ -4,6 +4,7 @@ var socket = require(props.socketPath())
 // loading the modules because it has to be done somewhere
 require(props.serverToLobbyPath())
 require(props.serverToGamePath())
+require(props.gameToServerPath())
 
 module.exports.createRoom = function({id, roomName}){
     socket.emit(eventsEnum.createRoom, {'id': id, 'roomName': roomName})
@@ -24,8 +25,10 @@ module.exports.leaveRoom = function({id, roomId}){
 }
 
 module.exports.startGame = function({id, roomId, angle}){
-    if(roomId && id && angle !== undefined && angle !== null)
-    socket.emit(eventsEnum.startGame, {'id': id, 'roomId': roomId, 'angle': angle})
+    if(roomId && id && angle !== undefined && angle !== null){
+        console.log('lobbyToServer - start game')
+        socket.emit(eventsEnum.startGame, {'id': id, 'roomId': roomId, 'angle': angle})
+    }
 }
 
 module.exports.newPlayer = function({name}){

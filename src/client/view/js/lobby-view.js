@@ -6,6 +6,7 @@ lobbyLogic.subscribe(function(){
     let lobbyState = lobbyLogic.getState()
     displayRooms(lobbyState.rooms)
     displayPlayers(lobbyState.players)
+    displayLocalPlayer(lobbyState.localPlayer)
     if(lobbyState.currentRoom)switchToGameView()
     else switchToLobbyView()
 })
@@ -13,7 +14,7 @@ lobbyLogic.subscribe(function(){
 module.exports.updateView = function({players, rooms, localPlayer, currentRoom}){
     if(currentRoom !== null) switchToGameView()
     else switchToLobbyView()
-
+    if(localPlayer) displayLocalPlayer(localPlayer)
     for(let p in players){
 
     }
@@ -52,6 +53,10 @@ function displayPlayers(players){
         let parsed = domPerignon.parseFromString(pString, 'text/html')
         rpl.appendChild(parsed)
     }
+}
+
+function displayLocalPlayer(player){
+    document.getElementById('localPlayerName').innerText = player.name
 }
 
 function getPlayerHtmlString(p){
