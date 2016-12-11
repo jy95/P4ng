@@ -39,7 +39,7 @@ Room.prototype.addPlayer = function(player,callback) {
 
 Room.prototype.startGame = function(playerId,callback) {
 
-    if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished) {
+    if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished && this.players.length >= 2) {
         isStarted = true;
         this.game.start();
         callback(null);

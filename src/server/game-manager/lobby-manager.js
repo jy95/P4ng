@@ -162,8 +162,27 @@ LobbyManager.prototype.leaveRoom = function (socket,data,callback) {
 
                 }
                 */
+
                 if (newMasterRequired) {
                     // CURRENT RELEASE : DELETE ROOM
+                    self.socketsInsideARoom(data.roomId, function (sockets) {
+
+                        self.gameLogic.listAllPlayer(data.roomId, function (err,answer) {
+                            if (!err) {
+
+                                // tell each players that they are ejected (fired)
+
+                                for (let player in answer.roomPlayers ) {
+                                    self.socketManager.broadcastMessageInRoom(sockets , eventEnum.leaveRoom,  { id : answer.roomPlayers[player].playerId} );
+                                }
+
+                            }
+                        });
+
+                        // remove room reference
+                        self.gameLogic.removeRoom(data.roomId);
+                    });
+
                 } else {
 
                     // send data +  prevent another players in room
