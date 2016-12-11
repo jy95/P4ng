@@ -385,8 +385,6 @@ describe('Server tests : ' , function () {
                 it('Test n°1 : Should not be able to join a room', function (done) {
                     this.timeout(250);
 
-                    let wrong = player2;
-                    wrong.id = -1;
                     playersRoomJson1 = [
                         {
                             "playerName": "Jacques",
@@ -395,7 +393,7 @@ describe('Server tests : ' , function () {
                         }
                     ];
 
-                    testFunctions.joinRoom(socket2, wrong, playersRoomJson1, function (err) {
+                    testFunctions.joinRoom(socket2, { id : -1 , roomId : roomId1}, playersRoomJson1, function (err) {
                         if (err) {
                             done();
                         } else {
@@ -407,7 +405,6 @@ describe('Server tests : ' , function () {
                 it('Test n°2 : Should not be able to join a room', function (done) {
                     this.timeout(250);
 
-                    player2.roomId = -1;
                     playersRoomJson1 = [
                         {
                             "playerName": "Jacques",
@@ -416,7 +413,7 @@ describe('Server tests : ' , function () {
                         }
                     ];
 
-                    testFunctions.joinRoom(socket2, player2, playersRoomJson1, function (err) {
+                    testFunctions.joinRoom(socket2, {roomId : roomId1 , id : -1}, playersRoomJson1, function (err) {
                         if (err) {
                             done();
                         } else {
@@ -570,10 +567,8 @@ describe('Server tests : ' , function () {
 
                 it('Test n°2 : Should not be able to start the game', function (done) {
                     this.timeout(250);
-                    let wrong = player2;
-                    wrong.id = -1;
 
-                    testFunctions.startGame([socket1, socket2], socket2, wrong, function (err) {
+                    testFunctions.startGame([socket1, socket2], socket2, { id : -1, roomId : roomId1} , function (err) {
                         if (err) {
                             done(err);
                         } else {
@@ -632,18 +627,14 @@ describe('Server tests : ' , function () {
                 it('Test n°1 : Should be able to receive GameState ', function (done) {
                     this.timeout(350);
 
-                    let keyPlayer1 = player1.id.toString();
-                    let keyPlayer2 = player2.id.toString();
-                    let keyPlayer3 = player3.id.toString();
+                    let someScoreStuff = {};
+                    someScoreStuff["roomId"] = roomId1;
 
-                    let someScoreStuff = {
-                        roomId : roomId1,
-                        players : {
-                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
-                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
-                        }
-                    };
+                    let players = {};
+                    players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
+                    players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
+                    someScoreStuff["players"] = players;
 
 
                     testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
@@ -656,53 +647,22 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°2 : Should not be able to receive GameState ', function (done) {
-                    this.timeout(350);
-
-                    let keyPlayer1 = player1.id.toString();
-                    let keyPlayer2 = player2.id.toString();
-                    let keyPlayer3 = player3.id.toString();
-
-                    let someScoreStuff = {
-                        roomId : roomId1,
-                        players : {
-                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
-                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
-                        }
-                    };
-
-
-                    testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
-                        if (err) {
-                            done();
-                        } else {
-                            done(err);
-                        }
-                    });
-
-                });
             });
 
             describe("Test case n°4 C : Last Tests", function () {
 
                 it("Test n°1 : Typisch way to end Game" , function (done) {
 
-                    let keyPlayer1 = player1.id.toString();
-                    let keyPlayer2 = player2.id.toString();
-                    let keyPlayer3 = player3.id.toString();
+                    let someScoreStuff = {};
+                    someScoreStuff["roomId"] = roomId1;
 
-                    let someScoreStuff = {
-                        roomId : roomId1,
-                        players : {
-                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
-                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
-                        }
-                    };
+                    let players = {};
+                    players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
+                    players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
+                    someScoreStuff["players"] = players;
 
                     // HERE TWO TIMES socket 1 because there are 2 players on it
-
                     async.forEach([socket1,socket1,socket2], function (socket, callback){
                         socket.emit(eventEnum.endGame, someScoreStuff );
                         callback();

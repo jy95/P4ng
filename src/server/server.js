@@ -81,15 +81,15 @@ module.exports.listen = function () {
             let bestRecordSocketKey;
 
             // get the sockets of all players from this game
-            for ( let [key,value] of data.players ) {
+            for ( let key in data ) {
 
                 // store the user socket
                 let mySocket = lobbyData.playersToSocket.get(key);
                 sockets.add(mySocket);
 
                 // check if current player has the best score
-                if ( bestRecordScore < value) {
-                    bestRecordScore = value;
+                if ( bestRecordScore < data[key]) {
+                    bestRecordScore = data[key];
                     bestRecordUserKey = key;
                     bestRecordSocketKey = mySocket.id;
                 }
@@ -100,28 +100,38 @@ module.exports.listen = function () {
             // if there are two or more players on the same socket ,
             // => No winner
             // Resume : the winner should be the first user on the socket
+
             if ( (lobbyData.idToSockets.get(bestRecordSocketKey).players)[0] === bestRecordUserKey ) {
 
                 let UserIdDatabase = lobbyData.socketIdtoIdDb.get(bestRecordSocketKey);
 
-                // mongoDb , do your job : updateScoreAndAddVictory
-                mongoDb.updateScoreAndAddVictory({score : bestRecordScore , id : UserIdDatabase }, function (err) {
-                    require("./server-logic/routes.js").winston.log( (err) ? 'warn': 'info', "Save the winner inside the database " + ( (err) ? " with message " + err.message : " successfully") );
-                });
+                // Only players who has an account
+                if (UserIdDatabase !== undefined ) {
+
+                    // mongoDb , do your job : updateScoreAndAddVictory
+                    mongoDb.updateScoreAndAddVictory({score: bestRecordScore, id: UserIdDatabase}, function (err) {
+                        require("./server-logic/routes.js").winston.log((err) ? 'warn' : 'info', "Save the winner inside the database " + ( (err) ? " with message " + err.message : " successfully"));
+                    });
+                }
             }
 
             // Others players get their participation incremented :)
-            for ( let key of monSet.keys() ) {
+            for ( let socket of sockets.keys() ) {
 
                 // except the one who probably wins
-                if (key !== bestRecordSocketKey) {
+                if (socket.id !== bestRecordSocketKey) {
 
-                    let UserIdDatabase = lobbyData.socketIdtoIdDb.get(key);
+                    let UserIdDatabase = lobbyData.socketIdtoIdDb.get(socket.id);
 
-                    // mongoDb , do your job : updateScore
-                    mongoDb.updateScore({id : UserIdDatabase }, function (err) {
-                        require("./server-logic/routes.js").winston.log( (err) ? 'warn': 'info', "Save the winner inside the database " + ( (err) ? " with message " + err.message : " successfully") );
-                    });
+                    // Only players who has an account
+                    if (UserIdDatabase !== undefined ) {
+
+                        // mongoDb , do your job : updateScore
+                        mongoDb.updateScore({id : UserIdDatabase }, function (err) {
+                            require("./server-logic/routes.js").winston.log( (err) ? 'warn': 'info', "Save the winner inside the database " + ( (err) ? " with message " + err.message : " successfully") );
+                        });
+
+                    }
 
                 }
 

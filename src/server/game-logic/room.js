@@ -147,7 +147,8 @@ Room.prototype.endGame = function (data,callback) {
     let self = this;
 
     self.stopGame();
-    self.game.endGame(data.players, (receivedAll) => {
+    self.game.endGame(data.players, function(receivedAll) {
+
         if(!receivedAll){
             callback(null);
         }
