@@ -688,7 +688,7 @@ describe('Server tests : ' , function () {
 
             describe("Test case n°3 B : GameState", function () {
 
-                it('Test n°1 : Should be able to receive GameState ', function (done) {
+                it('Test n°1 : Should be able to send GameState ', function (done) {
                     this.timeout(350);
 
                     let someScoreStuff = {};

@@ -42,7 +42,7 @@ Game.prototype.removePlayer = function(player){
     delete this.scores[player.id];
 };
 
-Game.prototype.updatePlayers = function({players}){
+Game.prototype.updatePlayers = function(players){
     for(let id in players){
         this.players[id].push(players[id]);
     }
