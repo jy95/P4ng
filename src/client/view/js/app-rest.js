@@ -155,12 +155,11 @@ function displayLobby(){
 }
 
 function signIn(jwt){
-    socket.emit(eventsEnum.signIn, jwt);
+    socket.emit(eventsEnum.signIn, {jwt: jwt});
 }
 
 socket.on(eventsEnum.newPlayer, (player)=>{
-    console.log(player);
-    if(!player.id === -1){
+    if(!player.id != -1){
         displayLobby();
     }
 })
