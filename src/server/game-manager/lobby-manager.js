@@ -305,7 +305,8 @@ LobbyManager.prototype.removeDisconnectedPlayers = function ( socket , callback)
                             });
                         }
 
-                        // remove
+                        // remove connection from this player account
+                        self.socketIdtoIdDb.delete(socket.id);
 
                         callback(null);
                         break;

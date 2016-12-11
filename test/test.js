@@ -736,27 +736,26 @@ describe('Server tests : ' , function () {
 
                 });
 
-                /* FOR FUTURE RELEASE
-                it("Test n°2 : newMaster  ", function (done) {
+
+                it("Test n°2 : Exit Room  ", function (done) {
 
                         this.timeout(500);
 
-                        testFunctions.RageExit(socket1,socket2,player1 , function (err) {
+                        testFunctions.RageExit(socket2,socket1,player2 , function (err) {
                             if (err) {
                                 done(err);
                             } else {
-                                testFunctions.NewMaster(socket2,player2 , function (err) {
-                                    if (err) {
-                                        done(err);
-                                    } else {
-                                        done();
-                                    }
-                                });
+                                done();
                             }
                         });
 
                 });
-                */
+                
+                it("Test n°3 : Master leaves his room", function (done) {
+                    socket1.disconnect();
+                    done();
+                });
+
 
             });
 
