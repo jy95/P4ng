@@ -74,6 +74,7 @@ Room.prototype.leaveRoom = function(player, callback) {
 
 };
 
+/* FOR FUTURE RELEASE
 Room.prototype.newMaster = function(callback) {
 
     // first player key
@@ -100,7 +101,7 @@ Room.prototype.newMaster = function(callback) {
 
 
 };
-
+*/
 Room.prototype.listAllPlayer = function(callback) {
 
     this._allPlayers( function (err,data) {
@@ -147,7 +148,8 @@ Room.prototype.endGame = function (data,callback) {
     let self = this;
 
     self.stopGame();
-    self.game.endGame(data.players, (receivedAll) => {
+    self.game.endGame(data.players, function(receivedAll) {
+
         if(!receivedAll){
             callback(null);
         }

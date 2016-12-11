@@ -1,6 +1,7 @@
 let bcrypt = require('bcryptjs');
 let mongoose = require('mongoose');
 const props = require('../../properties-loader.js');
+let ObjectIdType = require('mongoose').Types.ObjectId;
 
 mongoose.Promise = global.Promise;
 
@@ -98,11 +99,14 @@ module.exports = {
     
     updateScoreAndAddVictory : function (data,callback) {
 
-        User.findByIdAndUpdate(
-            data.id,
+        let elementId = new ObjectIdType(data.id);
+        let query = {_id: elementId};
+
+        User.findOneAndUpdate(
+            query,
             {
                 //$push: {"scores": data.score },
-                $inc : { participation : 1 }
+                $inc : { partiesGagnees: 1  }
             },
             function(err, model) {
                 if (err) {
@@ -117,11 +121,14 @@ module.exports = {
 
     updateScore : function (data,callback) {
 
+        let elementId = new ObjectIdType(data.id);
+        let query = {_id: elementId};
+
         User.findByIdAndUpdate(
-            data.id,
+            query,
             {
                 //$push: {"scores": data.score },
-                $inc : { participation : 1 , partiesGagnees: 1 }
+                $inc : { partiesFinies : 1}
             },
             function(err, model) {
                 if (err) {

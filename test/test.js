@@ -17,6 +17,7 @@ let roomId1;
 let playersRoomJson1;
 
 let socket1JWT;
+let socket2JWT;
 
 describe('Server tests : ' , function () {
 
@@ -132,6 +133,34 @@ describe('Server tests : ' , function () {
                 req.end();
             });
 
+            it("Test n°4 : Should be able to registerUser : another player ", function (done) {
+
+                let data = {
+                    "username": "TRUMP",
+                    "pwd": "TEST",
+                    "email": "PRESIDENTOFUSA@ipl.be"
+                };
+
+                let options = {
+                    host: props.socketProps.url.replace("http://", ""),
+                    path: '/registerUser',
+                    port: props.socketProps.port,
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+
+            });
+
 
         });
 
@@ -229,6 +258,44 @@ describe('Server tests : ' , function () {
                 req.end();
             });
 
+            it("Test n°2 : Should  be able to /checkUserCredentials", function (done) {
+
+                let data = {
+                    "username": "TRUMP",
+                    "pwd": "TEST",
+                    "email": "PRESIDENTOFUSA@ipl.be"
+                };
+
+                let options = {
+                    host: props.socketProps.url.replace("http://", ""),
+                    path: '/checkUserCredentials',
+                    port: props.socketProps.port,
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    res.setEncoding('utf8');
+                    let content = "";
+
+                    res.on('data', (chunk) => {
+                        content += chunk;
+                    });
+
+                    res.on('end', () => {
+                        socket2JWT = JSON.parse(content);
+                        done();
+                    });
+
+
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+            });
 
         });
     });
@@ -263,19 +330,16 @@ describe('Server tests : ' , function () {
 
             });
 
-            it('Test n°2 : Should be able to register a another new user : Player 2', function (done) {
-                this.timeout(250);
+            it('Test n°2 : Should be able to register a another new user : Player 2 - With sign in', function (done) {
 
                 socket2 = io.connect(props.socketProps.url+":"+props.socketProps.port);
-                testFunctions.createPlayer(socket2, player2, function (err, data) {
 
-                    if (err) {
-                        done(err);
-                    } else {
-                        player2.id = data.id;
-                        done();
-                    }
+                socket2.emit(eventEnum.signIn, socket2JWT );
 
+                socket2.on(eventEnum.newPlayer, function (data) {
+                    assert.notDeepEqual(data.id,-1,"Wrong email/passwd");
+                    player2.id = data.id;
+                    done();
                 });
 
             });
@@ -385,8 +449,6 @@ describe('Server tests : ' , function () {
                 it('Test n°1 : Should not be able to join a room', function (done) {
                     this.timeout(250);
 
-                    let wrong = player2;
-                    wrong.id = -1;
                     playersRoomJson1 = [
                         {
                             "playerName": "Jacques",
@@ -395,7 +457,7 @@ describe('Server tests : ' , function () {
                         }
                     ];
 
-                    testFunctions.joinRoom(socket2, wrong, playersRoomJson1, function (err) {
+                    testFunctions.joinRoom(socket2, { id : -1 , roomId : roomId1}, playersRoomJson1, function (err) {
                         if (err) {
                             done();
                         } else {
@@ -407,7 +469,6 @@ describe('Server tests : ' , function () {
                 it('Test n°2 : Should not be able to join a room', function (done) {
                     this.timeout(250);
 
-                    player2.roomId = -1;
                     playersRoomJson1 = [
                         {
                             "playerName": "Jacques",
@@ -416,7 +477,7 @@ describe('Server tests : ' , function () {
                         }
                     ];
 
-                    testFunctions.joinRoom(socket2, player2, playersRoomJson1, function (err) {
+                    testFunctions.joinRoom(socket2, {roomId : roomId1 , id : -1}, playersRoomJson1, function (err) {
                         if (err) {
                             done();
                         } else {
@@ -570,10 +631,8 @@ describe('Server tests : ' , function () {
 
                 it('Test n°2 : Should not be able to start the game', function (done) {
                     this.timeout(250);
-                    let wrong = player2;
-                    wrong.id = -1;
 
-                    testFunctions.startGame([socket1, socket2], socket2, wrong, function (err) {
+                    testFunctions.startGame([socket1, socket2], socket2, { id : -1, roomId : roomId1} , function (err) {
                         if (err) {
                             done(err);
                         } else {
@@ -632,18 +691,14 @@ describe('Server tests : ' , function () {
                 it('Test n°1 : Should be able to receive GameState ', function (done) {
                     this.timeout(350);
 
-                    let keyPlayer1 = player1.id.toString();
-                    let keyPlayer2 = player2.id.toString();
-                    let keyPlayer3 = player3.id.toString();
+                    let someScoreStuff = {};
+                    someScoreStuff["roomId"] = roomId1;
 
-                    let someScoreStuff = {
-                        roomId : roomId1,
-                        players : {
-                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
-                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
-                        }
-                    };
+                    let players = {};
+                    players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
+                    players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
+                    someScoreStuff["players"] = players;
 
 
                     testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
@@ -656,54 +711,23 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°2 : Should not be able to receive GameState ', function (done) {
-                    this.timeout(350);
-
-                    let keyPlayer1 = player1.id.toString();
-                    let keyPlayer2 = player2.id.toString();
-                    let keyPlayer3 = player3.id.toString();
-
-                    let someScoreStuff = {
-                        roomId : roomId1,
-                        players : {
-                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
-                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
-                        }
-                    };
-
-
-                    testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
-                        if (err) {
-                            done();
-                        } else {
-                            done(err);
-                        }
-                    });
-
-                });
             });
 
             describe("Test case n°4 C : Last Tests", function () {
 
                 it("Test n°1 : Typisch way to end Game" , function (done) {
 
-                    let keyPlayer1 = player1.id.toString();
-                    let keyPlayer2 = player2.id.toString();
-                    let keyPlayer3 = player3.id.toString();
+                    let someScoreStuff = {};
+                    someScoreStuff["roomId"] = roomId1;
 
-                    let someScoreStuff = {
-                        roomId : roomId1,
-                        players : {
-                            keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
-                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
-                        }
-                    };
+                    let players = {};
+                    players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
+                    players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
+                    someScoreStuff["players"] = players;
 
-                    // HERE TWO TIMES socket 1 because there are 2 players on it
-
-                    async.forEach([socket1,socket1,socket2], function (socket, callback){
+                    // HERE TWO TIMES socket 2 because there are 2 players on it
+                    async.forEach([socket1,socket2,socket2], function (socket, callback){
                         socket.emit(eventEnum.endGame, someScoreStuff );
                         callback();
                     }, function(err) {
@@ -712,25 +736,26 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it("Test n°2 : newMaster  ", function (done) {
+
+                it("Test n°2 : Exit Room  ", function (done) {
 
                         this.timeout(500);
 
-                        testFunctions.RageExit(socket1,socket2,player1 , function (err) {
+                        testFunctions.RageExit(socket2,socket1,player2 , function (err) {
                             if (err) {
                                 done(err);
                             } else {
-                                testFunctions.NewMaster(socket2,player2 , function (err) {
-                                    if (err) {
-                                        done(err);
-                                    } else {
-                                        done();
-                                    }
-                                });
+                                done();
                             }
                         });
 
                 });
+                
+                it("Test n°3 : Master leaves his room", function (done) {
+                    socket1.disconnect();
+                    done();
+                });
+
 
             });
 
