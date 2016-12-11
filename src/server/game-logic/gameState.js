@@ -33,7 +33,6 @@ Game.prototype.stop = function () {
 };
 
 Game.prototype.addPlayer = function(player){
-    console.log("gs + " + player.id);
     this.players[player.id] = [];
     this.scores[player.id] = [];
 };
