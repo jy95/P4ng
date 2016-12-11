@@ -16,13 +16,15 @@ let socket2;
 let roomId1;
 let playersRoomJson1;
 
+let socket1JWT;
 
 describe('Server tests : ' , function () {
 
     describe('Create and connect to a Server : ', function () {
 
         it('Test n°1 : Should create a Server' , function (done) {
-            this.timeout(2500);
+            // Db init and jwt takes too much time now
+            this.timeout(25000);
             require('../src/server/server.js').listen();
             done();
         });
@@ -32,7 +34,6 @@ describe('Server tests : ' , function () {
         winstom.remove(winstom.transports.Console);
 
         it('Test n°2 : Should be possible for client to connect on this Server', function (done) {
-            this.timeout(250);
 
             let socket = io.connect(props.socketProps.url+":"+props.socketProps.port);
             socket.on('connect', function (socket) {
@@ -209,7 +210,19 @@ describe('Server tests : ' , function () {
 
                 let req = http.request(options, function(res) {
                     assert.equal(res.statusCode,200);
-                    done();
+                    res.setEncoding('utf8');
+                    let content = "";
+
+                    res.on('data', (chunk) => {
+                        content += chunk;
+                    });
+
+                    res.on('end', () => {
+                        socket1JWT = JSON.parse(content);
+                        done();
+                    });
+
+
                 });
 
                 req.write(JSON.stringify(data));
@@ -240,7 +253,7 @@ describe('Server tests : ' , function () {
 
                 socket1 = io.connect(props.socketProps.url+":"+props.socketProps.port);
 
-                socket1.emit(eventEnum.signIn, {email : "TEST@ipl.be",  password : "TEST" } );
+                socket1.emit(eventEnum.signIn, socket1JWT );
 
                 socket1.on(eventEnum.newPlayer, function (data) {
                     assert.notDeepEqual(data.id,-1,"Wrong email/passwd");

@@ -1,6 +1,3 @@
-/**
- * Created by jacques on 10-11-16.
- */
 
 const props = require('../properties-loader.js');
 const secretJwtKey = 'Inyoursnatchfitspleasurebroomshapedpleasure';
@@ -20,20 +17,13 @@ module.exports.listen = function () {
     // parse application/json
     app.use(bodyParser.json());
 
-    /*
-     Middleware express : plus très utile
-    app.use(function(req, res, next) {
-
-    });
-    */
-
     app.post("/registerUser", function (req,res) {
         mongoDb.registerUser(req.body, (err, user) =>{
             if(err){
                 res.status(409).send(err.message);
             }
             else{
-                var rep = {'jwt': jwt.sign({password: user._id, email: user.email}, secretJwtKey)};
+                let rep = {'jwt': jwt.sign({idDb: user._id, username: user.username}, secretJwtKey)};
                 res.status(200).send(JSON.stringify(rep));
             }
         });
@@ -45,19 +35,27 @@ module.exports.listen = function () {
                 res.status(422).send(err.message);
             }
             else{
-                var rep = {'jwt': jwt.sign({password: user._id, email: user.email}, secretJwtKey)};
+                let rep = {'jwt': jwt.sign({idDb: user._id, username: user.username}, secretJwtKey)};
                 res.status(200).send(JSON.stringify(rep));
             }
         });
     });
 
-    /*
-    app.get("/scores" , function (req,res) {
-
-    });
-    */
 
     io.on("connection", function (socket) {
+
+        socket.on(eventsEnum.signIn, function (data)  {
+
+            jwt.verify(data.jwt, secretJwtKey, function(err, decoded) {
+                if (err) {
+                    socket.emit(eventsEnum.newPlayer, { id : -1} );
+                } else {
+
+                    require("./server-logic/routes.js").newPlayerWhenSignIn(socket,decoded.idDb,{name: decoded.username });
+                }
+            });
+
+        });
 
         // another socket events listeners
         require("./server-logic/routes.js").gestionSocket(socket);

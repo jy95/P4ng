@@ -7,7 +7,7 @@ function Room(playerId,gameId,roomName) {
     this.roomName = roomName;
     this.isStarted = false;
     this.isFinished = false;
-    this.players= new Map();
+    this.players= [];
     this.game = new Game(this.gameId,60);
     this.emitter = require('../server-logic/gameEventEmitter.js').commonEmitter;
 
@@ -23,10 +23,10 @@ function Room(playerId,gameId,roomName) {
 }
 
 Room.prototype.addPlayer = function(player,callback) {
-    if (this.players.size < 4) {
+    if (this.players.length < 4) {
 
-        // add player in Players Map
-        this.players.set(this.players.size, {user: player });
+        // add player in Players Array
+        this.players.push(player);
 
         //add player to game
         this.game.addPlayer(player);
@@ -62,13 +62,13 @@ Room.prototype.leaveRoom = function(player, callback) {
 
         default :
             // remove player
-            this.players.delete(index);
+            this.players.splice(index, 1);
 
             //remove player from game
             this.game.removePlayer(player);
 
             // a New Master may be required , if enough players left
-            callback(null,  (this.creatorId === player.id) , this.players.size > 1 , this.players.size === 0);
+            callback(null,  (this.creatorId === player.id) , this.players.length > 1 , this.players.length === 0);
     }
 
 
@@ -115,8 +115,8 @@ Room.prototype.listAllPlayer = function(callback) {
  */
 Room.prototype.findPlayer = function(player) {
     let index = -1;
-    for ( let [key,value] of this.players ) {
-        if (  value.user.id === player.id ) {
+    for ( let key in this.players ) {
+        if (  this.players[key].id === player.id ) {
             index = key;
         }
     }
@@ -129,8 +129,8 @@ Room.prototype._allPlayers = function(callback) {
 
     this.players.forEach( (value,key) => {
         playerJson.push(
-            { playerName: (value.user).name,
-                playerId : (value.user).id ,
+            { playerName: value.name,
+                playerId : value.id ,
                 playerNumber : key
             });
     });

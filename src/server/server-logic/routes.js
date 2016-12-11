@@ -5,7 +5,6 @@ let eventEnum = require("../../events.js");
 let LobbyGenerator = require("./../game-manager/lobby-manager.js");
 let lobby = new LobbyGenerator();
 let winston = require("winston");
-let mongoDb = require('../database/database-mongodb.js');
 
 // winstom config
 winston.remove(winston.transports.Console);
@@ -75,33 +74,6 @@ module.exports.gestionSocket = function(socket){
         });
     });
 
-    socket.on(eventEnum.signIn, function (data)  {
-
-        mongoDb.checkUserCredentials( { email : data.email , pwd : data.password } , (err, user) =>{
-
-            if(!err){
-
-                function newPlayerWhenSignIn(socket, idDb,data) {
-
-                    // tell the server that SocketID X is player PK Y
-                    lobby.registerSocketIdAndId(socket.id,idDb);
-
-                    // register him directly , like normal player
-                    lobby.newPlayer(socket, data, function (err) {
-                        winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.newPlayer + " with connection handled : " + ( (err) ? " with message " + err.message : " successfully") );
-                    });
-
-                }
-                // call this function
-                newPlayerWhenSignIn(socket,user._id,{name: user.username });
-
-            } else {
-                socket.emit(eventEnum.newPlayer, { id : -1} );
-            }
-
-        });
-    });
-
 
 };
 
@@ -115,5 +87,17 @@ module.exports.getRequiredDataForScore = function (callback) {
     lobby.getRequiredDataForScore( function (data) {
        callback(data);
     });
+};
+
+module.exports.newPlayerWhenSignIn = function (socket, idDb,data) {
+
+    // tell the server that SocketID X is player PK Y
+    lobby.registerSocketIdAndId(socket.id,idDb);
+
+    // register him directly , like normal player
+    lobby.newPlayer(socket, data, function (err) {
+        winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.newPlayer + " with connection handled : " + ( (err) ? " with message " + err.message : " successfully") );
+    });
+
 };
 
