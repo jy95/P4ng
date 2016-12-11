@@ -1,6 +1,8 @@
 const props = require('../../../properties-loader.js');
 const lobbyLogic = require(props.lobbyLogicPath());
 const socketProps = props.socketProps
+const socket = require(props.socketPath())
+const eventsEnum = require(props.eventsEnumPath())
 
 var submitCreateAccountForm = document.getElementById('submitCreateAccountForm');
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
@@ -90,14 +92,6 @@ function registerUser(username, email, pwd){
            if (xmlhttp.status == 200) {
                var rep = JSON.parse(xmlhttp.responseText);
                signIn(rep.jwt);
-               /*var user = {};
-               user.name = username;
-<<<<<<< HEAD
-               lobbyLogic.newPlayer(user);
-=======
-               newPlayer(user);*/
->>>>>>> eb3e4b04ac8c8bd75b1879943cf51779c55b116a
-
            }
            else {
                alertCreateAccountForm.innerText =xmlhttp.responseText;
