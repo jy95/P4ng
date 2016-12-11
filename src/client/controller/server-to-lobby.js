@@ -25,8 +25,7 @@ socket.on(eventsEnum.createRoom, (data)=>{
 })
 
 socket.on(eventsEnum.joinRoom, (data)=>{
-    console.log(data)
-    console.log('serverToLobby - join room')
+    console.log(`serverToLobby - join room`)
     lobbyLogic.setCurrentRoom(data)
 })
 
