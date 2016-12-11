@@ -1,10 +1,9 @@
-/**
- * Created by jacques on 10-11-16.
- */
 
 const props = require('../properties-loader.js');
+const secretJwtKey = 'Inyoursnatchfitspleasurebroomshapedpleasure';
 let eventsEnum = require(props.eventsEnumPath());
 let mongoDb = require('./database/database-mongodb.js');
+let jwt = require('jsonwebtoken');
 
 module.exports.listen = function () {
 
@@ -18,20 +17,14 @@ module.exports.listen = function () {
     // parse application/json
     app.use(bodyParser.json());
 
-    /*
-     Middleware express : plus très utile
-    app.use(function(req, res, next) {
-
-    });
-    */
-
     app.post("/registerUser", function (req,res) {
-        mongoDb.registerUser(req.body, (err) =>{
+        mongoDb.registerUser(req.body, (err, user) =>{
             if(err){
                 res.status(409).send(err.message);
             }
             else{
-                res.status(200).send('Successfully created');
+                let rep = {'jwt': jwt.sign({idDb: user._id, username: user.username}, secretJwtKey)};
+                res.status(200).send(JSON.stringify(rep));
             }
         });
     });
@@ -42,31 +35,26 @@ module.exports.listen = function () {
                 res.status(422).send(err.message);
             }
             else{
-                res.status(200).send(user);
+                let rep = {'jwt': jwt.sign({idDb: user._id, username: user.username}, secretJwtKey)};
+                res.status(200).send(JSON.stringify(rep));
             }
         });
     });
 
-    /*
-    app.get("/scores" , function (req,res) {
-
-    });
-    */
 
     io.on("connection", function (socket) {
 
-        // NB : I do it here because mongoDb cannot be anywhere than HERE (just not trying asking, response is NO)
-        // trigger when someone wants to connect to our Game Server
-        socket.on(eventsEnum.SignIn, function (data)  {
-            mongoDb.checkUserCredentials( { email : data.email , pwd : data.password } , (err, user) =>{
+        socket.on(eventsEnum.signIn, function (data)  {
 
-                if(!err){
-                    require("./server-logic/routes.js").newPlayerWhenSignIn(socket,user._id,{name: user.username });
-                } else {
+            jwt.verify(data.jwt, secretJwtKey, function(err, decoded) {
+                if (err) {
                     socket.emit(eventsEnum.newPlayer, { id : -1} );
-                }
+                } else {
 
+                    require("./server-logic/routes.js").newPlayerWhenSignIn(socket,decoded.idDb,{name: decoded.username });
+                }
             });
+
         });
 
         // another socket events listeners
@@ -100,8 +88,8 @@ module.exports.listen = function () {
                 sockets.add(mySocket);
 
                 // check if current player has the best score
-                if ( bestRecordScore < value.score) {
-                    bestRecordScore = value.score;
+                if ( bestRecordScore < value) {
+                    bestRecordScore = value;
                     bestRecordUserKey = key;
                     bestRecordSocketKey = mySocket.id;
                 }
