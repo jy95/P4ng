@@ -1,9 +1,6 @@
-const props = require('../../../properties-loader.js').socketProps;
-const lobbyToServerPath = require('../../../properties-loader.js').lobbyToServerPath();
-
-var newPlayer = require(lobbyToServerPath).newPlayer;
-
-console.log(newPlayer);
+const props = require('../../../properties-loader.js');
+const lobbyLogic = require(props.lobbyLogicPath());
+const socketProps = props.socketProps
 
 var submitCreateAccountForm = document.getElementById('submitCreateAccountForm');
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
@@ -58,7 +55,7 @@ function checkCreateAccountForm(){
     }
 
     registerUser(usernameCreateAccountForm.value, emailCreateAccountForm.value, pwdCreateAccountForm.value);
-   
+
 }
 
 
@@ -94,7 +91,7 @@ function registerUser(username, email, pwd){
                displayLobby();
                var user = {};
                user.name = username;
-               newPlayer(user);
+               lobbyLogic.newPlayer(user);
 
            }
            else {
@@ -103,7 +100,7 @@ function registerUser(username, email, pwd){
         }
     };
 
-    xmlhttp.open("POST", props.url + ":" + props.port + "/registerUser");
+    xmlhttp.open("POST", socketProps.url + ":" + socketProps.port + "/registerUser");
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.send(JSON.stringify({username: username, pwd: pwd, email: email}));
 
@@ -122,7 +119,7 @@ function authenticate(email, pwd){
                displayLobby();
                var user = JSON.parse(xmlhttp.responseText);
                user.name = user.username;
-               newPlayer(user);
+               lobbyLogic.newPlayer(user);
            }
            else {
                alertAuthenticateForm.innerText =xmlhttp.responseText;
@@ -130,7 +127,7 @@ function authenticate(email, pwd){
         }
     };
 
-    xmlhttp.open("POST", props.url + ":" + props.port + "/checkUserCredentials");
+    xmlhttp.open("POST", socketProps.url + ":" + socketProps.port + "/checkUserCredentials");
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.send(JSON.stringify({pwd: pwd, email: email}));
 
