@@ -1,31 +1,34 @@
 const props = require('../../properties-loader.js')
 var eventsEnum = require(props.eventsEnumPath())
-var socket = require(props.socketPath()).socket
+var socket = require(props.socketPath())
 var gameLogic = require(props.gameLogicPath())
 var endGameAlreadySent = false
+console.log('game to server required')
 
-gameLogic.subscribe(()=>{sendStateToServer(gameLogic.getState())})
+gameLogic.subscribe(()=>{sendStateToServer()})
 
-function sendStateToServer (gameState){
-    if(!gameState.isFinished){
-      socket.emit(eventsEnum.PlayerStateUpdate, getLocalPlayersState(gameState))
+function sendStateToServer (){
+    let state = getLocalPlayersState()
+    if(!state.isFinished){
+      socket.emit(eventsEnum.PlayerStateUpdate, state)
+      endGameAlreadySent = false
     }
     else if (!endGameAlreadySent){
-        socket.emit(eventsEnum.EndGame, gameState)
+        socket.emit(eventsEnum.EndGame, state)
         endGameAlreadySent = true
     }
 
 }
 
-function getLocalPlayersState ({players, roomId}){
+function getLocalPlayersState (){
     var localPlayersState = {}
     localPlayersState.players = {}
-    for(key in players){
-        var player = players[key]
-        if(player.isLocal){
-            localPlayersState.players[player.id] = players[key]
-        }
+    let state = gameLogic.getState()
+    for(let p in state.players){
+        if(state.players[p].isLocal)
+            localPlayersState.players[p] = state.players[p]
     }
-    localPlayersState.roomId = roomId
+    localPlayersState.roomId = state.roomId
+    localPlayersState.isFinished = state.isFinished
     return localPlayersState
 }

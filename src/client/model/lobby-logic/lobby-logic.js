@@ -4,86 +4,119 @@ const eventsEnum = require(props.eventsEnumPath())
 var lobbyToServer = require(props.lobbyToServerPath())
 var gameLogic = require(props.gameLogicPath())
 const gameController = require(props.gameControllerPath())
+const Lobby = require('./objects/Lobby.js')
 
-let localPlayer = null
-let remotePlayers = {}
-let localPlayers = {}
-let currentRoom = null
-let rooms = {}
+let theLobby = new Lobby()
 
 module.exports.setPlayerList = function(playerList){
-    remotePlayers = {}
-    for(let p of playerList)
-    if(!p.id === localPlayer.id) remotePlayers[p.id] = p
+    console.log('lobby logic - set player list')
+    theLobby.setPlayerList(playerList)
 }
 
+// if the local player isn't set yet, this method sets him
+// if he's set, then it tries to add a guest
+// if it manages to add a guest, it asks the server to make the guest join the current room
+// then it emits an update
 module.exports.setLocalPlayer = function(player) {
-    if (!localPlayer) {
-        localPlayer = player
-        localPlayer.isLocal = true
-        localPlayers[localPlayer.id] = localPlayer
-    } else {
-        localPlayers[player.id] = player
-        localPlayers[player.id].isLocal = true
-    }
+    console.log('lobby logic - set local player')
+    if (!theLobby.setLocalPlayer(player) && theLobby.addGuest(player))
+    lobbyToServer.joinRoom({roomId: theLobby.currentRoom.roomId, id: player.id})
+
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
-module.exports.getLocalPlayer = function(){
-    return localPlayer
+module.exports.newPlayer = function({name}){
+    console.log('lobby logic - new player')
+    if(!name && (theLobby.localPlayer || !theLobby.canAddGuest())) return false
+
+    lobbyToServer.newPlayer({'name': name})
+    return true
 }
 
-module.exports.removePlayer = function({id}){
-    if(! id === localPlayer.id) delete remotePlayers[id]
-    lobbyEventEmitter.emit('lobbyUpdate')
-}
-
+// asks the server to create a room
 module.exports.createRoom = function({roomName}){
-    if(localPlayer && roomName && !currentRoom){
+    console.log('lobby logic - create room')
+    if(theLobby.isCurrentRoomSettable() && roomName){
         lobbyToServer.createRoom({
-            'id': localPlayer.id,
+            'id': theLobby.localPlayer.id,
             'roomName': roomName
         })
-        return 'request sent';
     }
-    return localPlayer ? 'You need a room name!' : 'You need to create a player!'
 }
 
-module.exports.joinRoom = function({roomId}){
-    if(localPlayer && roomId)
-    lobbyToServer.joinRoom({
-        'id': localPlayer.id,
-        'roomId': roomId
-    })
+// asks the server to join a room
+module.exports.askToJoinRoom = function({roomId}){
+    console.log('lobby logic - ask to join')
+    if(theLobby.isCurrentRoomSettable() && roomId){
+        lobbyToServer.joinRoom({
+            'id': theLobby.localPlayer.id,
+            'roomId': roomId
+        })
+    }
 }
 
+// leaves a room, warns the server if necessary
 module.exports.leaveRoom = function({roomId, id}){
-    if(!roomId && currentRoom){
-        lobbyToServer.leaveRoom(currentRoom)
-        currentRoom = null
-        gameLogic.killGame()
-    }else if(currentRoom && roomId === currentRoom.roomId){
-        if(id === localPlayer.id){
-            currentRoom = null
-            gameLogic.killGame()
-        }else{
-            currentRoom.removePlayer(id)
-        }
+    console.log('lobby logic - leave room')
+    // if the player is the main local player
+    if(id === theLobby.localPlayer.id){
+        nukeRoom()
+    }else{ // else juste remove the player
+        theLobby.currentRoom.removePlayer(id)
     }
+    // warn the server if order comes from local
+    if(!roomId) lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
+
+    // tell listeners
     lobbyEventEmitter.emit('lobbyUpdate')
-    console.log('lobbyLogic - leave room')
 }
 
-module.exports.setCurrentRoom = function(room){
-    currentRoom = room
-    currentRoom.angle = gameLogic.initGame()
-    gameLogic.addPlayer(localPlayer)
+function nukeRoom(){
+    theLobby.resetCurrentRoom()
+    gameLogic.killGame()
+}
+
+module.exports.setCurrentRoom = function(data){
+    console.log('lobby logic - set current room')
+    console.log(data)
+    if(!theLobby.setCurrentRoom(data))
+    theLobby.addPlayerToCurrentRoom({id: data.id, name: data.name})
+
+    console.log(theLobby.currentRoom);
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
 module.exports.setRooms = function(roomsList){
-    rooms = roomsList
+    console.log('lobby logic - set rooms')
+    theLobby.setAvailableRooms(roomsList)
     lobbyEventEmitter.emit('lobbyUpdate')
+}
+
+
+// asks the server to start a game
+module.exports.askToStartGame = function(){
+    console.log('lobby logic - ask to start game')
+    if(theLobby.currentRoom){
+        let theAngle = gameLogic.initGame()
+        lobbyToServer.startGame({angle: theAngle, roomId: theLobby.currentRoom.roomId, id: theLobby.localPlayer.id})
+        console.log(`lobbyLogic - askToStartGame --- ${theAngle}`)
+    }
+}
+
+// actually starts a game
+module.exports.startGame = function({angle}) {
+    console.log('lobby logic - start game')
+    let theRoom = theLobby.currentRoom
+    if(theRoom) {
+        gameLogic.initGame()
+        for (let i = 0; i< theRoom.players.length; i++) { //add players to the Game instance
+            gameLogic.addPlayer(theRoom.players[i])
+            //this is ideally where the game-controller should be asked to assign a
+            //controller device to the players
+            gameController.assignController(gameController.KEYBOARD, i)
+        }
+        gameLogic.startGame({'angle': angle})
+    }
 }
 
 module.exports.subscribe = function(callback){
@@ -91,30 +124,10 @@ module.exports.subscribe = function(callback){
 }
 
 module.exports.getState = function(){
-    return {
-        'rooms': rooms,
-        'currentRoom': currentRoom,
-        'localPlayer': localPlayer,
-        'localPlayers': localPlayers,
-        'remotePlayers': remotePlayers//getRankedPlayersList()
-    }
-}
-
-module.exports.startGame = function() {
-    if(currentRoom) {
-        for (let playerID in localPlayers) { //add players to the Game instance
-            gameLogic.addPlayer(localPlayers[playerID])
-            //this is ideally where the game-controller should be asked to assign a
-            //controller device to the players
-            gameController.assignController(gameController.GAMEPAD, localPlayers[playerID].side)
-        }
-        lobbyToServer.startGame({angle: currentRoom.angle, roomId: currentRoom.roomId, id: localPlayer.id})
-        console.log(`lobbyLogic - startGame ${currentRoom.angle}`)
-    }
+    return theLobby.toJSON()
 }
 
 // returns an array of players ordered by their total score
-//TODO: adapt to localPlayers
 function getRankedPlayersList(){
     if(remotePlayers){
         let playersArray = remotePlayers.sort(function(a,b){

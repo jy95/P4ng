@@ -62,7 +62,7 @@ PongGame.prototype.update = function (){
     // magically moves only the local players :-O I'm David Blaine yo!
     // (I'm kidding, I used an isLocal boolean in the move method)
     for (let paddle of this.sides)
-        paddle.move()
+    paddle.move()
     // moves the ball
     this.ball.move()
 }
@@ -108,7 +108,7 @@ PongGame.prototype.toJSON = function(){
     var thePlayers = {}
 
     for(let paddle of this.sides)
-        thePlayers[paddle.id] = paddle.toJSON()
+    thePlayers[paddle.id] = paddle.toJSON()
 
     var theBall = this.ball.toJSON()
 

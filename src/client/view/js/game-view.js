@@ -9,8 +9,6 @@ c.font = '30px earlygameboy'
 
 gameLogic.subscribe(()=>{
     updateView(gameLogic.getState())
-    console.log('gameView - update')
-    console.log(gameLogic.getState())
 })
 
 function updateView (state){

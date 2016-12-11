@@ -1,10 +1,8 @@
 const props = require('../../../properties-loader.js');
-const socketProps = props.socketProps;
-const lobbyToServerPath = props.lobbyToServerPath();
-
-var eventsEnum = require(props.eventsEnumPath());
-var socket = require(props.socketPath());
-var newPlayer = require(lobbyToServerPath).newPlayer;
+const lobbyLogic = require(props.lobbyLogicPath());
+const socketProps = props.socketProps
+const socket = require(props.socketPath())
+const eventsEnum = require(props.eventsEnumPath())
 
 var submitCreateAccountForm = document.getElementById('submitCreateAccountForm');
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
@@ -60,7 +58,7 @@ function checkCreateAccountForm(){
     }
 
     registerUser(usernameCreateAccountForm.value, emailCreateAccountForm.value, pwdCreateAccountForm.value);
-   
+
 }
 
 
@@ -94,10 +92,6 @@ function registerUser(username, email, pwd){
            if (xmlhttp.status == 200) {
                var rep = JSON.parse(xmlhttp.responseText);
                signIn(rep.jwt);
-               /*var user = {};
-               user.name = username;
-               newPlayer(user);*/
-
            }
            else {
                alertCreateAccountForm.innerText =xmlhttp.responseText;
@@ -155,12 +149,13 @@ function displayLobby(){
 }
 
 function signIn(jwt){
-    socket.emit(eventsEnum.signIn, jwt);
+    socket.emit(eventsEnum.signIn, {jwt: jwt});
 }
 
 socket.on(eventsEnum.newPlayer, (player)=>{
     console.log(player);
     if(!player.id === -1){
+        lobbyLogic.setLocalPlayer(player)
         displayLobby();
     }
 })
