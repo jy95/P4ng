@@ -8,7 +8,7 @@ function Room(playerId,gameId,roomName) {
     this.isStarted = false;
     this.isFinished = false;
     this.players= [];
-    this.game = new Game(this.gameId,60);
+    this.game = new Game(this.gameId);
     this.emitter = require('../server-logic/gameEventEmitter.js').commonEmitter;
 
     // implement the onUpdate function of game

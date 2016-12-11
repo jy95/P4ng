@@ -29,5 +29,7 @@
     "MongoDb" : {
         "url" : "127.0.0.1",
         "database" : "P4ngDb"
-    }
+    },
+    "secretJwtKey": "Inyoursnatchfitspleasurebroomshapedpleasure",
+    "fps" : 60
 }

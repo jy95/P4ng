@@ -1,8 +1,8 @@
 let u = require('underscore');
+const props = require('../../properties-loader.js');
 
-
-let Game = function (roomId,fps) {
-    this.fps = fps;
+let Game = function (roomId) {
+    this.fps = props.fps;
     this.delay = 1000 / this.fps;
     this.roomId = roomId;
     this.players = {};
