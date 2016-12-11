@@ -28,18 +28,18 @@ module.exports = {
         else{
             this.findUser(data, (err, user) => {
                 if(err){
-                    callback(err.message);
+                    callback(err.message, null);
                 }
                 else{
                     if(user === null){
                         let salt = bcrypt.genSaltSync(10);
                         data.pwd = bcrypt.hashSync(data.pwd, salt);
-                        this.createUser(data, (err) =>{
+                        this.createUser(data, (err, user) =>{
                             if(err){
-                                callback(err.message);
+                                callback(err.message, null);
                             }
                             else{
-                                callback(null);
+                                callback(null, user);
                             }
                         });
                     }
@@ -73,11 +73,11 @@ module.exports = {
     },
 
     createUser : function (data,callback){
-        User.create(data, function (err) {
+        User.create(data, function (err, user) {
                 if (err) {
-                    callback(err);
+                    callback(err, null);
                 } else {
-                    callback(null);
+                    callback(null, user);
                 }
         });
     },

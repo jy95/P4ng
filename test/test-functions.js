@@ -226,21 +226,6 @@ module.exports = {
         } catch (err) {
             callback(err);
         }
-    },
-    
-    EndGame : function (sockets,playerState,callback) {
-
-        socket.emit(eventEnum.endGame, playerState);
-
-        try {
-            socket.on(eventEnum.endGame, function (data) {
-                assert.equal(JSON.stringify(data),JSON.stringify(playerState),"No same playerState");
-            });
-
-            callback(null);
-        } catch (err) {
-            callback(err);
-        }
-    } 
+    }
 
 };

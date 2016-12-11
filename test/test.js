@@ -4,6 +4,7 @@ const props = require('../src/properties-loader.js');
 let io = require('socket.io-client');
 let testFunctions = require("./test-functions.js");
 let eventEnum = require('../src/events.js');
+let async = require("async");
 
 let player1 = {name: "Jacques" };
 let player2 = {name: "TRUMP" };
@@ -15,13 +16,15 @@ let socket2;
 let roomId1;
 let playersRoomJson1;
 
+let socket1JWT;
 
 describe('Server tests : ' , function () {
 
     describe('Create and connect to a Server : ', function () {
 
         it('Test n°1 : Should create a Server' , function (done) {
-            this.timeout(1500);
+            // Db init and jwt takes too much time now
+            this.timeout(25000);
             require('../src/server/server.js').listen();
             done();
         });
@@ -31,7 +34,6 @@ describe('Server tests : ' , function () {
         winstom.remove(winstom.transports.Console);
 
         it('Test n°2 : Should be possible for client to connect on this Server', function (done) {
-            this.timeout(250);
 
             let socket = io.connect(props.socketProps.url+":"+props.socketProps.port);
             socket.on('connect', function (socket) {
@@ -208,7 +210,19 @@ describe('Server tests : ' , function () {
 
                 let req = http.request(options, function(res) {
                     assert.equal(res.statusCode,200);
-                    done();
+                    res.setEncoding('utf8');
+                    let content = "";
+
+                    res.on('data', (chunk) => {
+                        content += chunk;
+                    });
+
+                    res.on('end', () => {
+                        socket1JWT = JSON.parse(content);
+                        done();
+                    });
+
+
                 });
 
                 req.write(JSON.stringify(data));
@@ -239,7 +253,7 @@ describe('Server tests : ' , function () {
 
                 socket1 = io.connect(props.socketProps.url+":"+props.socketProps.port);
 
-                socket1.emit(eventEnum.SignIn, {email : "TEST@ipl.be",  password : "TEST" } );
+                socket1.emit(eventEnum.signIn, socket1JWT );
 
                 socket1.on(eventEnum.newPlayer, function (data) {
                     assert.notDeepEqual(data.id,-1,"Wrong email/passwd");
@@ -620,12 +634,14 @@ describe('Server tests : ' , function () {
 
                     let keyPlayer1 = player1.id.toString();
                     let keyPlayer2 = player2.id.toString();
+                    let keyPlayer3 = player3.id.toString();
 
                     let someScoreStuff = {
-                      roomId : roomId1,
+                        roomId : roomId1,
                         players : {
                             keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18}
+                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
+                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
                         }
                     };
 
@@ -645,12 +661,14 @@ describe('Server tests : ' , function () {
 
                     let keyPlayer1 = player1.id.toString();
                     let keyPlayer2 = player2.id.toString();
+                    let keyPlayer3 = player3.id.toString();
 
                     let someScoreStuff = {
-                        roomId : -1,
+                        roomId : roomId1,
                         players : {
                             keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18}
+                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
+                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
                         }
                     };
 
@@ -666,39 +684,35 @@ describe('Server tests : ' , function () {
                 });
             });
 
-            describe("Test case n°4 C : End Game + newMaster", function () {
-                it("Test n°1 : Wrong room", function (done) {
-                    this.timeout(250);
+            describe("Test case n°4 C : Last Tests", function () {
+
+                it("Test n°1 : Typisch way to end Game" , function (done) {
 
                     let keyPlayer1 = player1.id.toString();
                     let keyPlayer2 = player2.id.toString();
+                    let keyPlayer3 = player3.id.toString();
 
                     let someScoreStuff = {
                         roomId : roomId1,
                         players : {
                             keyPlayer1 :{"isLocal":true,"id":keyPlayer1,"score":5,"position":18},
-                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18}
+                            keyPlayer2 :{"isLocal":true,"id":keyPlayer2,"score":2,"position":18},
+                            keyPlayer3 :{"isLocal":true,"id":keyPlayer3,"score":1,"position":18}
                         }
                     };
 
-                    socket2.emit(eventEnum.endGame, someScoreStuff);
+                    // HERE TWO TIMES socket 1 because there are 2 players on it
 
-                    try {
-                        socket2.on(eventEnum.endGame, function (data) {
-                            assert.equal(JSON.stringify(data),JSON.stringify(someScoreStuff),"No same playerState");
-                        });
+                    async.forEach([socket1,socket1,socket2], function (socket, callback){
+                        socket.emit(eventEnum.endGame, someScoreStuff );
+                        callback();
+                    }, function(err) {
                         done();
-                    } catch (err) {
-                        done(err);
-                    }
+                    });
 
                 });
 
-                it("Test n°2 : Typisch way to end Game" , function (done) {
-                    done();
-                });
-
-                it("Test n°3 : newMaster  ", function (done) {
+                it("Test n°2 : newMaster  ", function (done) {
 
                         this.timeout(500);
 

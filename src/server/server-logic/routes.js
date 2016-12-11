@@ -74,12 +74,19 @@ module.exports.gestionSocket = function(socket){
         });
     });
 
+
 };
 
 module.exports.gameStateUpdate = function (data) {
   lobby.gameStateUpdate(data , function (err) {
       winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.playerStateUpdate + " handled : " + ( (err) ? " with message " + err.message : " successfully" ));
   });
+};
+
+module.exports.getRequiredDataForScore = function (callback) {
+    lobby.getRequiredDataForScore( function (data) {
+       callback(data);
+    });
 };
 
 module.exports.newPlayerWhenSignIn = function (socket, idDb,data) {
@@ -92,11 +99,5 @@ module.exports.newPlayerWhenSignIn = function (socket, idDb,data) {
         winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.newPlayer + " with connection handled : " + ( (err) ? " with message " + err.message : " successfully") );
     });
 
-};
-
-module.exports.getRequiredDataForScore = function (callback) {
-    lobby.getRequiredDataForScore( function (data) {
-       callback(data);
-    });
 };
 

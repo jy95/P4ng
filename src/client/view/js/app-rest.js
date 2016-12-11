@@ -17,6 +17,7 @@ var emailAuthenticateForm = document.getElementById('emailAuthenticateForm');
 
 
 
+
 submitCreateAccountForm.addEventListener("click", function(event){
     event.preventDefault();
     checkCreateAccountForm();
@@ -87,11 +88,15 @@ function registerUser(username, email, pwd){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
            if (xmlhttp.status == 200) {
-               alertCreateAccountForm.innerText =xmlhttp.responseText;
-               displayLobby();
-               var user = {};
+               var rep = JSON.parse(xmlhttp.responseText);
+               signIn(rep.jwt);
+               /*var user = {};
                user.name = username;
+<<<<<<< HEAD
                lobbyLogic.newPlayer(user);
+=======
+               newPlayer(user);*/
+>>>>>>> eb3e4b04ac8c8bd75b1879943cf51779c55b116a
 
            }
            else {
@@ -116,10 +121,8 @@ function authenticate(email, pwd){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
            if (xmlhttp.status == 200) {
-               displayLobby();
-               var user = JSON.parse(xmlhttp.responseText);
-               user.name = user.username;
-               lobbyLogic.newPlayer(user);
+                var rep = JSON.parse(xmlhttp.responseText);
+                signIn(rep.jwt);
            }
            else {
                alertAuthenticateForm.innerText =xmlhttp.responseText;
@@ -150,3 +153,15 @@ function displayLobby(){
      document.getElementById('formsContainer').className = 'closed';
      document.getElementById('lobbyContainer').className = 'open';
 }
+
+function signIn(jwt){
+    socket.emit(eventsEnum.signIn, jwt);
+}
+
+socket.on(eventsEnum.newPlayer, (player)=>{
+    console.log(player);
+    if(!player.id === -1){
+        lobbyLogic.setLocalPlayer(player)
+        displayLobby();
+    }
+})
