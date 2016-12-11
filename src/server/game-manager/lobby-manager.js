@@ -149,7 +149,7 @@ LobbyManager.prototype.leaveRoom = function (socket,data,callback) {
         switch(err) {
             case null:
 
-
+                /* FOR FUTURE RELEASE : Change the master of the room
                 // A new Master is required
                 if ( hasEnoughPlayers && newMasterRequired) {
 
@@ -161,38 +161,43 @@ LobbyManager.prototype.leaveRoom = function (socket,data,callback) {
                     });
 
                 }
+                */
+                if (newMasterRequired) {
+                    // CURRENT RELEASE : DELETE ROOM
+                } else {
 
-                // send data +  prevent another players in room
-                self.socketsInsideARoom(data.roomId, function (sockets) {
-                    self.socketManager.broadcastMessageInRoom(sockets , eventEnum.leaveRoom,  data );
-                });
+                    // send data +  prevent another players in room
+                    self.socketsInsideARoom(data.roomId, function (sockets) {
+                        self.socketManager.broadcastMessageInRoom(sockets , eventEnum.leaveRoom,  data );
+                    });
 
-                // remove socket from room , if required :
-                if ( self.idToSockets.has(socket.id ) ) {
+                    // remove socket from room , if required :
+                    if ( self.idToSockets.has(socket.id ) ) {
 
-                    // removes player ID from idToSockets
+                        // removes player ID from idToSockets
 
-                    let previousEntry = self.idToSockets.get(socket.id);
-                    let index = previousEntry.players.indexOf(data.id);
+                        let previousEntry = self.idToSockets.get(socket.id);
+                        let index = previousEntry.players.indexOf(data.id);
 
-                    if (index >= 0) {
-                        previousEntry.players.splice( index, 1 );
+                        if (index >= 0) {
+                            previousEntry.players.splice( index, 1 );
+                        }
+
+                        // set changes
+                        if ( previousEntry.players.length == 0) {
+                            self.idToSockets.delete(socket.id);
+                        } else {
+                            self.idToSockets.set(socket.id , previousEntry );
+                        }
+
                     }
 
-                    // set changes
-                    if ( previousEntry.players.length == 0) {
-                        self.idToSockets.delete(socket.id);
-                    } else {
-                        self.idToSockets.set(socket.id , previousEntry );
+                    if ( lastPlayerQuit) {
+
+                        // remove room reference
+                        self.gameLogic.removeRoom(data.roomId);
+
                     }
-
-                }
-
-                if ( lastPlayerQuit) {
-
-                    // remove room reference
-                    self.gameLogic.removeRoom(data.roomId);
-
                 }
                 callback(null);
                 break;

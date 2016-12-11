@@ -72,13 +72,13 @@ module.exports = {
     leaveRoom : "leaveRoom",
 
 
-    /*
+    /* FOR FUTURE RELEASE
         As mentioned above, "In the case where the creator of the game chooses a random angle at the beginning of each round, if he leaves a running game,
         a new player will have to be chosen as the new "master" of the game "
         The server sends {id: 69, roomId: 47} to the new master that he has elected
-    */
-    newMaster : "newMaster",
 
+    newMaster : "newMaster",
+    */
 
     /*
         When a player enters a room he is sent a list of all the players currently in that room

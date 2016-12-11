@@ -17,6 +17,7 @@ let roomId1;
 let playersRoomJson1;
 
 let socket1JWT;
+let socket2JWT;
 
 describe('Server tests : ' , function () {
 
@@ -132,6 +133,34 @@ describe('Server tests : ' , function () {
                 req.end();
             });
 
+            it("Test n°4 : Should be able to registerUser : another player ", function (done) {
+
+                let data = {
+                    "username": "TRUMP",
+                    "pwd": "TEST",
+                    "email": "PRESIDENTOFUSA@ipl.be"
+                };
+
+                let options = {
+                    host: props.socketProps.url.replace("http://", ""),
+                    path: '/registerUser',
+                    port: props.socketProps.port,
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+
+            });
+
 
         });
 
@@ -229,6 +258,44 @@ describe('Server tests : ' , function () {
                 req.end();
             });
 
+            it("Test n°2 : Should  be able to /checkUserCredentials", function (done) {
+
+                let data = {
+                    "username": "TRUMP",
+                    "pwd": "TEST",
+                    "email": "PRESIDENTOFUSA@ipl.be"
+                };
+
+                let options = {
+                    host: props.socketProps.url.replace("http://", ""),
+                    path: '/checkUserCredentials',
+                    port: props.socketProps.port,
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    res.setEncoding('utf8');
+                    let content = "";
+
+                    res.on('data', (chunk) => {
+                        content += chunk;
+                    });
+
+                    res.on('end', () => {
+                        socket2JWT = JSON.parse(content);
+                        done();
+                    });
+
+
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+            });
 
         });
     });
@@ -263,19 +330,16 @@ describe('Server tests : ' , function () {
 
             });
 
-            it('Test n°2 : Should be able to register a another new user : Player 2', function (done) {
-                this.timeout(250);
+            it('Test n°2 : Should be able to register a another new user : Player 2 - With sign in', function (done) {
 
                 socket2 = io.connect(props.socketProps.url+":"+props.socketProps.port);
-                testFunctions.createPlayer(socket2, player2, function (err, data) {
 
-                    if (err) {
-                        done(err);
-                    } else {
-                        player2.id = data.id;
-                        done();
-                    }
+                socket2.emit(eventEnum.signIn, socket2JWT );
 
+                socket2.on(eventEnum.newPlayer, function (data) {
+                    assert.notDeepEqual(data.id,-1,"Wrong email/passwd");
+                    player2.id = data.id;
+                    done();
                 });
 
             });
@@ -662,8 +726,8 @@ describe('Server tests : ' , function () {
                     players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
                     someScoreStuff["players"] = players;
 
-                    // HERE TWO TIMES socket 1 because there are 2 players on it
-                    async.forEach([socket1,socket1,socket2], function (socket, callback){
+                    // HERE TWO TIMES socket 2 because there are 2 players on it
+                    async.forEach([socket1,socket2,socket2], function (socket, callback){
                         socket.emit(eventEnum.endGame, someScoreStuff );
                         callback();
                     }, function(err) {
@@ -672,6 +736,7 @@ describe('Server tests : ' , function () {
 
                 });
 
+                /* FOR FUTURE RELEASE
                 it("Test n°2 : newMaster  ", function (done) {
 
                         this.timeout(500);
@@ -691,6 +756,7 @@ describe('Server tests : ' , function () {
                         });
 
                 });
+                */
 
             });
 

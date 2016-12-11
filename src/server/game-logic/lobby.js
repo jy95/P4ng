@@ -186,7 +186,7 @@ Lobby.prototype.endGame = function (data,callback) {
     }
 
 };
-
+/* FOR FUTURE RELEASE
 Lobby.prototype.electNewMaster = function (roomId, callback) {
     let room = this.rooms.get(roomId);
 
@@ -199,7 +199,7 @@ Lobby.prototype.electNewMaster = function (roomId, callback) {
     }
 
 };
-
+*/
 Lobby.prototype.findRoomsOfPlayers = function (players, callback) {
     let search = new Map();
 

@@ -115,11 +115,8 @@ module.exports.listen = function () {
                 }
             }
 
-            // Others players get their participation incremented :)
+            // all players get their participation incremented :)
             for ( let socket of sockets.keys() ) {
-
-                // except the one who probably wins
-                if (socket.id !== bestRecordSocketKey) {
 
                     let UserIdDatabase = lobbyData.socketIdtoIdDb.get(socket.id);
 
@@ -134,8 +131,6 @@ module.exports.listen = function () {
                     }
 
                 }
-
-            }
 
         });
 
