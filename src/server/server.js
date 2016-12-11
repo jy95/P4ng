@@ -1,6 +1,6 @@
 
 const props = require('../properties-loader.js');
-const secretJwtKey = 'Inyoursnatchfitspleasurebroomshapedpleasure';
+const secretJwtKey = props.secretJwtKey;
 let eventsEnum = require(props.eventsEnumPath());
 let mongoDb = require('./database/database-mongodb.js');
 let jwt = require('jsonwebtoken');
