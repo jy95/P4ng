@@ -67,6 +67,7 @@ Game.prototype.getFinalScores = function(){
 Game.prototype.getPlayerState = function(){
     let playerState = {};
     for(let id in this.players){
+        console.log(id);
         let player = this.players[id].shift();
         if(player !== undefined){
              playerState[id] = player.position;
