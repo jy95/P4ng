@@ -1,8 +1,8 @@
 let u = require('underscore');
+const props = require('../../properties-loader.js');
 
-
-let Game = function (roomId,fps) {
-    this.fps = fps;
+let Game = function (roomId) {
+    this.fps = props.fps;
     this.delay = 1000 / this.fps;
     this.roomId = roomId;
     this.players = {};
@@ -67,6 +67,7 @@ Game.prototype.getFinalScores = function(){
 Game.prototype.getPlayerState = function(){
     let playerState = {};
     for(let id in this.players){
+        console.log(id);
         let player = this.players[id].shift();
         if(player !== undefined){
              playerState[id] = player.position;

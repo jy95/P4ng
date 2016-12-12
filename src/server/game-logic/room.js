@@ -8,15 +8,16 @@ function Room(playerId,gameId,roomName) {
     this.isStarted = false;
     this.isFinished = false;
     this.players= [];
-    this.game = new Game(this.gameId,60);
+    this.game = new Game(this.gameId);
     this.emitter = require('../server-logic/gameEventEmitter.js').commonEmitter;
 
     // implement the onUpdate function of game
     this.game.onUpdate = function () {
 
         let playerState = this.game.getPlayerState();
+        //console.log(playerState);
         // envoi de ce playerState à tous les joueurs (event => playerStateUpdate)
-        this.emitter.emit(eventEnum.gameStateUpdate ,  playerState );
+        this.emitter.emit(eventEnum.playerStateUpdate ,  playerState );
 
     }.bind(this);
 
@@ -39,7 +40,7 @@ Room.prototype.addPlayer = function(player,callback) {
 
 Room.prototype.startGame = function(playerId,callback) {
 
-    if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished) {
+    if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished && this.players.length >= 2) {
         isStarted = true;
         this.game.start();
         callback(null);

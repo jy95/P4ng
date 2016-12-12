@@ -1,6 +1,6 @@
 
 const props = require('../properties-loader.js');
-const secretJwtKey = 'Inyoursnatchfitspleasurebroomshapedpleasure';
+const secretJwtKey = props.secretJwtKey;
 let eventsEnum = require(props.eventsEnumPath());
 let mongoDb = require('./database/database-mongodb.js');
 let jwt = require('jsonwebtoken');
@@ -63,7 +63,7 @@ module.exports.listen = function () {
 
     let gameEventEmitter = require("./server-logic/gameEventEmitter.js").commonEmitter;
 
-    gameEventEmitter.on( eventsEnum.gameStateUpdate, function (data) {
+    gameEventEmitter.on( eventsEnum.playerStateUpdate, function (data) {
 
         require("./server-logic/routes.js").gameStateUpdate(data);
 

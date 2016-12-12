@@ -43,6 +43,22 @@ Lobby.prototype.joinRoom = function(data,callback) {
     }
 };
 
+Lobby.prototype.listAllPlayer = function (roomId, callback) {
+    let room = this.rooms.get( roomId );
+
+    if (room === undefined) {
+        callback(new Error("Room doesn't exist"));
+    } else {
+        // get the json of player
+        room.listAllPlayer(function (err,json) {
+
+            callback(err,json);
+
+        });
+    }
+
+};
+
 Lobby.prototype.newPlayer = function (player,callback) {
 
     // create a id for this player
@@ -222,11 +238,6 @@ Lobby.prototype.removeRoom = function (roomId) {
     // stop the game if still running
     this.rooms.get(roomId).stopGame();
     this.rooms.delete( roomId );
-};
-
-Lobby.prototype.stopGame = function (roomId) {
-    // stop the game if still running
-    this.rooms.get(roomId).stopGame();
 };
 
 Lobby.prototype.getRoom = function (roomId) {
