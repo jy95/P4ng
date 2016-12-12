@@ -36,11 +36,11 @@ let devices = {
     }
 }
 
-let controlKeys = {} //maps each key to its corresponding deviceId
-for (var i in devices) {
-    for (var j in devices[i]) {
+let controlKeys = {} //maps each key to its corresponding deviceID
+for (let i in devices) {
+    for (let j in devices[i]) {
         if (j != 'assigned') {
-            controlKeys[j] = {deviceId: i, pressed: false}
+            controlKeys[j] = {deviceID: i, pressed: false}
         }
     }
 }
@@ -48,19 +48,19 @@ for (var i in devices) {
 function init(callback) {
     moveCallback = callback
     document.addEventListener('keydown', function(e){
-        if (controlKeys[e.key] !== undefined && !controlKeys[e.key].pressed && devices[controlKeys[e.key].deviceId].assigned) {
+        if (controlKeys[e.key] !== undefined && !controlKeys[e.key].pressed && devices[controlKeys[e.key].deviceID].assigned) {
             controlKeys[e.key].pressed = true
-            if (devices[controlKeys[e.key].deviceId][e.key] == -1) { //left, (should import the directional constants)
-                callback({deviceId: controlKeys[e.key].deviceId, value: -1})
+            if (devices[controlKeys[e.key].deviceID][e.key] == -1) { //left, (should import the directional constants)
+                callback({deviceID: controlKeys[e.key].deviceID, value: -1})
             } else { //right, hopefully
-                callback({deviceId: controlKeys[e.key].deviceId, value: 1})
+                callback({deviceID: controlKeys[e.key].deviceID, value: 1})
             }
         }
     })
     document.addEventListener('keyup', function(e){
-        if (controlKeys[e.key] !== undefined && controlKeys[e.key].pressed && devices[controlKeys[e.key].deviceId].assigned) {
+        if (controlKeys[e.key] !== undefined && controlKeys[e.key].pressed && devices[controlKeys[e.key].deviceID].assigned) {
             controlKeys[e.key].pressed = false
-            callback({deviceId: controlKeys[e.key].deviceId, value: 0})
+            callback({deviceID: controlKeys[e.key].deviceID, value: 0})
         }
     })
 }
@@ -68,27 +68,27 @@ function init(callback) {
 /**
 * assigns a device for the given player
 **/
-function assignControls(playerSide, callback) {
-    var deviceId = null
-    for (var i in devices) {
+function assignDevice(playerSide, callback) {
+    let deviceID = null
+    for (let i in devices) {
         if (devices[i].assigned == false) {
             devices[i].assigned = true
-            var deviceId = i
+            deviceID = i
             break;
         }
     }
-    var error = null
-    if (deviceId === null) { //couldn't assign a device
+    let error = null
+    if (deviceID === null) { //couldn't assign a device, not really possible
         error = {message: 'All defined keysets are already assigned'}
     }
-    callback(error, {deviceId: deviceId, side: playerSide})
+    callback(error, {deviceID: deviceID, side: playerSide})
 }
 
 /**
 * marks the device as unassigned
 **/
-function deassignControls(deviceId, callback) {
-    var device = devices[deviceId]
+function deassignDevice(deviceID, callback) {
+    let device = devices[deviceID]
     if (device !== undefined) {
         device.assigned = false
     }
@@ -97,6 +97,6 @@ function deassignControls(deviceId, callback) {
 
 module.exports = {
     init: init,
-    assignControls: assignControls,
-    deassignControls: deassignControls
+    assignDevice: assignDevice,
+    deassignDevice: deassignDevice
 }

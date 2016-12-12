@@ -1,8 +1,8 @@
-const props = require('../../../properties-loader.js');
-const lobbyLogic = require(props.lobbyLogicPath());
-const socketProps = props.socketProps
-const socket = require(props.socketPath())
-const eventsEnum = require(props.eventsEnumPath())
+const props = require('../../properties-loader.js');
+const socketProps = props.socketProps;
+const socket = require(props.socketPath());
+const eventsEnum = require(props.eventsEnumPath());
+var vue = require(props.appRestViewPath());
 
 var submitCreateAccountForm = document.getElementById('submitCreateAccountForm');
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
@@ -39,21 +39,21 @@ submitAuthenticateForm.addEventListener("click", function(event){
 
 
 function checkCreateAccountForm(){
-    alertCreateAccountForm.innerText ="";
+    vue.setText(alertCreateAccountForm, "");
     if(isEmpty(usernameCreateAccountForm.value)){
-        alertCreateAccountForm.innerText ="The field username can't be empty";
+        vue.setText(alertCreateAccountForm, "The field username can't be empty");
         return;
     }
     if(!validateEmail(emailCreateAccountForm.value)){
-        alertCreateAccountForm.innerText ="Please enter a valid email";
+        vue.setText(alertCreateAccountForm, "Please enter a valid email");
         return;
     }
     if(isEmpty(pwdCreateAccountForm.value)){
-        alertCreateAccountForm.innerText ="The field password can't be empty";
+        vue.setText(alertCreateAccountForm, "The field password can't be empty");
         return;
     }
     if(pwdCreateAccountForm.value !== verifyPwdCreateAccountForm.value){
-        alertCreateAccountForm.innerText ="The password fields don't match";
+        vue.setText(alertCreateAccountForm, "The password fields don't match");
         return;
     }
 
@@ -64,13 +64,13 @@ function checkCreateAccountForm(){
 
 
 function checkAuthenticateForm(){
-    alertAuthenticateForm.innerText ="";
+    vue.setText(alertAuthenticateForm, "");
     if(!validateEmail(emailAuthenticateForm.value)){
-        alertAuthenticateForm.innerText ="Please enter a valid email";
+        vue.setText(alertAuthenticateForm, "Please enter a valid email");
         return;
     }
     if(isEmpty(pwdAuthenticateForm.value)){
-        alertAuthenticateForm.innerText ="The field password can't be empty";
+        vue.setText(alertAuthenticateForm, "The field password can't be empty");
         return;
     }
 
@@ -83,7 +83,7 @@ function checkAuthenticateForm(){
 
 
 function registerUser(username, email, pwd){
-    alertCreateAccountForm.innerText ="";
+    vue.setText(alertCreateAccountForm, "");
 
     var xmlhttp = new XMLHttpRequest();
 
@@ -94,7 +94,7 @@ function registerUser(username, email, pwd){
                signIn(rep.jwt);
            }
            else {
-               alertCreateAccountForm.innerText =xmlhttp.responseText;
+               vue.setText(alertCreateAccountForm, xmlhttp.responseText);
            }
         }
     };
@@ -108,7 +108,7 @@ function registerUser(username, email, pwd){
 
 
 function authenticate(email, pwd){
-    alertAuthenticateForm.innerText ="";
+    vue.setText(alertAuthenticateForm, "");
 
     var xmlhttp = new XMLHttpRequest();
 
@@ -119,7 +119,7 @@ function authenticate(email, pwd){
                 signIn(rep.jwt);
            }
            else {
-               alertAuthenticateForm.innerText =xmlhttp.responseText;
+               vue.setText(alertAuthenticateForm, xmlhttp.responseText);
            }
         }
     };
@@ -143,17 +143,13 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-function displayLobby(){
-     document.getElementById('formsContainer').className = 'closed';
-     document.getElementById('lobbyContainer').className = 'open';
-}
 
 function signIn(jwt){
     socket.emit(eventsEnum.signIn, {jwt: jwt});
 }
 
 socket.on(eventsEnum.newPlayer, (player)=>{
-    if(player.id !== -1){
-        displayLobby();
+    if(player.id != -1){
+        vue.displayLobby();
     }
 })

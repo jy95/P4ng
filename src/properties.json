@@ -7,6 +7,7 @@
         "FIELD_WIDTH": 500
     },
     "p4ngModules":{
+        "appRestView": "./client/view/js/app-rest-view.js",
         "eventsEnum": "./events.js",
         "gameLogic": "./client/model/game-logic/game-logic.js",
         "gameController": "./client/controller/game-controller.js",

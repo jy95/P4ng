@@ -15,7 +15,10 @@ let Game = function (roomId) {
 };
 
 Game.prototype.update = function () {
-    this.onUpdate();
+    if(this.receivedAllPlayerStates()){
+        this.onUpdate();
+    }
+    
 };
 
 
@@ -78,5 +81,14 @@ Game.prototype.getPlayerState = function(){
     return gameState;
 
 };
+
+Game.prototype.receivedAllPlayerStates = function(){
+    for(let id in this.players){
+        if(this.players[id].length === 0){
+            return false;
+        }
+    }
+    return true;
+}
 
 module.exports = Game;
