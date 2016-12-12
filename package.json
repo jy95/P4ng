@@ -10,7 +10,6 @@
     "callsite": "^1.0.0",
     "electron": "^1.4.7",
     "express": "^4.14.0",
-    "gamepad": "git://github.com/creationix/node-gamepad.git",
     "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.7.1",
     "socket.io": "^1.5.1",

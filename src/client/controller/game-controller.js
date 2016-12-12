@@ -1,9 +1,10 @@
 const props = require('../../properties-loader.js')
 const gameLogic = require(props.gameLogicPath())
 const lobbyLogic = require(props.lobbyLogicPath())
-//const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
+const lobbyToServer = require(props.lobbyToServerPath())
 
-const io = require('socket.io')(3000)
+//slave controllers
+const gpc = require('./gamepad-controller.js')
 const kbc = require('./keyboard-controller.js')
 
 //controller type constants
@@ -14,40 +15,19 @@ const KEYBOARD = 1
 const LEFT = -1
 const RIGHT = 1
 
-let controllerMap = {} // maps deviceIds to players
+let controllerMap = {} // maps deviceIDs to players
 let controllerQueue = [] // list of players (temporarily using the keyboard) who await available gamepads
 let assignmentFailures = {} // a support structure that helps avoid infinite callback loops
-let socket // communication socket for the gamepad-controller
 
-document.getElementById('stopButton').addEventListener('click', onStopGame)
+document.getElementById('stopButton').addEventListener('click', onStop)
 document.getElementById('startButton').addEventListener('click', onStart)
 document.getElementById('addPlayerButton').addEventListener('click', onAddPlayer);
 
-/*
-document.addEventListener('keydown', function(e){
-    for(let side in pc){
-        if(e.key === pc[side].left) gameLogic.movePlayerLeft({'side': side})
-        if(e.key === pc[side].right) gameLogic.movePlayerRight({'side': side})
-    }
-})
-document.addEventListener('keyup', function(e){
-    for(let side in pc){
-        if(e.key === pc[side].left) gameLogic.stopPlayer({'side': side})
-        if(e.key === pc[side].right) gameLogic.stopPlayer({'side': side})
-    }
-})
-*/
-
 function onStart() {
-
-    //assignController(GAMEPAD, NORTH) //ne pas faire ici
-    //assignController(KEYBOARD, EAST) // ..
-    //assignController(KEYBOARD, WEST)
-    //assignController(GAMEPAD, SOUTH)
     lobbyLogic.askToStartGame()
 }
 
-function onStopGame(){
+function onStop(){
     lobbyLogic.leaveRoom({roomId: false, id: false})
 }
 
@@ -58,7 +38,7 @@ function onAddPlayer() {
     } else {
         let playerName = inputZone.value
         inputZone.value = ''
-        lobbyLogic.newPlayer({name: playerName})
+        lobbyToServer.newPlayer({name: playerName})
         inputZone.style.visibility = 'hidden'
     }
 }
@@ -68,9 +48,9 @@ function onAddPlayer() {
 **/
 function assignController(controllerType, side, callback) {
     if (controllerType == GAMEPAD) {
-        socket.emit('assign', {side: side})
+        gpc.assignGamepad(side, handleAssignment)
     } else {
-        kbc.assignControls(side, handleAssignment)
+        kbc.assignDevice(side, handleAssignment)
     }
     if (callback !== undefined) {
         callback()
@@ -107,40 +87,28 @@ function assignFromQueue() {
     if (controllerQueue.length > 0) {
         var side = controllerQueue[0].side
         controllerQueue[0].awaitingResponse = true
-        socket.emit('assign', {side: side})
+        gpc.assignGamepad(side, handleAssignment)
     }
 }
 
 function init() {
     kbc.init(handleMove)
-
+    gpc.init(handleMove, onDeviceAvailable, onDeviceDisconnect)
     document.getElementById('playerName').style.visibility = 'hidden'
+}
 
-    io.on('connect', function(_socket) {
-        socket = _socket
-        socket.on('move', function(data) {
-            handleMove(data)
-        })
+/**
+* called when a new gamepad is available
+**/
+function onDeviceAvailable() {
+    assignFromQueue()
+}
 
-        socket.on('assign', function(err, data) {
-            handleAssignment(err, data)
-        })
-
-        socket.on('gamepadDisconnected', function(data) {
-            //gamepad disconnected, assign player to keyboard
-            var side = controllerMap[data.deviceId].side
-            delete controllerMap[data.deviceId]
-            assignController(KEYBOARD, side, undefined)
-            pushToQueue(side)
-        })
-
-        socket.on('availableDevices', function(data) {
-            //available gamepads
-            for (var i = 0; i < data.availableDevices; i++) {
-                assignFromQueue()
-            }
-        })
-    })
+function onDeviceDisconnect(data) {
+    var side = controllerMap[data.deviceID].side
+    delete controllerMap[data.deviceID]
+    assignController(KEYBOARD, side, undefined)
+    pushToQueue(side)
 }
 
 /**
@@ -148,22 +116,13 @@ function init() {
 **/
 function handleMove(data) {
     if (data.value != 0) {
-        if (controllerMap[data.deviceId].inMovement) { //not really doing anything at the moment
-            gameLogic.stopPlayer({side: controllerMap[data.deviceId].side})
-            controllerMap[data.deviceId].skippingStop = true
-        }
         if (data.value == LEFT) {
-            gameLogic.movePlayerLeft({side: controllerMap[data.deviceId].side})
+            gameLogic.movePlayerLeft({side: controllerMap[data.deviceID].side})
         } else if (data.value == RIGHT) {
-            gameLogic.movePlayerRight({side: controllerMap[data.deviceId].side})
+            gameLogic.movePlayerRight({side: controllerMap[data.deviceID].side})
         }
     } else {
-        if (!controllerMap[data.deviceId].skippingStop) {
-            controllerMap[data.deviceId].inMovement = false
-            gameLogic.stopPlayer({side: controllerMap[data.deviceId].side})
-        } else {
-            controllerMap[data.deviceId].skippingStop = false
-        }
+        gameLogic.stopPlayer({side: controllerMap[data.deviceID].side})
     }
 }
 
@@ -172,7 +131,6 @@ function handleMove(data) {
 * controllers.
 **/
 function handleAssignment(err, data) {
-    console.log(data)
     if (err) { //the controller failed to assign a device
         if (assignmentFailures[data.side] === undefined) {
             assignmentFailures[data.side] = 1 // first failed attempt
@@ -189,12 +147,12 @@ function handleAssignment(err, data) {
             pushToQueue(data.side)
         }
         //assign a keyboard 'device'
-        kbc.assignControls(data.side, handleAssignment)
+        kbc.assignDevice(data.side, handleAssignment)
     } else { //success
 
         assignmentFailures[data.side] = 0
         deassignAll(data.side) // necessary ?
-        controllerMap[data.deviceId] = {side: data.side, inMovement : false, skippingStop: false};
+        controllerMap[data.deviceID] = {side: data.side, inMovement : false, skippingStop: false};
         if (controllerQueue.length > 0 && controllerQueue[0].side == data.side && controllerQueue[0].awaitingResponse) {
             popFromQueue()
         }
@@ -205,19 +163,19 @@ function handleAssignment(err, data) {
 * deassign any devices currently assigned to the given player
 **/
 function deassignAll(side) {
-    for (var deviceId in controllerMap) {
-        if (controllerMap[deviceId].side == side) {
-            delete(controllerMap[deviceId])
-            if (isNaN(deviceId)) {
-                kbc.deassignControls(deviceId)
+    for (var deviceID in controllerMap) {
+        if (controllerMap[deviceID].side == side) {
+            delete controllerMap[deviceID]
+            if (isNaN(deviceID)) {
+                kbc.deassignDevice(deviceID)
             }
         }
     }
 }
 
-module.exports.init = init
-module.exports.assignController = assignController
-//module.exports.LEFT = LEFT
-//module.exports.RIGHT = RIGHT
-module.exports.GAMEPAD = GAMEPAD
-module.exports.KEYBOARD = KEYBOARD
+module.exports = {
+    init: init,
+    assignController: assignController,
+    GAMEPAD: GAMEPAD,
+    KEYBOARD: KEYBOARD
+}
