@@ -28,7 +28,6 @@ function displayRooms(rooms){
         }
         for(let i in rooms){
             let rString = getGameString(rooms[i])
-            console.log(rString)
             let parsed = domPerignon.parseFromString(rString, 'text/html').firstChild
             gamesTable.appendChild(parsed)
         }

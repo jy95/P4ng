@@ -172,7 +172,7 @@ function handleMove(data) {
 * controllers.
 **/
 function handleAssignment(err, data) {
-    console.log(data)
+    //console.log(data)
     if (err) { //the controller failed to assign a device
         if (assignmentFailures[data.side] === undefined) {
             assignmentFailures[data.side] = 1 // first failed attempt

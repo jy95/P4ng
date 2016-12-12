@@ -73,7 +73,7 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
 
     // returns the offset, and sets a waiting ball if needed
     var offset = this.getCollision(stateID, hitPaddle, position, this.ball.ballSize)
-    if(offset !== 'no') this.lastHitter = side
+    if(offset !== 'no' && !hitPaddle.isAWall) this.lastHitter = side
     else{
         // we give the paddle a point if we're sure he deserves it
         if(this.lastHitter !== undefined && stateID === hitPaddle.stateID && !this.isFinished){

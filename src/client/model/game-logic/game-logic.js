@@ -22,8 +22,10 @@ module.exports.subscribe = function(callback){
 // this JSON player needs an id and a side
 // if he has no side, he is given a remaining side
 module.exports.addPlayer = function(player){
-    if(currentGame && !currentGame.isFinished)
-    currentGame.addPlayer(player)
+    if(currentGame && !currentGame.isFinished){
+        currentGame.addPlayer(player)
+        console.log(player)
+    }
 }
 
 module.exports.startGame = function({angle}){
@@ -53,10 +55,8 @@ module.exports.getState = function(){
 module.exports.updatePlayer = function({id,position}){
     if(currentGame){
         let p = currentGame.players[id]
-        console.log(p)
-        if(!p.islocal){
-            p.position = position
-            console.log('prout')
+        if(!p.isLocal){
+            p.setPosition(position)
         }
     }
 }

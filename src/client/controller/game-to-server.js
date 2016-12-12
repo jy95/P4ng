@@ -3,7 +3,6 @@ var eventsEnum = require(props.eventsEnumPath())
 var socket = require(props.socketPath())
 var gameLogic = require(props.gameLogicPath())
 var endGameAlreadySent = false
-console.log('game to server required')
 
 gameLogic.subscribe(()=>{sendStateToServer()})
 

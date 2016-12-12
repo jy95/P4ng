@@ -153,9 +153,7 @@ function signIn(jwt){
 }
 
 socket.on(eventsEnum.newPlayer, (player)=>{
-    console.log(player);
-    if(!player.id === -1){
-        lobbyLogic.setLocalPlayer(player)
+    if(player.id !== -1){
         displayLobby();
     }
 })

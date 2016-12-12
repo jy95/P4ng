@@ -59,7 +59,7 @@ module.exports.askToJoinRoom = function({roomId}){
 module.exports.leaveRoom = function({roomId, id}){
     console.log('lobby logic - leave room')
     // if the player is the main local player
-    if(id === theLobby.localPlayer.id){
+    if(id === theLobby.localPlayer.id || !roomId){
         nukeRoom()
     }else{ // else juste remove the player
         theLobby.currentRoom.removePlayer(id)
@@ -78,11 +78,9 @@ function nukeRoom(){
 
 module.exports.setCurrentRoom = function(data){
     console.log('lobby logic - set current room')
-    console.log(data)
     if(!theLobby.setCurrentRoom(data))
     theLobby.addPlayerToCurrentRoom({id: data.id, name: data.name})
 
-    console.log(theLobby.currentRoom);
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 

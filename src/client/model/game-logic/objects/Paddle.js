@@ -41,6 +41,13 @@ function PongPaddle ({side, isLocal, id}){
 
     // boolean being true if the paddle belongs to a player on the local machine
     this.isLocal = isLocal
+
+    this.isAWall = false
+}
+
+PongPaddle.prototype.wallMe = function(){
+    this.position = (FIELD_WIDTH/2)
+    this.width = FIELD_WIDTH
 }
 
 PongPaddle.prototype.max = function(){return FIELD_WIDTH - this.width/2}
@@ -99,6 +106,8 @@ PongPaddle.prototype.toJSON = function(){
         position: this.position,
         side: this.side,
         score: this.score,
-        isLocal: this.isLocal
+        isLocal: this.isLocal,
+        isAWall: this.isAWall,
+        name: this.name
     }
 }
