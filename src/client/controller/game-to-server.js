@@ -10,7 +10,7 @@ gameLogic.subscribe(()=>{sendStateToServer()})
 function sendStateToServer (){
     let state = getLocalPlayersState()
     if(!state.isFinished){
-      socket.emit(eventsEnum.PlayerStateUpdate, state)
+      socket.emit(eventsEnum.playerStateUpdate, state)
       endGameAlreadySent = false
     }
     else if (!endGameAlreadySent){

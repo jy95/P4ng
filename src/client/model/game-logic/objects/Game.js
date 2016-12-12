@@ -7,7 +7,7 @@ module.exports = PongGame
 /*
 * Game object
 */
-function PongGame ({ballDirection, id}){
+function PongGame (id){
     this.id = id
     // P4ng field should be a square
     // this is the width of the field in pixels
@@ -29,7 +29,7 @@ function PongGame ({ballDirection, id}){
     this.players = {}
 
     // the object representing the ball
-    this.ball = new Ball({direction : ballDirection, game : this});
+    this.ball = new Ball({direction : null, game : this});
 
     // first at maxScore wins
     this.maxScore = 10

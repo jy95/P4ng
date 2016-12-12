@@ -97,7 +97,7 @@ module.exports.setRooms = function(roomsList){
 module.exports.askToStartGame = function(){
     console.log('lobby logic - ask to start game')
     if(theLobby.currentRoom){
-        let theAngle = gameLogic.initGame()
+        let theAngle = gameLogic.initGame(theLobby.currentRoom.roomid)
         lobbyToServer.startGame({angle: theAngle, roomId: theLobby.currentRoom.roomId, id: theLobby.localPlayer.id})
         console.log(`lobbyLogic - askToStartGame --- ${theAngle}`)
     }
@@ -108,7 +108,7 @@ module.exports.startGame = function({angle}) {
     console.log('lobby logic - start game')
     let theRoom = theLobby.currentRoom
     if(theRoom) {
-        gameLogic.initGame()
+        gameLogic.initGame(theLobby.currentRoom.roomId)
         for (let i = 0; i< theRoom.players.length; i++) { //add players to the Game instance
             gameLogic.addPlayer(theRoom.players[i])
             //this is ideally where the game-controller should be asked to assign a

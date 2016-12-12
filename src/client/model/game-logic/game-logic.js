@@ -8,8 +8,8 @@ var currentGame = null
 var intervalId = 0
 
 // beginningDirection is used only when joining an existing game
-module.exports.initGame = function(beginningDirection){
-    currentGame = new Game({ballDirection: beginningDirection})
+module.exports.initGame = function(id){
+    currentGame = new Game(id)
     return currentGame.ball.direction;
 }
 
@@ -53,8 +53,11 @@ module.exports.getState = function(){
 module.exports.updatePlayer = function({id,position}){
     if(currentGame){
         let p = currentGame.players[id]
-        if(!p.islocal)
-        p.position = position
+        console.log(p)
+        if(!p.islocal){
+            p.position = position
+            console.log('prout')
+        }
     }
 }
 
