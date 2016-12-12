@@ -5,6 +5,7 @@ const props = require('./properties-loader.js')
 const exec = require('child_process').exec
 const gamepad_cmd = 'node ./src/client/controller/gamepad-controller.js'
 
+
 exec(gamepad_cmd, function(error, stdout, stderr) {
     console.log('executing..')
     if (error) {
@@ -39,3 +40,4 @@ function createWindow(){
 app.on('ready', ()=>{
     createWindow()
 })
+
