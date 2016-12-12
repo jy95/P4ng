@@ -65,15 +65,17 @@ Game.prototype.getFinalScores = function(){
 };
 
 Game.prototype.getPlayerState = function(){
-    let playerState = {};
+    let gameState = {};
+    gameState["players"] = {};
     for(let id in this.players){
-        console.log(id);
+        //console.log(id);
         let player = this.players[id].shift();
         if(player !== undefined){
-             playerState[id] = player.position;
+             gameState["players"][id] = player.position;
         }    
     }
-    return playerState;
+    gameState.roomId = this.roomId;
+    return gameState;
 
 };
 
