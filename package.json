@@ -29,7 +29,8 @@
     "startClient": "electron src/app.js",
     "startServer": "node src/server/launch-server.js",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec test/test.js",
-    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
+	"packagerApp" : "scripts/packager-script.sh"
   },
   "repository": {
     "type": "git",
