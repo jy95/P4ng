@@ -42,7 +42,7 @@ Room.prototype.startGame = function(playerId,callback) {
 
     if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished && this.players.length >= 2) {
         isStarted = true;
-        this.game.start();
+        //this.game.start();
         callback(null);
     } else {
         callback(new Error("You don't have the right to start the game (only master can)"));
@@ -164,7 +164,7 @@ Room.prototype.endGame = function (data,callback) {
 
 Room.prototype.stopGame = function () {
     if (this.isStarted && this.isFinished) {
-        this.game.stop();
+        //this.game.stop();
         this.isFinished = true;
     }
 
