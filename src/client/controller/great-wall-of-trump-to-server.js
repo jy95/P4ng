@@ -51,5 +51,10 @@ function manageResponse(xmlhttp, callback){
     }
 }
 
+module.exports.logInAsGuest = function(username, callback){
+    socket.emit(eventsEnum.newPlayer, {name: username});
+    callback();
+}
+
 
 
