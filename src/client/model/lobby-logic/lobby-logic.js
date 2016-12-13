@@ -20,7 +20,7 @@ module.exports.setPlayerList = function(playerList){
 module.exports.setLocalPlayer = function(player) {
     console.log('lobby logic - set local player')
     if (!theLobby.setLocalPlayer(player) && theLobby.addGuest(player))
-    lobbyToServer.joinRoom({roomId: theLobby.currentRoom.roomId, id: player.id})
+    lobbyToServer.joinRoom({roomId: theLobby.currentRoom.roomId, id: player.id, name: player.name})
 
     lobbyEventEmitter.emit('lobbyUpdate')
 }
@@ -50,7 +50,8 @@ module.exports.askToJoinRoom = function({roomId}){
     if(theLobby.isCurrentRoomSettable() && roomId){
         lobbyToServer.joinRoom({
             'id': theLobby.localPlayer.id,
-            'roomId': roomId
+            'roomId': roomId,
+            'name': theLobby.localPlayer.name
         })
     }
 }

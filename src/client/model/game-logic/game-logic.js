@@ -6,7 +6,7 @@ var gameEventEmitter = new (require('events'))()
 
 var currentGame = null
 
-var slowpokeTimeout = {}
+var timeoutExpired = true
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(id){
@@ -39,15 +39,20 @@ module.exports.startGame = function({angle}){
 }
 
 function doUpdate(){
-    if(currentGame.canUpdate()){
+    if(currentGame.canUpdate() && timeoutExpired){
+        currentGame.ball.move()
+
+        for (let paddle of currentGame.sides)
+        paddle.move()
+        
+        console.log(currentGame.toJSON())
+        gameEventEmitter.emit('gameStateUpdate')
+        timeoutExpired = false
         setTimeout(function(){
-            currentGame.ball.move()
-            gameEventEmitter.emit('gameStateUpdate')
-            for (let paddle of currentGame.sides)
-            paddle.move()
+            timeoutExpired = true
+            doUpdate()
         }, 17)
     }
-
 }
 
 module.exports.killGame = function(){

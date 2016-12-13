@@ -8,7 +8,7 @@ let win
 function createWindow(){
     win = new BrowserWindow({
         width: 700,
-        height: 700,
+        height: 800,
         icon: props.p4ngIcon
     })
     win.loadURL(url.format({
@@ -29,4 +29,3 @@ function createWindow(){
 app.on('ready', ()=>{
     createWindow()
 })
-

@@ -4,19 +4,23 @@ var domPerignon = new DOMParser()
 
 lobbyLogic.subscribe(function(){
     let lobbyState = lobbyLogic.getState()
-    displayRooms(lobbyState.rooms)
-    displayPlayers(lobbyState.players)
-    displayLocalPlayer(lobbyState.localPlayer)
-    if(lobbyState.currentRoom)switchToGameView()
-    else switchToLobbyView()
+    if(lobbyState.currentRoom){
+        switchToGameView()
+        displayCurrentRoom(lobbyState.currentRoom)
+    }else{
+        switchToLobbyView()
+        displayRooms(lobbyState.rooms)
+        displayPlayers(lobbyState.players)
+        displayLocalPlayer(lobbyState.localPlayer)
+    }
 })
 
-module.exports.updateView = function({players, rooms, localPlayer, currentRoom}){
-    if(currentRoom !== null) switchToGameView()
-    else switchToLobbyView()
-    if(localPlayer) displayLocalPlayer(localPlayer)
-    for(let p in players){
+function displayCurrentRoom ({players, roomName}){
+    document.getElementById('roomName').innerText = roomName
 
+    var pNameElem = document.getElementsByClassName('roomPlayerName')
+    for(let i = 0; i<pNameElem.length; i++){
+        pNameElem[i].innerText = players[i]? players[i].name : '*'
     }
 }
 

@@ -8,7 +8,7 @@
     color: #322;
     overflow: hidden;
 }
-h1{
+h1, h3{
     text-align: center;
 }
 
@@ -115,12 +115,6 @@ canvas{
     width: 500px;
 }
 
-#controls #addPlayerButton {
-    font-size: 1em;
-    width: 10%;
-    height: 5%;
-    border-radius: 3px
-}
 .control{
 	width: auto;
 	margin-top: 0.25em;
@@ -160,7 +154,7 @@ p{
 }
 
 .open{
-    height: 600px;
+    height: 700px;
     transition-property: height;
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out;

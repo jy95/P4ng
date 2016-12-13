@@ -23,6 +23,7 @@ function updateView (state){
         for(let id in state.players){
             drawPaddle(state.players[id])
             drawScore(state.players[id])
+            //drawName(state.players[id])
         }
         drawCorners()
     })
@@ -74,6 +75,29 @@ function drawScore({side, score}){
         break
     }
     c.fillText(score, x, y)
+}
+
+function drawName({side, name}){
+    // #473838
+    let x = 240, y = 260
+    switch(side){
+        case NORTH:
+        y = 40
+        break
+
+        case SOUTH:
+        y = 480
+        break
+
+        case EAST:
+        x = 460
+        break
+
+        case WEST:
+        x = 20
+        break
+    }
+    c.fillText(name, x, y)
 }
 
 function drawCorners(){

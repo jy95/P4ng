@@ -14,9 +14,9 @@ module.exports.getAvailableRooms = function(){
     socket.emit(eventsEnum.getAvailableRooms)
 }
 
-module.exports.joinRoom = function({id, roomId}){
-    if(roomId && id)
-    socket.emit(eventsEnum.joinRoom, {'id': id, 'roomId': roomId})
+module.exports.joinRoom = function({id, roomId, name}){
+    if(roomId && id && name)
+    socket.emit(eventsEnum.joinRoom, {'id': id, 'roomId': roomId, 'name': name})
 }
 
 module.exports.leaveRoom = function({id, roomId}){
