@@ -12,6 +12,8 @@ var verifyPwdCreateAccountForm = document.getElementById('verifyPwdCreateAccount
 var pwdAuthenticateForm = document.getElementById('pwdAuthenticateForm');
 var emailAuthenticateForm = document.getElementById('emailAuthenticateForm');
 
+var usernameLogInAsGuestForm = document.getElementById('usernameLogInAsGuestForm');
+
 
 let state = {failed:false, msg: ''};
 
@@ -63,10 +65,25 @@ module.exports.checkAuthenticateForm = function(){
     }
     else{
          greatWallOfTrumpEventEmitter.emit('greatWallOfTrumpUpdate', 'authenticate');
+    }   
+}
+
+
+module.exports.checkLogInAsGuestForm = function(){
+    changeState(false, '');
+    if(isEmpty(usernameLogInAsGuestForm.value)){
+        changeState(true, 'The field username can\'t be empty');
     }
-    
-   
-    
+
+    if(!(state.failed)){
+        greatWallOfTrumpToServer.logInAsGuest(usernameLogInAsGuestForm.value, function(){
+            greatWallOfTrumpEventEmitter.emit('greatWallOfTrumpUpdate', 'logInAsGuest');
+        });
+    }
+    else{
+        greatWallOfTrumpEventEmitter.emit('greatWallOfTrumpUpdate', 'logInAsGuest');
+    } 
+
 }
 
 

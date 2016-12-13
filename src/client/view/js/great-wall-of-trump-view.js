@@ -3,6 +3,7 @@ var greatWallOfTrumpLogic = require(props.greatWallOfTrumpLogicPath())
 
 var alertCreateAccountForm = document.getElementById('alertCreateAccountForm');
 var alertAuthenticateForm = document.getElementById('alertAuthenticateForm');
+var alertLogInAsGuestForm = document.getElementById('alertLoginAsGuestForm');
 
 
 
@@ -15,6 +16,9 @@ greatWallOfTrumpLogic.subscribe(function(type){
                 break;
             case 'authenticate': 
                 setText(alertAuthenticateForm, state.msg);
+                break;
+            case 'logInAsGuest':
+                setText(alertLogInAsGuestForm, state.msg);
                 break;
         }        
     }
