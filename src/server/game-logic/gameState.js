@@ -85,7 +85,7 @@ Game.prototype.getPlayerState = function(){
 };
 
 Game.prototype.receivedAllPlayerStates = function(){
-    return this.playerStateReceived.length == Object.keys(this.players).length;
+    return this.playerStateReceived.size == Object.keys(this.players).length;
 }
 
 module.exports = Game;
