@@ -9,16 +9,14 @@ let Game = function (roomId) {
     this.loopFunction;
     this.scores = {};
     this.nbEndGameReceived = 0;
+    this.playerStateReceived = new Set();
     this.onUpdate = function () {
 
     };
 };
 
 Game.prototype.update = function () {
-    if(this.receivedAllPlayerStates()){
-        this.onUpdate();
-    }
-    
+     this.onUpdate();    
 };
 
 
@@ -48,6 +46,11 @@ Game.prototype.removePlayer = function(player){
 Game.prototype.updatePlayers = function(players){
     for(let id in players){
         this.players[id].push(players[id]);
+        this.playerStateReceived.add(id);
+    }
+    if(receivedAllPlayerStates){
+        this.playerStateReceived.clear();
+        this.update();
     }
 };
 
@@ -71,7 +74,6 @@ Game.prototype.getPlayerState = function(){
     let gameState = {};
     gameState["players"] = {};
     for(let id in this.players){
-        //console.log(id);
         let player = this.players[id].shift();
         if(player !== undefined){
              gameState["players"][id] = player.position;
@@ -83,12 +85,7 @@ Game.prototype.getPlayerState = function(){
 };
 
 Game.prototype.receivedAllPlayerStates = function(){
-    for(let id in this.players){
-        if(this.players[id].length === 0){
-            return false;
-        }
-    }
-    return true;
+    return this.playerStateReceived.length == Object.keys(this.players).length;
 }
 
 module.exports = Game;

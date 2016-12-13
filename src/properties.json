@@ -8,11 +8,12 @@
         "slowpokeDelay": 200
     },
     "p4ngModules":{
-        "appRestView": "./client/view/js/app-rest-view.js",
         "eventsEnum": "./events.js",
         "gameLogic": "./client/model/game-logic/game-logic.js",
         "gameController": "./client/controller/game-controller.js",
         "gameView": "./client/view/js/game-view.js",
+        "greatWallOfTrumpLogic": "./client/model/great-wall-of-trump-logic.js",
+        "greatWallOfTrumpToServer": "./client/controller/great-wall-of-trump-to-server.js",
         "lobbyLogic": "./client/model/lobby-logic/lobby-logic.js",
         "lobbyController": "./client/controller/lobby-controller.js",
         "lobbyView": "./client/view/js/lobby-view.js",
