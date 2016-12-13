@@ -15,3 +15,8 @@ document.getElementById('submitAuthenticateForm').addEventListener('click', func
      greatWallOfTrumpLogic.checkAuthenticateForm();
 })
 
+document.getElementById('submitLogInAsGuestForm').addEventListener('click', function(e){
+     e.preventDefault();
+     greatWallOfTrumpLogic.checkLogInAsGuestForm();
+})
+

@@ -63,7 +63,7 @@ Game.prototype.endGame = function (players, callback) {
 };
 
 Game.prototype.getFinalScores = function(){
-    var finalScores = {};
+    let finalScores = {};
     for(let id in this.scores){
         finalScores[id] = u.chain(this.scores[id]).countBy().pairs().max(u.last).head().value();
     }
@@ -86,6 +86,6 @@ Game.prototype.getPlayerState = function(){
 
 Game.prototype.receivedAllPlayerStates = function(){
     return this.playerStateReceived.size == Object.keys(this.players).length;
-}
+};
 
 module.exports = Game;
