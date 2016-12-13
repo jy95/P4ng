@@ -48,7 +48,7 @@ Game.prototype.updatePlayers = function(players){
         this.players[id].push(players[id]);
         this.playerStateReceived.add(id);
     }
-    if(receivedAllPlayerStates){
+    if(this.receivedAllPlayerStates()){
         this.playerStateReceived.clear();
         this.update();
     }
