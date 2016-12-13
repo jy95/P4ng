@@ -58,15 +58,6 @@ PongGame.prototype.addPlayer = function (player){
     return player.side
 }
 
-PongGame.prototype.update = function (){
-    // magically moves only the local players :-O I'm David Blaine yo!
-    // (I'm kidding, I used an isLocal boolean in the move method)
-    for (let paddle of this.sides)
-    paddle.move()
-    // moves the ball
-    this.ball.move()
-}
-
 PongGame.prototype.getCollisionOffset = function(stateID, side, position){
     // the paddle that was hit
     var hitPaddle = this.sides[side]
@@ -76,7 +67,7 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
     if(offset !== 'no' && !hitPaddle.isAWall) this.lastHitter = side
     else{
         // we give the paddle a point if we're sure he deserves it
-        if(this.lastHitter !== undefined && stateID === hitPaddle.stateID && !this.isFinished){
+        if(this.lastHitter !== undefined && !this.isFinished){
             this.sides[this.lastHitter].score++
             this.isFinished = this.sides[this.lastHitter].score === this.maxScore
         }
@@ -90,18 +81,20 @@ PongGame.prototype.getCollisionOffset = function(stateID, side, position){
 // returns 'no' if no collision with the paddle
 // else the offset of the ball on the paddle
 PongGame.prototype.getCollision = function(stateID, paddle, ballPosition, ballSize){
-    let offset
-    if(paddle.stateHistory[stateID] !== undefined){
-        offset = ballPosition - (paddle.stateHistory[stateID])
-    }else{
-        offset = ballPosition - (paddle.position)
-        this.ball.waitForState(stateID, paddle)
-    }
+    let offset = ballPosition - (paddle.position)
 
     let halfPaddle = paddle.width/2
     let halfBall = this.ball.width/2
     if(Math.abs(offset)-halfBall > halfPaddle)return 'no'
     else return (((Math.PI/2) - 0.09)/(paddle.width/2))*offset
+}
+
+PongGame.prototype.canUpdate = function(){
+    let stateNum = this.sides[0].stateID
+    for(let p of this.sides){
+        if(p.stateID !== stateNum) return false
+    }
+    return true
 }
 
 PongGame.prototype.toJSON = function(){

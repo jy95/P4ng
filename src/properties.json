@@ -4,7 +4,8 @@
         "EAST" : 1,
         "SOUTH": 2,
         "WEST": 3,
-        "FIELD_WIDTH": 500
+        "FIELD_WIDTH": 500,
+        "slowpokeDelay": 200
     },
     "p4ngModules":{
         "appRestView": "./client/view/js/app-rest-view.js",

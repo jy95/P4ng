@@ -11,9 +11,6 @@ function PongPaddle ({side, isLocal, id}){
     //how many position we've been in
     // used for latency correction
     this.stateID = 0
-    // the position corrsponding to a state id
-    // this.stateHistory[stateID] is the position for stateID
-    this.stateHistory = {}
 
     // the point scored by this paddle
     this.score = 0
@@ -36,9 +33,6 @@ function PongPaddle ({side, isLocal, id}){
     // direction of the paddle
     this.direction = 0
 
-    // dealing with latency
-    this.subscribers = {}
-
     // boolean being true if the paddle belongs to a player on the local machine
     this.isLocal = isLocal
 
@@ -57,18 +51,9 @@ PongPaddle.prototype.setPosition = function (position){
     if(position < this.min() && position > this.max()) return false
 
     this.position = position
-    this.manageHistory()
-
-    if(this.subscribers[this.stateID])this.subscribers[this.stateID].execute()
+    this.stateID++
 
     return true
-}
-
-PongPaddle.prototype.manageHistory = function(){
-    this.stateID++
-    this.stateHistory[this.stateID] = this.position
-    // keep the state history short
-    delete this.stateHistory[this.stateID-20]
 }
 
 PongPaddle.prototype.move = function(){
@@ -95,10 +80,6 @@ PongPaddle.prototype.movingLeft = function(){
 
 PongPaddle.prototype.movingRight = function(){
     this.direction = 1
-}
-
-PongPaddle.prototype.subscribe = function(ball){
-    this.subscribers[ball.stateID] = ball
 }
 
 PongPaddle.prototype.toJSON = function(){

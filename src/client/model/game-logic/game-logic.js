@@ -5,7 +5,8 @@ const Game = require('./objects/Game.js')
 var gameEventEmitter = new (require('events'))()
 
 var currentGame = null
-var intervalId = 0
+
+var slowpokeTimeout = {}
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(id){
@@ -32,16 +33,25 @@ module.exports.startGame = function({angle}){
     if(currentGame && !currentGame.isFinished){
         console.log('gameLogic - startGame')
         currentGame.ball.direction = angle
-        intervalId = setInterval(function(){
-            currentGame.update()
+        currentGame.ball.beginningDirection = angle
+        doUpdate()
+    }
+}
+
+function doUpdate(){
+    if(currentGame.canUpdate()){
+        setTimeout(function(){
+            currentGame.ball.move()
             gameEventEmitter.emit('gameStateUpdate')
+            for (let paddle of currentGame.sides)
+            paddle.move()
         }, 17)
     }
+
 }
 
 module.exports.killGame = function(){
     if(currentGame){
-        clearInterval(intervalId)
         delete currentGame.ball.game // I'm afraid of circular references
         currentGame = null
         gameEventEmitter.emit('gameStateUpdate')
@@ -57,6 +67,7 @@ module.exports.updatePlayer = function({id,position}){
         let p = currentGame.players[id]
         if(!p.isLocal){
             p.setPosition(position)
+            doUpdate()
         }
     }
 }
