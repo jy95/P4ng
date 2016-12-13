@@ -136,5 +136,12 @@ module.exports = {
     /*
         Event fired when the server wants to update players score on the database
      */
-    updateScores : "updateScores"
+    updateScores : "updateScores",
+
+    /*
+        Event fired when some weirdo is ejected from room because he is too slow
+        Client sends a JSON like this : {id: 47, roomId: 88}
+        If slowpokeLimit is reached, Eject him from room by sending him a leaveRoom JSON answer
+     */
+    kickSlowpoke : "kickSlowpoke"
 };

@@ -1,5 +1,6 @@
 let u = require('underscore');
 const props = require('../../properties-loader.js');
+const eventEnum = require('../../events.js');
 
 let Game = function (roomId) {
     this.slowpokeDelay = props.gameConsts.slowpokeDelay; 
@@ -7,10 +8,11 @@ let Game = function (roomId) {
     this.players = {};
     this.slowpokeTimeout;
     this.slowpokes = {};
+    this.slowpokesLimit = props.gameConsts.slowpokesLimit;
     this.scores = {};
     this.nbEndGameReceived = 0;
     this.playerStateReceived = new Set();
-    this.eventEmitter = new (require('events'))();
+    this.eventEmitter = require("../server-logic/gameEventEmitter.js").commonEmitter;
     this.onUpdate = function () {
 
     };
@@ -43,8 +45,9 @@ Game.prototype.updatePlayers = function(players){
         clearTimeout(this.slowpokeTimeout);
         this.playerStateReceived.clear();
         this.update();
-        this.slowpokeTimeout = setTimeout(function(){
-            this.punishSlowpokes();
+        let self = this;
+        self.slowpokeTimeout = setTimeout(function(){
+            self.punishSlowpokes();
         }, this.slowpokeDelay)
     }
 };
@@ -88,8 +91,8 @@ Game.prototype.punishSlowpokes = function(){
     for(let id in this.players){
         if(!(this.playerStateReceived.has(id))){
             this.slowpokes[id]++;
-            if(this.slowpokes[id] >= 7){
-                this.eventEmitter.emit('kickSlowpoke', id);
+            if(this.slowpokes[id] >= this.slowpokesLimit){
+                this.eventEmitter.emit(eventEnum.kickSlowpoke, { playerId: id, roomId: this.gameId});
             }
         }
     }
@@ -102,9 +105,5 @@ Game.prototype.reduceThePressure = function(){
         }
     }
 };
-
-Game.prototype.subscribe = function(callback){
-    this.eventEmitter.on('kickSlowpoke', function(id){callback(id)})
-}
 
 module.exports = Game;

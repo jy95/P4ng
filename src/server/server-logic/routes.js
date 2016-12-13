@@ -74,7 +74,6 @@ module.exports.gestionSocket = function(socket){
         });
     });
 
-
 };
 
 module.exports.gameStateUpdate = function (data) {
@@ -85,6 +84,7 @@ module.exports.gameStateUpdate = function (data) {
 
 module.exports.getRequiredDataForScore = function (callback) {
     lobby.getRequiredDataForScore( function (data) {
+        winston.log('info',"Server is going to save the game final scores");
        callback(data);
     });
 };
@@ -99,5 +99,11 @@ module.exports.newPlayerWhenSignIn = function (socket, idDb,data) {
         winston.log( (err) ? 'warn': 'info', "Request " + eventEnum.newPlayer + " with connection handled : " + ( (err) ? " with message " + err.message : " successfully") );
     });
 
+};
+
+module.exports.kickSlowpoke = function (playerId,roomId) {
+    lobby.kickSlowpoke(playerId,roomId, function (err) {
+        winston.log( (err) ? 'warn': 'info' , "Request " + eventEnum.kickSlowpoke + "  : " + ( (err) ? " with message " + err.message : " successfully" ));
+    });
 };
 

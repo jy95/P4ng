@@ -11,11 +11,6 @@ function Room(playerId,gameId,roomName) {
     this.game = new Game(this.gameId);
     this.emitter = require('../server-logic/gameEventEmitter.js').commonEmitter;
 
-    this.game.subscribe(function(id){
-        //id est l'id du slowpoke à virer
-        //tu peux récupérer la roomId directement ici
-    });
-
     // implement the onUpdate function of game
     this.game.onUpdate = function () {
 

@@ -69,8 +69,11 @@ module.exports.listen = function () {
 
     });
 
-    // still cannot use that because the end gameState is currently missing :
-    // emit eventsEnum.updateScores with gameEventEmitter to arrive here
+
+    gameEventEmitter.on(eventsEnum.kickSlowpoke, function (data) {
+        require("./server-logic/routes.js").kickSlowpoke(data.playerId,data.roomId);
+    });
+
     gameEventEmitter.on( eventsEnum.updateScores, function (data) {
 
         require("./server-logic/routes.js").getRequiredDataForScore( function (lobbyData) {

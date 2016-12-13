@@ -383,4 +383,11 @@ LobbyManager.prototype.socketsInsideARoom = function (roomId, callback) {
     }
 };
 
+LobbyManager.prototype.kickSlowpoke = function (playerId,roomId, callback) {
+    let socket = this.idToSockets.get(playerId);
+    this.leaveRoom(socket, {id: playerId, roomId: roomId} , function (err) {
+        callback(err);
+    });
+};
+
 module.exports = LobbyManager;
