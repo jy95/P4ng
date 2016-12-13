@@ -59,7 +59,7 @@ PongPaddle.prototype.setPosition = function (position){
     this.position = position
     this.manageHistory()
 
-    if(this.subscribers[this.stateID])this.subscribers.execute()
+    if(this.subscribers[this.stateID])this.subscribers[this.stateID].execute()
 
     return true
 }
@@ -80,8 +80,9 @@ PongPaddle.prototype.move = function(){
     if(position > this.max()) position = this.max()
     else if(position < this.min()) position = this.min()
 
-    // finally we set the position
-    if(this.isLocal) this.setPosition(position)
+    // finally we set the position only if he's local or a wall
+    // because remote peeps get updated by the socket events
+    if(this.isLocal || this.isAWall) this.setPosition(position)
 }
 
 PongPaddle.prototype.stop = function(){

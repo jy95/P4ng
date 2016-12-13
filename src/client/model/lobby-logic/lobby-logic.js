@@ -65,7 +65,7 @@ module.exports.leaveRoom = function({roomId, id}){
         theLobby.currentRoom.removePlayer(id)
     }
     // warn the server if order comes from local
-    if(!roomId) lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
+    if(!roomId && theLobby.currentRoom) lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
 
     // tell listeners
     lobbyEventEmitter.emit('lobbyUpdate')

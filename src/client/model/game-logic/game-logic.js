@@ -75,3 +75,7 @@ module.exports.stopPlayer = function({side}){
     if(currentGame)
     currentGame.sides[side].stop()
 }
+
+module.exports.wallPlayer = function({id}){
+    currentGame.players[id].wallMe()
+}

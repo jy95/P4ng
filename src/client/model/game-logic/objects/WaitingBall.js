@@ -63,6 +63,7 @@ WaitingBall.prototype.move = function(){
 // this method is called by a paddle we subscribed to
 // when it reaches the state we told it we were waiting for
 WaitingBall.prototype.execute = function(){
+    console.log("Working waiting ball!")
     for(let com of this.commands)
         com.bind(this.sittingBall)() // we execute the commands on the local ball
     // once we've done all the commands and reached a correct state
