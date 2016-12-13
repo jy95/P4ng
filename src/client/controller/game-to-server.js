@@ -9,8 +9,8 @@ gameLogic.subscribe(()=>{sendStateToServer()})
 function sendStateToServer (){
     let state = getLocalPlayersState()
     if(!state.isFinished){
-      socket.emit(eventsEnum.playerStateUpdate, state)
-      endGameAlreadySent = false
+        socket.emit(eventsEnum.playerStateUpdate, state)
+        endGameAlreadySent = false
     }
     else if (!endGameAlreadySent){
         socket.emit(eventsEnum.EndGame, state)
@@ -25,7 +25,7 @@ function getLocalPlayersState (){
     let state = gameLogic.getState()
     for(let p in state.players){
         if(state.players[p].isLocal)
-            localPlayersState.players[p] = state.players[p]
+        localPlayersState.players[p] = state.players[p]
     }
     localPlayersState.roomId = state.roomId
     localPlayersState.isFinished = state.isFinished

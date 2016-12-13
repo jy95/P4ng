@@ -38,15 +38,9 @@ function PongBall({direction, game}){
     if(direction === undefined || direction === null) direction = Math.random() * Math.PI * 2
     this.beginningDirection = direction
     this.direction = direction
-
-    // the waiting baaaaall, used to wait for paddle stateID
-    // see https://github.com/jy95/P4ng/wiki/Synchronizing-strategy
-    this.waitingBall = null
 }
 
 PongBall.prototype.move = function(){
-    if(this.waitingBall === null) this.waitingBall = new WaitingBall()
-    this.waitingBall.addCommand(this.waitingBall.move)
     // move the ball from (x,y) to (x',y')
     // to compute x' and y' it uses:
     // this.angle as direction,
@@ -131,10 +125,6 @@ PongBall.prototype.resetAfterScore = function(){
     this.speed = 10
 }
 
-PongBall.prototype.waitForState = function(stateID, paddle){
-    this.waitingBall.waitForState(stateID, paddle)
-}
-
 PongBall.prototype.toJSON = function(){
     return {x: this.x, y: this.y, width: this.width}
 }
@@ -197,5 +187,3 @@ function dealWithWest(val){
     let max = 5*Math.PI/2 - 0.02
     return keepBoundaries(min, max, val)%(Math.PI*2)
 }
-
-const WaitingBall = require('./WaitingBall.js')

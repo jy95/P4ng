@@ -59,22 +59,29 @@ module.exports.askToJoinRoom = function({roomId}){
 // leaves a room, warns the server if necessary
 module.exports.leaveRoom = function({roomId, id}){
     console.log('lobby logic - leave room')
-    // if the player is the main local player
-    if(id === theLobby.localPlayer.id || !roomId){
+    // if the player is the main local player and we haven't left yet
+    if(id === theLobby.localPlayer.id && theLobby.currentRoom){
         nukeRoom()
     }else{ // else juste remove the player
         theLobby.currentRoom.removePlayer(id)
+        gameLogic.wallPlayer({'id': id})
     }
     // warn the server if order comes from local
-    if(!roomId && theLobby.currentRoom) lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
+    if(!roomId && theLobby.currentRoom)
 
     // tell listeners
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
+module.exports.askToLeaveRoom = function(){
+    lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
+    nukeRoom()
+    lobbyEventEmitter.emit('lobbyUpdate')
+}
+
 function nukeRoom(){
-    theLobby.resetCurrentRoom()
     gameLogic.killGame()
+    theLobby.resetCurrentRoom()
 }
 
 module.exports.setCurrentRoom = function(data){

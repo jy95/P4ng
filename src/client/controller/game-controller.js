@@ -28,7 +28,7 @@ function onStart() {
 }
 
 function onStop(){
-    lobbyLogic.leaveRoom({roomId: false, id: false})
+    lobbyLogic.askToLeaveRoom()
 }
 
 function onAddPlayer() {

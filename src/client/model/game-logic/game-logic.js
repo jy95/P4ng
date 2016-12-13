@@ -1,12 +1,15 @@
 const props = require('../../../properties-loader.js')
 const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 const Game = require('./objects/Game.js')
+const gameToServer = require(props.gameToServerPath())
 
 var gameEventEmitter = new (require('events'))()
 
 var currentGame = null
 
 var timeoutExpired = true
+
+var updateTimeout
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(id){
@@ -44,11 +47,11 @@ function doUpdate(){
 
         for (let paddle of currentGame.sides)
         paddle.move()
-        
+
         console.log(currentGame.toJSON())
         gameEventEmitter.emit('gameStateUpdate')
         timeoutExpired = false
-        setTimeout(function(){
+        updateTimeout = setTimeout(function(){
             timeoutExpired = true
             doUpdate()
         }, 17)
@@ -57,6 +60,7 @@ function doUpdate(){
 
 module.exports.killGame = function(){
     if(currentGame){
+        if(updateTimeout)clearTimeout(updateTimeout)
         delete currentGame.ball.game // I'm afraid of circular references
         currentGame = null
         gameEventEmitter.emit('gameStateUpdate')

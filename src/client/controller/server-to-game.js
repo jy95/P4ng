@@ -13,8 +13,3 @@ socket.on(eventsEnum.startGame, ({angle, roomId})=>{
     console.log(`serverToGame - startGame --- ${angle}`)
     if(roomId !== -1) lobbyLogic.startGame({'angle': angle})
 })
-
-socket.on(eventsEnum.leaveRoom, ({id})=>{
-    console.log(`serverToGame - wall me`)
-    gameLogic.wallPlayer({'id': id})
-})
