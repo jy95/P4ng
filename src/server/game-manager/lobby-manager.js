@@ -273,9 +273,8 @@ LobbyManager.prototype.gameStateUpdate = function (data, callback) {
 
     this.socketsInsideARoom(data.roomId , function (sockets) {
         self.socketManager.broadcastMessageInRoom(sockets, eventEnum.playerStateUpdate, data );
-        console.log(data)
+        callback(null);
     });
-    callback(null);
 };
 
 LobbyManager.prototype.removeDisconnectedPlayers = function ( socket , callback) {
