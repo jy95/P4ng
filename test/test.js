@@ -13,11 +13,13 @@ let player4 = {name: "CHEATER"};
 
 let socket1;
 let socket2;
+let socket3;
 let roomId1;
 let playersRoomJson1;
 
 let socket1JWT;
 let socket2JWT;
+let socket3JWT;
 
 describe('Server tests : ' , function () {
 
@@ -161,6 +163,33 @@ describe('Server tests : ' , function () {
 
             });
 
+            it("Test n°5 : Should be able to registerUser ", function (done) {
+
+                let data = {
+                    "username": player3.name,
+                    "pwd": "TEST",
+                    "email": "TEST2@ipl.be"
+                };
+
+                let options = {
+                    host: props.socketProps.url.replace("http://", ""),
+                    path: '/registerUser',
+                    port: props.socketProps.port,
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    done();
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+
+            });
 
         });
 
@@ -219,7 +248,7 @@ describe('Server tests : ' , function () {
                 req.end();
             });
 
-            it("Test n°2 : Should  be able to /checkUserCredentials", function (done) {
+            it("Test n°3 : Should  be able to /checkUserCredentials", function (done) {
 
                 let data = {
                     "username": "Jacques",
@@ -258,7 +287,7 @@ describe('Server tests : ' , function () {
                 req.end();
             });
 
-            it("Test n°2 : Should  be able to /checkUserCredentials", function (done) {
+            it("Test n°4 : Should  be able to /checkUserCredentials", function (done) {
 
                 let data = {
                     "username": "TRUMP",
@@ -287,6 +316,45 @@ describe('Server tests : ' , function () {
 
                     res.on('end', () => {
                         socket2JWT = JSON.parse(content);
+                        done();
+                    });
+
+
+                });
+
+                req.write(JSON.stringify(data));
+                req.end();
+            });
+
+            it("Test n°5 : Should  be able to /checkUserCredentials", function (done) {
+
+                let data = {
+                    "username": player3.name,
+                    "pwd": "TEST",
+                    "email": "TEST2@ipl.be"
+                };
+
+                let options = {
+                    host: props.socketProps.url.replace("http://", ""),
+                    path: '/checkUserCredentials',
+                    port: props.socketProps.port,
+                    method: 'POST',
+                    headers: {
+                        "Content-Type" : "application/json;charset=UTF-8"
+                    }
+                };
+
+                let req = http.request(options, function(res) {
+                    assert.equal(res.statusCode,200);
+                    res.setEncoding('utf8');
+                    let content = "";
+
+                    res.on('data', (chunk) => {
+                        content += chunk;
+                    });
+
+                    res.on('end', () => {
+                        socket3JWT = JSON.parse(content);
                         done();
                     });
 
@@ -344,18 +412,16 @@ describe('Server tests : ' , function () {
 
             });
 
-            it('Test n°3 : Should be able to register a another new user : Player 3 (on socket 2)', function (done) {
-                this.timeout(250);
+            it('Test n°3 : Should be able to register a another new user : Player 3 - With sign in', function (done) {
 
-                testFunctions.createPlayer(socket2, player3, function (err, data) {
+                socket3 = io.connect(props.socketProps.url+":"+props.socketProps.port);
 
-                    if (err) {
-                        done(err);
-                    } else {
-                        player3.id = data.id;
-                        done();
-                    }
+                socket3.emit(eventEnum.signIn, socket2JWT );
 
+                socket3.on(eventEnum.newPlayer, function (data) {
+                    assert.notDeepEqual(data.id,-1,"Wrong email/passwd");
+                    player3.id = data.id;
+                    done();
                 });
 
             });
@@ -508,7 +574,7 @@ describe('Server tests : ' , function () {
 
                 });
 
-                it('Test n°4 : Should be able for another player to join a room : Player3 on Player 2 socket joins Player1 room', function (done) {
+                it('Test n°4 : Should be able for another player to join a room : Player3 joins Player1 room', function (done) {
                     this.timeout(500);
 
                     player3.roomId = roomId1;
@@ -520,7 +586,7 @@ describe('Server tests : ' , function () {
                         }
                     );
 
-                    testFunctions.joinRoom(socket2, player3, playersRoomJson1, function (err) {
+                    testFunctions.joinRoom(socket3, player3, playersRoomJson1, function (err) {
                         if (err) {
                             done(err);
                         } else {
@@ -701,7 +767,7 @@ describe('Server tests : ' , function () {
                     someScoreStuff["players"] = players;
 
 
-                    testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
+                    testFunctions.GameState([socket1,socket2,socket3], someScoreStuff, function (err) {
                         if (err) {
                             done(err);
                         } else {
@@ -712,22 +778,30 @@ describe('Server tests : ' , function () {
                 });
 
                 it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
-                    this.timeout(props.gameConsts.slowpokeDelay * props.gameConsts.slowpokesLimit + 500);
+
+                    this.timeout(5000);
+
                     // player 3 doesn't received playerStateUpdate at time X times
                     let someScoreStuff = {};
                     someScoreStuff["roomId"] = roomId1;
 
+                    let serverTimeout = parseInt(props.gameConsts.slowpokeDelay);
+                    let serverTries = parseInt(props.gameConsts.slowpokeLimit) +1;
+                    let count = serverTimeout * serverTries;
+
                     let players = {};
                     players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
                     players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":2,"position":18};
                     someScoreStuff["players"] = players;
+
 
                     let started = Date.now();
 
                     let interval = setInterval(function(){
 
                         // for n * slowpokeDelay seconds
-                        if (Date.now() - started > props.gameConsts.slowpokeDelay * props.gameConsts.slowpokesLimit) {
+                        if (Date.now() - started > count) {
 
                             // and then pause it
                             clearInterval(interval);
@@ -735,15 +809,34 @@ describe('Server tests : ' , function () {
                         } else {
 
                             // the thing to do every x ms
-                                async.forEach([socket1,socket2], function (socket, callback){
-                                    socket.emit(eventEnum.playerStateUpdate, someScoreStuff );
-                                    callback();
-                                }, function(err) {
-
-                                });
+                            async.forEach([socket1,socket2], function (socket, callback){
+                                socket.emit(eventEnum.playerStateUpdate, someScoreStuff );
+                                callback();
+                            }, function(err) {
+                                console.log("2 joueurs ont envoyé leur état à temps");
+                            });
 
                         }
-                    }, 17 );
+                    },  serverTimeout);
+
+                    let started2 = Date.now();
+
+                    let interval2 = setInterval(function(){
+
+                        // for n * slowpokeDelay seconds
+                        if (Date.now() - started2 > count) {
+
+                            // and then pause it
+                            clearInterval(interval2);
+
+                        } else {
+
+                            // the thing to do every x ms
+                            socket3.emit(eventEnum.playerStateUpdate, someScoreStuff );
+                            console.log("1 joueur en retard");
+
+                        }
+                    },  serverTimeout );
 
                     // player 3 should be ejected from room
                     socket2.on(eventEnum.leaveRoom, function (data) {
@@ -751,7 +844,6 @@ describe('Server tests : ' , function () {
                         assert.deepEqual(data.id, player3.id);
                     });
                     done();
-
                 })
 
             });

@@ -48,6 +48,7 @@ Game.prototype.updatePlayers = function(players){
         let self = this;
         self.slowpokeTimeout = setTimeout(function(){
             self.punishSlowpokes();
+            console.log("HERE PUNISH");
         }, this.slowpokeDelay)
     }
 };
