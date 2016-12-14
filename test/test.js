@@ -10,6 +10,7 @@ let player1 = {name: "Jacques" };
 let player2 = {name: "TRUMP" };
 let player3 = {name: "HELL OF CALLBACKS"};
 let player4 = {name: "CHEATER"};
+let someScoreStuff = {};
 
 let socket1;
 let socket2;
@@ -377,6 +378,9 @@ describe('Server tests : ' , function () {
             for (let socketTest of [socket1,socket2] ) {
                 if (socketTest !== undefined) {
                     socketTest.removeAllListeners();
+                }
+                if (roomId1 != undefined) {
+                    socket.emit(eventEnum.playerStateUpdate, someScoreStuff);
                 }
             }
             done();
@@ -766,7 +770,7 @@ describe('Server tests : ' , function () {
                     players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
                     someScoreStuff["players"] = players;
 
-                    while(true) {
+
                     testFunctions.GameState([socket1,socket2,socket3], someScoreStuff, function (err) {
                         if (err) {
                             done(err);
