@@ -712,7 +712,7 @@ describe('Server tests : ' , function () {
                 });
 
                 it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
-
+                    this.timeout(props.gameConsts.slowpokeDelay * props.gameConsts.slowpokesLimit + 500);
                     // player 3 doesn't received playerStateUpdate at time X times
                     let someScoreStuff = {};
                     someScoreStuff["roomId"] = roomId1;
@@ -721,6 +721,8 @@ describe('Server tests : ' , function () {
                     players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
                     players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
                     someScoreStuff["players"] = players;
+
+                    let started = Date.now();
 
                     let interval = setInterval(function(){
 
@@ -743,13 +745,12 @@ describe('Server tests : ' , function () {
                         }
                     }, 17 );
 
-                    console.log("DF");
                     // player 3 should be ejected from room
                     socket2.on(eventEnum.leaveRoom, function (data) {
                         assert.deepEqual(data.roomId, roomId1);
                         assert.deepEqual(data.id, player3.id);
-                        done();
                     });
+                    done();
 
                 })
 
