@@ -54,7 +54,15 @@ Last step : Run it :
 Simply run this :
 
 ```sh
-$ npm startClient
+$ npm run startClient
+```
+
+### Server Installation
+
+Simply run this :
+
+```sh
+$ npm run startServer
 ```
 
 ## Running tests
