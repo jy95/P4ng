@@ -9,19 +9,19 @@ let connectedDevices = 0 //number of connected devices
 let moveCallback
 let gamepadConnectedCallback
 let gamepadDisconnectedCallback
+let pollingInterval
 
 window.addEventListener("gamepadconnected", function(e) {
-    //console.log("Gamepad connected at index %d.", gp.index)
+    e.preventDefault()
     devices[e.gamepad.index] = { assigned: false }
-    console.log(devices[e.gamepad.index])
     connectedDevices++
-    gamepadConnectedCallback()
+    gamepadConnectedCallback({ deviceID: e.gamepad.index })
 })
 
 window.addEventListener("gamepaddisconnected", function(e) {
-    //console.log("Gamepad disconnected from index %d", e.gamepad.index)
+    e.preventDefault()
     if (devices[e.gamepad.index].assigned) {
-        assignedDevices--
+        deassignGamepad(e.gamepad.index)
     }
     delete devices[e.gamepad.index]
     connectedDevices--
@@ -35,7 +35,7 @@ function isPressed(b) {
     return Math.abs(b) >= 0.6 //b <= -0.6 || b >= 0.6
 }
 
-function poll(s) {
+function poll() {
     var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
     if (!gamepads) {
         return;
@@ -62,8 +62,6 @@ function poll(s) {
                 moveCallback({ deviceID: gp.index, value: 0 })
             }
         }
-
-        if (assignedDevices) window.requestAnimationFrame(poll)
     }
 }
 
@@ -91,7 +89,11 @@ function assignGamepad(playerSide, callback) {
             assignedID = deviceID
             assignedDevices++
             if (assignedDevices == 1) {
-                window.requestAnimationFrame(poll)
+                //window.requestAnimationFrame(poll)
+                pollingInterval = setInterval(function() {
+                    if (assignedDevices)
+                        poll()
+                }, 25)
             }
             break
         }
@@ -99,7 +101,6 @@ function assignGamepad(playerSide, callback) {
     let error = null
     if (assignedID == -1) { //couldn't assign a device
         error = { message: 'No gamepads available' }
-        console.log(error.message)
     }
     callback(error, { deviceID: assignedID, side: playerSide })
 }
@@ -113,6 +114,7 @@ function deassignGamepad(deviceID, callback) {
         device.assigned = false
         assignedDevices--
     }
+    if (!assignedDevices) clearInterval(pollingInterval)
     if (callback !== undefined) callback(null, null)
 }
 

@@ -98,6 +98,7 @@ PongBall.prototype.bounce = function(side, straightAngle, position){
     // else it's equal to 'no', meaning there was no collision (meaning a score)
     var angleOffset = this.game.getCollisionOffset(this.stateID, side, position)
     if(angleOffset !== 'no'){
+        if (side.isAWall) angleOffset = 0
         if(side === NORTH || side === EAST)angleOffset *= -1
         let naturalBounceAngle = naturalBounceFrom(side, this.direction)
         let newDirection = naturalBounceAngle + angleOffset
@@ -105,7 +106,7 @@ PongBall.prototype.bounce = function(side, straightAngle, position){
         let max = straightAngle + ((Math.PI/2) - 0.04) // 0.04 is arbitrary
         let min = straightAngle - (Math.PI/2) + 0.04
         // shit fix for west case
-        newDirection = side === WEST ? dealWithWest(min, max, newDirection) : keepBoundaries(min, max, newDirection)
+        //newDirection = side === WEST ? dealWithWest(min, max, newDirection) : keepBoundaries(min, max, newDirection)
         this.direction = newDirection
         this.incrementSpeed()
     }

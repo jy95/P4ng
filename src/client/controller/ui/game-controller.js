@@ -18,6 +18,7 @@ const RIGHT = 1
 let controllerMap = {} // maps deviceIDs to players
 let controllerQueue = [] // list of players (temporarily using the keyboard) who await available gamepads
 let assignmentFailures = {} // a support structure that helps avoid infinite callback loops
+let pendingDeviceID
 
 document.getElementById('stopButton').addEventListener('click', onStop)
 document.getElementById('startButton').addEventListener('click', onStart)
@@ -29,6 +30,7 @@ function onStart() {
 
 function onStop(){
     lobbyLogic.askToLeaveRoom()
+    deassignAll(0, true)
 }
 
 function onAddPlayer() {
@@ -47,7 +49,6 @@ function onAddPlayer() {
 * assigns a controller to the given player
 **/
 function assignController(controllerType, side, callback) {
-    deassignAll(side)
     if (controllerType == GAMEPAD) {
         gpc.assignGamepad(side, handleAssignment)
     } else {
@@ -101,15 +102,20 @@ function init() {
 /**
 * called when a new gamepad is available
 **/
-function onDeviceAvailable() {
-    assignFromQueue()
+function onDeviceAvailable(device) {
+    if (pendingDeviceID != device.deviceID) {
+        pendingDeviceID = device.deviceID
+        assignFromQueue()
+    }
 }
 
 function onDeviceDisconnect(data) {
-    var side = controllerMap[data.deviceID].side
-    delete controllerMap[data.deviceID]
-    assignController(KEYBOARD, side, undefined)
-    pushToQueue(side)
+    if (controllerMap[data.deviceID] !== undefined) {
+        var side = controllerMap[data.deviceID].side
+        delete controllerMap[data.deviceID]
+        assignController(KEYBOARD, side, undefined)
+        pushToQueue(side)
+    }
 }
 
 /**
@@ -151,10 +157,10 @@ function handleAssignment(err, data) {
         kbc.assignDevice(data.side, handleAssignment)
     } else { //success
         assignmentFailures[data.side] = 0
-        deassignAll(data.side) // necessary ?
         controllerMap[data.deviceID] = { side: data.side };
         if (controllerQueue.length > 0 && controllerQueue[0].side == data.side && controllerQueue[0].awaitingResponse) {
             popFromQueue()
+            if (pendingDeviceID == data.deviceID) pendingDeviceID = undefined
         }
     }
 }
@@ -162,16 +168,20 @@ function handleAssignment(err, data) {
 /**
 * deassign any devices currently assigned to the given player
 **/
-function deassignAll(side) {
+function deassignAll(side, allPlayers) {
     for (var deviceID in controllerMap) {
-        if (controllerMap[deviceID].side == side) {
-            delete controllerMap[deviceID]
-            if (isNaN(deviceID)) {
-                kbc.deassignDevice(deviceID)
-            } else {
-                gpc.deassignDevice(deviceID)
-            }
+        if (allPlayers || controllerMap[deviceID].side == side) {
+            deassignDevice(deviceID)
         }
+    }
+}
+
+function deassignDevice(deviceID) {
+    delete controllerMap[deviceID]
+    if (isNaN(deviceID)) {
+        kbc.deassignDevice(deviceID)
+    } else {
+        gpc.deassignGamepad(deviceID)
     }
 }
 
