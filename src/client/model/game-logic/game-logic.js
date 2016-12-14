@@ -12,6 +12,7 @@ var updateTimeout
 
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(id){
+    timeoutExpired = true
     currentGame = new Game(id)
     timeoutExpired = true
     return currentGame.ball.direction;
@@ -46,14 +47,12 @@ module.exports.startGame = function({angle}){
 }
 
 function doUpdate(){
-    console.log(currentGame)
     if(currentGame.canUpdate() && timeoutExpired){
         currentGame.ball.move()
 
         for (let paddle of currentGame.sides)
         paddle.move()
 
-        console.log(currentGame.toJSON())
         gameEventEmitter.emit('gameStateUpdate')
         timeoutExpired = false
         updateTimeout = setTimeout(function(){
@@ -102,5 +101,9 @@ module.exports.stopPlayer = function({side}){
 }
 
 module.exports.wallPlayer = function({id}){
-    if(currentGame) currentGame.players[id].wallMe()
+    if(currentGame && !currentGame.isFinished){
+        currentGame.players[id].wallMe()
+        currentGame.players[id].move()
+        doUpdate()
+    }
 }

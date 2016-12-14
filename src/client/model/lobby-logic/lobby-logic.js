@@ -3,7 +3,6 @@ const props = require('../../../properties-loader.js')
 const eventsEnum = require(props.eventsEnumPath())
 var lobbyToServer = require(props.lobbyToServerPath())
 var gameLogic = require(props.gameLogicPath())
-console.log('ll loaded')
 const gameController = require(props.gameControllerPath())
 const Lobby = require('./objects/Lobby.js')
 
@@ -75,8 +74,13 @@ module.exports.leaveRoom = function({roomId, id}){
 
 module.exports.askToLeaveRoom = function(){
     // tell the server
-    if(theLobby.currentRoom)
-    lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
+    if(theLobby.currentRoom){
+        lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
+        for(let id in theLobby.localGuestPlayers){
+            let p = theLobby.localGuestPlayers[id]
+            lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id: p.id})
+        }
+    }
 
     // leave anyway
     nukeRoom()

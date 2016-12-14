@@ -101,8 +101,9 @@ PongBall.prototype.bounce = function(side, straightAngle, position){
         if(side === NORTH || side === EAST)angleOffset *= -1
         let naturalBounceAngle = naturalBounceFrom(side, this.direction)
         let newDirection = naturalBounceAngle + angleOffset
+        console.log(`naturalBounceAngle: ${naturalBounceAngle}, angleOffset: ${angleOffset}, newDirection: ${newDirection}`)
         let max = straightAngle + ((Math.PI/2) - 0.04) // 0.04 is arbitrary
-        let min = straightAngle - ((Math.PI/2) + 0.04)
+        let min = straightAngle - (Math.PI/2) + 0.04
         // shit fix for west case
         newDirection = side === WEST ? dealWithWest(min, max, newDirection) : keepBoundaries(min, max, newDirection)
         this.direction = newDirection
@@ -179,17 +180,17 @@ function keepBoundaries(min, max, val){
 // shit fix
 function dealWithWest(min, max, newDirection){
     // counterclockwise 180° rotation
-    console.log(`${min} / ${max} / ${newDirection}`)
+    console.log(`${(min/(2*Math.PI))*360} / ${(max/(2*Math.PI))*360} / ${(newDirection/(2*Math.PI))*360}`)
     min += Math.PI
     max += Math.PI
     newDirection %= 2*Math.PI
     newDirection += Math.PI
-    console.log(`${min} / ${max} / ${newDirection}`)
+    console.log(`${(min/(2*Math.PI))*360} / ${(max/(2*Math.PI))*360} / ${(newDirection/(2*Math.PI))*360}`)
     // clockwise 180° rotation of the keepBoundaries result
     let res = keepBoundaries(min, max, newDirection)
-    console.log(res)
-    res-=Math.PI
-    console.log(res)
+    console.log((res/(2*Math.PI)*360))
+    res -= Math.PI
+    console.log((res/(2*Math.PI)*360))
 
     // if the result is negative, we rotate it 360° to make it positive but same direction
     // else we return it as such

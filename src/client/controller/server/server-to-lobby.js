@@ -32,7 +32,6 @@ socket.on(eventsEnum.joinRoom, (data)=>{
 
 socket.on(eventsEnum.leaveRoom, (data)=>{
     console.log('serverToLobby - leave room')
-    console.log(data)
     lobbyLogic.leaveRoom(data)
 })
 
