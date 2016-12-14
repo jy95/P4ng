@@ -776,7 +776,7 @@ describe('Server tests : ' , function () {
                     });
 
                 });
-
+                /*
                 it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
 
                     this.timeout(5000);
@@ -845,7 +845,7 @@ describe('Server tests : ' , function () {
                     });
                     done();
                 })
-
+                */
             });
 
             describe("Test case n°4 C : Last Tests", function () {
