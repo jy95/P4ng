@@ -47,6 +47,7 @@ function onAddPlayer() {
 * assigns a controller to the given player
 **/
 function assignController(controllerType, side, callback) {
+    deassignAll(side)
     if (controllerType == GAMEPAD) {
         gpc.assignGamepad(side, handleAssignment)
     } else {
@@ -68,7 +69,7 @@ function pushToQueue(side) {
         }
     }
     if (!waiting) { //avoid adding the same player multiple times
-        controllerQueue.push({side: side, awaitingResponse: false})
+        controllerQueue.push({ side: side, awaitingResponse: false })
     }
 }
 
@@ -117,12 +118,12 @@ function onDeviceDisconnect(data) {
 function handleMove(data) {
     if (data.value != 0) {
         if (data.value == LEFT) {
-            gameLogic.movePlayerLeft({side: controllerMap[data.deviceID].side})
+            gameLogic.movePlayerLeft({ side: controllerMap[data.deviceID].side })
         } else if (data.value == RIGHT) {
-            gameLogic.movePlayerRight({side: controllerMap[data.deviceID].side})
+            gameLogic.movePlayerRight({ side: controllerMap[data.deviceID].side })
         }
     } else {
-        gameLogic.stopPlayer({side: controllerMap[data.deviceID].side})
+        gameLogic.stopPlayer({ side: controllerMap[data.deviceID].side })
     }
 }
 
@@ -149,10 +150,9 @@ function handleAssignment(err, data) {
         //assign a keyboard 'device'
         kbc.assignDevice(data.side, handleAssignment)
     } else { //success
-
         assignmentFailures[data.side] = 0
         deassignAll(data.side) // necessary ?
-        controllerMap[data.deviceID] = {side: data.side, inMovement : false, skippingStop: false};
+        controllerMap[data.deviceID] = { side: data.side };
         if (controllerQueue.length > 0 && controllerQueue[0].side == data.side && controllerQueue[0].awaitingResponse) {
             popFromQueue()
         }
@@ -168,6 +168,8 @@ function deassignAll(side) {
             delete controllerMap[deviceID]
             if (isNaN(deviceID)) {
                 kbc.deassignDevice(deviceID)
+            } else {
+                gpc.deassignDevice(deviceID)
             }
         }
     }
@@ -176,6 +178,7 @@ function deassignAll(side) {
 module.exports = {
     init: init,
     assignController: assignController,
+    deassignController: deassignAll,
     GAMEPAD: GAMEPAD,
     KEYBOARD: KEYBOARD
 }

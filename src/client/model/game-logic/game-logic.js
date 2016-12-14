@@ -13,6 +13,7 @@ var updateTimeout
 // beginningDirection is used only when joining an existing game
 module.exports.initGame = function(id){
     currentGame = new Game(id)
+    timeoutExpired = true
     return currentGame.ball.direction;
 }
 
