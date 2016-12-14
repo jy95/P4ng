@@ -760,7 +760,7 @@ describe('Server tests : ' , function () {
                 it('Test n°1 : Should be able to send GameState ', function (done) {
                     this.timeout(350);
 
-                    let someScoreStuff = {};
+                    someScoreStuff = {};
                     someScoreStuff["roomId"] = roomId1;
 
                     let players = {};
@@ -785,15 +785,16 @@ describe('Server tests : ' , function () {
 
                 it("Test n°1 : Typisch way to end Game" , function (done) {
 
-                    let someScoreStuff = {};
+                    someScoreStuff = {};
                     someScoreStuff["roomId"] = roomId1;
 
                     let players = {};
                     players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
                     players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
                     someScoreStuff["players"] = players;
 
-                    async.forEach([socket1,socket2], function (socket, callback){
+                    async.forEach([socket1,socket2,socket3], function (socket, callback){
                         socket.emit(eventEnum.endGame, someScoreStuff );
                         callback();
                     }, function(err) {
