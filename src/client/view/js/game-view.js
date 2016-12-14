@@ -11,6 +11,11 @@ gameLogic.subscribe(()=>{
     updateView(gameLogic.getState())
 })
 
+gameLogic.subscribeStart(()=>{
+    console.log("COUCOU")
+    document.getElementById('startButton').disabled = true;
+})
+
 function updateView (state){
     requestAnimationFrame(()=>{
         c.clearRect(0,0,500,500)

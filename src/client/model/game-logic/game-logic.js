@@ -24,6 +24,13 @@ module.exports.subscribe = function(callback){
         callback()
     })
 }
+
+
+module.exports.subscribeStart = function(callback){
+    gameEventEmitter.on('gameStart', function(){
+        callback()
+    })
+}
 // this JSON player needs an id and a side
 // if he has no side, he is given a remaining side
 module.exports.addPlayer = function(player){
@@ -43,6 +50,7 @@ module.exports.startGame = function({angle}){
         currentGame.ball.direction = angle
         currentGame.ball.beginningDirection = angle
         doUpdate()
+        gameEventEmitter.emit('gameStart')
     }
 }
 

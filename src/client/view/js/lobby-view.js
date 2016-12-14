@@ -12,6 +12,8 @@ lobbyLogic.subscribe(function(){
         displayRooms(lobbyState.rooms)
         displayPlayers(lobbyState.players)
         displayLocalPlayer(lobbyState.localPlayer)
+        console.log("SALUT")
+        document.getElementById('startButton').disabled = false;
     }
 })
 
