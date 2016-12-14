@@ -46,6 +46,10 @@ Room.prototype.addPlayer = function(player){
     return true
 }
 
+Room.prototype.isMaster = function(id){
+    return this.players[0].id === id
+}
+
 Room.prototype.toJSON = function(){
     return {players: this.players, roomId: this.roomId, roomName: this.roomName}
 }

@@ -42,6 +42,7 @@ function PongPaddle ({side, isLocal, id}){
 PongPaddle.prototype.wallMe = function(){
     this.position = (FIELD_WIDTH/2)
     this.width = FIELD_WIDTH
+    this.isAWall = true
 }
 
 PongPaddle.prototype.max = function(){return FIELD_WIDTH - this.width/2}

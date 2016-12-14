@@ -101,11 +101,10 @@ PongBall.prototype.bounce = function(side, straightAngle, position){
         if(side === NORTH || side === EAST)angleOffset *= -1
         let naturalBounceAngle = naturalBounceFrom(side, this.direction)
         let newDirection = naturalBounceAngle + angleOffset
-        let fromLeft = comesFromLeft(this.direction, straightAngle)
-        let max = straightAngle + ((Math.PI/2) - 0.04) // 0.09 is arbitrary
-        let min = straightAngle - (Math.PI/2) + 0.04
+        let max = straightAngle + ((Math.PI/2) - 0.04) // 0.04 is arbitrary
+        let min = straightAngle - ((Math.PI/2) + 0.04)
         // shit fix for west case
-        newDirection = side === WEST ? dealWithWest(newDirection) : keepBoundaries(min, max, newDirection)
+        newDirection = side === WEST ? dealWithWest(min, max, newDirection) : keepBoundaries(min, max, newDirection)
         this.direction = newDirection
         this.incrementSpeed()
     }
@@ -171,10 +170,6 @@ function naturalBounceFrom(side, angle){
     return undefined
 }
 
-function comesFromLeft(inAngle, refAngle){
-    return (inAngle + Math.PI)%(Math.PI*2) > refAngle
-}
-
 function keepBoundaries(min, max, val){
     if(val>max)return max
     if(val<min)return min
@@ -182,8 +177,21 @@ function keepBoundaries(min, max, val){
 }
 
 // shit fix
-function dealWithWest(val){
-    let min = 3*Math.PI/2 + 0.02
-    let max = 5*Math.PI/2 - 0.02
-    return keepBoundaries(min, max, val)%(Math.PI*2)
+function dealWithWest(min, max, newDirection){
+    // counterclockwise 180° rotation
+    console.log(`${min} / ${max} / ${newDirection}`)
+    min += Math.PI
+    max += Math.PI
+    newDirection %= 2*Math.PI
+    newDirection += Math.PI
+    console.log(`${min} / ${max} / ${newDirection}`)
+    // clockwise 180° rotation of the keepBoundaries result
+    let res = keepBoundaries(min, max, newDirection)
+    console.log(res)
+    res-=Math.PI
+    console.log(res)
+
+    // if the result is negative, we rotate it 360° to make it positive but same direction
+    // else we return it as such
+    return res<0? res+(2*Math.PI) : res
 }

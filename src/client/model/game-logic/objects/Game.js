@@ -58,16 +58,34 @@ PongGame.prototype.addPlayer = function (player){
     return player.side
 }
 
+PongGame.prototype.removePlayer = function(id){
+    let playerToRemove = this.players[id]
+
+    // we start at the guy after the one we remove
+    // if there's none, we automatically skip that part
+    for(let i = playerToRemove.side+1; i<this.sides.length; i++){
+        // we shift him one place back in the side array
+        this.sides[i-1] = this.sides[i]
+        // we update his side attribute
+        this.side[i-1].side = i-1
+        // and remove the previous reference
+        delete this.sides[i]
+    }
+
+    delete this.players[id]
+}
+
 PongGame.prototype.getCollisionOffset = function(stateID, side, position){
     // the paddle that was hit
     var hitPaddle = this.sides[side]
 
     // returns the offset, and sets a waiting ball if needed
     var offset = this.getCollision(stateID, hitPaddle, position, this.ball.ballSize)
-    if(offset !== 'no' && !hitPaddle.isAWall) this.lastHitter = side
-    else{
+    if(offset !== 'no'){
+        if(!hitPaddle.isAWall)this.lastHitter = side
+    }else{
         // we give the paddle a point if we're sure he deserves it
-        if(this.lastHitter !== undefined && !this.isFinished){
+        if(this.lastHitter !== undefined && !this.isFinished && this.lastHitter !== hitPaddle.side){
             this.sides[this.lastHitter].score++
             this.isFinished = this.sides[this.lastHitter].score === this.maxScore
         }
@@ -103,7 +121,7 @@ PongGame.prototype.wallPlayer = function(id){
     let wallCounter = 0
 
     for(let paddle of this.sides)
-    if(paddle.isAWall()) wallCounter++
+    if(paddle.isAWall) wallCounter++
 
     if(wallCounter === 3)this.isFinished = true
 }

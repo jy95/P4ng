@@ -64,6 +64,7 @@ module.exports.leaveRoom = function({roomId, id}){
     if(id === theLobby.localPlayer.id && theLobby.currentRoom){
         nukeRoom()
     }else{ // else juste remove the player
+        if(theLobby.isMaster(id)) nukeRoom()
         theLobby.removePlayer(id)
         gameLogic.wallPlayer({'id': id})
     }

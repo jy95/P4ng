@@ -32,6 +32,12 @@ module.exports.addPlayer = function(player){
 module.exports.startGame = function({angle}){
     if(currentGame && !currentGame.isFinished){
         console.log('gameLogic - startGame')
+
+        for(let i = currentGame.sides.length; i < 4; i++){
+            currentGame.addPlayer({id: -i})
+            currentGame.wallPlayer(-i)
+        }
+
         currentGame.ball.direction = angle
         currentGame.ball.beginningDirection = angle
         doUpdate()
@@ -39,6 +45,7 @@ module.exports.startGame = function({angle}){
 }
 
 function doUpdate(){
+    console.log(currentGame)
     if(currentGame.canUpdate() && timeoutExpired){
         currentGame.ball.move()
 
@@ -58,8 +65,6 @@ function doUpdate(){
 module.exports.killGame = function(){
     if(currentGame){
         if(updateTimeout)clearTimeout(updateTimeout)
-        currentGame.isFinished = true;
-        gameEventEmitter.emit('gameStateUpdate')
         delete currentGame.ball.game // I'm afraid of circular references
         currentGame = null
         gameEventEmitter.emit('gameStateUpdate')

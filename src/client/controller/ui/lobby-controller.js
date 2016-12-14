@@ -15,6 +15,7 @@ function onCreate(){
 
 function makeOnJoinRoom(roomId){
     return function(){
+        lobbyToServer.getAvailableRooms()
         lobbyLogic.askToJoinRoom({'roomId': roomId})
     }
 }

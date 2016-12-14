@@ -109,6 +109,10 @@ Lobby.prototype.removePlayer = function(id){
     if(this.currentRoom) this.currentRoom.removePlayer(id)
 }
 
+Lobby.prototype.isMaster = function(id){
+    return this.currentRoom && this.currentRoom.isMaster(id)
+}
+
 Lobby.prototype.toJSON = function(){
     return {
         'rooms': this.availableRooms,
