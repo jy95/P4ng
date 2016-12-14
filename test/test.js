@@ -379,7 +379,7 @@ describe('Server tests : ' , function () {
                 if (socketTest !== undefined) {
                     socketTest.removeAllListeners();
                 }
-                if (roomId1 != undefined) {
+                if (someScoreStuff != {}) {
                     socketTest.emit(eventEnum.playerStateUpdate, someScoreStuff);
                 }
             }
