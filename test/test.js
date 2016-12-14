@@ -378,10 +378,13 @@ describe('Server tests : ' , function () {
             for (let socketTest of [socket1,socket2] ) {
                 if (socketTest !== undefined) {
                     socketTest.removeAllListeners();
+
+                    if (someScoreStuff != {} ) {
+                        socketTest.emit(eventEnum.playerStateUpdate, someScoreStuff);
+                    }
+
                 }
-                if (someScoreStuff != {}) {
-                    socketTest.emit(eventEnum.playerStateUpdate, someScoreStuff);
-                }
+
             }
             done();
         });
