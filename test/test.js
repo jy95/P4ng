@@ -722,25 +722,34 @@ describe('Server tests : ' , function () {
                     players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
                     someScoreStuff["players"] = players;
 
-                    for ( let i = 0 ; i < props.gameConsts.slowpokeLimit ; i++) {
+                    let interval = setInterval(function(){
 
-                        async.forEach([socket1,socket2], function (socket, callback){
-                            socket.emit(eventEnum.playerStateUpdate, someScoreStuff );
-                            callback();
-                        }, function(err) {
+                        // for n * slowpokeDelay seconds
+                        if (Date.now() - started > props.gameConsts.slowpokeDelay * props.gameConsts.slowpokesLimit) {
 
-                        });
+                            // and then pause it
+                            clearInterval(interval);
 
-                    }
+                        } else {
 
+                            // the thing to do every x ms
+                                async.forEach([socket1,socket2], function (socket, callback){
+                                    socket.emit(eventEnum.playerStateUpdate, someScoreStuff );
+                                    callback();
+                                }, function(err) {
 
+                                });
+
+                        }
+                    }, 17 );
+
+                    console.log("DF");
                     // player 3 should be ejected from room
                     socket2.on(eventEnum.leaveRoom, function (data) {
                         assert.deepEqual(data.roomId, roomId1);
                         assert.deepEqual(data.id, player3.id);
-
+                        done();
                     });
-                    done();
 
                 })
 
