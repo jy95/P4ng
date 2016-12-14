@@ -779,76 +779,7 @@ describe('Server tests : ' , function () {
                         }
                     });
                 });
-                /*
-                it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
 
-                    this.timeout(5000);
-
-                    // player 3 doesn't received playerStateUpdate at time X times
-                    let someScoreStuff = {};
-                    someScoreStuff["roomId"] = roomId1;
-
-                    let serverTimeout = parseInt(props.gameConsts.slowpokeDelay);
-                    let serverTries = parseInt(props.gameConsts.slowpokeLimit) +1;
-                    let count = serverTimeout * serverTries;
-
-                    let players = {};
-                    players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
-                    players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
-                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":2,"position":18};
-                    someScoreStuff["players"] = players;
-
-
-                    let started = Date.now();
-
-                    let interval = setInterval(function(){
-
-                        // for n * slowpokeDelay seconds
-                        if (Date.now() - started > count) {
-
-                            // and then pause it
-                            clearInterval(interval);
-
-                        } else {
-
-                            // the thing to do every x ms
-                            async.forEach([socket1,socket2], function (socket, callback){
-                                socket.emit(eventEnum.playerStateUpdate, someScoreStuff );
-                                callback();
-                            }, function(err) {
-                                console.log("2 joueurs ont envoyé leur état à temps");
-                            });
-
-                        }
-                    },  serverTimeout);
-
-                    let started2 = Date.now();
-
-                    let interval2 = setInterval(function(){
-
-                        // for n * slowpokeDelay seconds
-                        if (Date.now() - started2 > count) {
-
-                            // and then pause it
-                            clearInterval(interval2);
-
-                        } else {
-
-                            // the thing to do every x ms
-                            socket3.emit(eventEnum.playerStateUpdate, someScoreStuff );
-                            console.log("1 joueur en retard");
-
-                        }
-                    },  serverTimeout );
-
-                    // player 3 should be ejected from room
-                    socket2.on(eventEnum.leaveRoom, function (data) {
-                        assert.deepEqual(data.roomId, roomId1);
-                        assert.deepEqual(data.id, player3.id);
-                    });
-                    done();
-                })
-                */
             });
 
             describe("Test case n°4 C : Last Tests", function () {
@@ -900,3 +831,74 @@ describe('Server tests : ' , function () {
     });
 
 });
+
+/*
+ it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
+
+ this.timeout(5000);
+
+ // player 3 doesn't received playerStateUpdate at time X times
+ let someScoreStuff = {};
+ someScoreStuff["roomId"] = roomId1;
+
+ let serverTimeout = parseInt(props.gameConsts.slowpokeDelay);
+ let serverTries = parseInt(props.gameConsts.slowpokeLimit) +1;
+ let count = serverTimeout * serverTries;
+
+ let players = {};
+ players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
+ players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+ players[player3.id] = {"isLocal":true,"id": player3.id,"score":2,"position":18};
+ someScoreStuff["players"] = players;
+
+
+ let started = Date.now();
+
+ let interval = setInterval(function(){
+
+ // for n * slowpokeDelay seconds
+ if (Date.now() - started > count) {
+
+ // and then pause it
+ clearInterval(interval);
+
+ } else {
+
+ // the thing to do every x ms
+ async.forEach([socket1,socket2], function (socket, callback){
+ socket.emit(eventEnum.playerStateUpdate, someScoreStuff );
+ callback();
+ }, function(err) {
+ console.log("2 joueurs ont envoyé leur état à temps");
+ });
+
+ }
+ },  serverTimeout);
+
+ let started2 = Date.now();
+
+ let interval2 = setInterval(function(){
+
+ // for n * slowpokeDelay seconds
+ if (Date.now() - started2 > count) {
+
+ // and then pause it
+ clearInterval(interval2);
+
+ } else {
+
+ // the thing to do every x ms
+ socket3.emit(eventEnum.playerStateUpdate, someScoreStuff );
+ console.log("1 joueur en retard");
+
+ }
+ },  serverTimeout );
+
+ // player 3 should be ejected from room
+ socket2.on(eventEnum.leaveRoom, function (data) {
+ assert.deepEqual(data.roomId, roomId1);
+ assert.deepEqual(data.id, player3.id);
+ });
+ done();
+ })
+ */
