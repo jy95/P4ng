@@ -33,7 +33,7 @@ function Room({roomId, roomName, roomPlayers}){
 // this methods implements the strategy documented above
 Room.prototype.removePlayer = function(playerId){
     for(let i = 0; i<this.players.length; i++)
-    if(this.players[i].id === playerId) this.players.splice(i, 1)
+    if(this.players[i].id === playerId) return this.players.splice(i, 1)
 }
 
 // returns false if the player is already in the room or if the room is full

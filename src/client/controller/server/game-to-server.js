@@ -8,26 +8,32 @@ gameLogic.subscribe(()=>{sendStateToServer()})
 
 function sendStateToServer (){
     let state = getLocalPlayersState()
-    if(!state.isFinished){
-        socket.emit(eventsEnum.playerStateUpdate, state)
-        endGameAlreadySent = false
-    }
-    else if (!endGameAlreadySent){
-        socket.emit(eventsEnum.EndGame, state)
-        endGameAlreadySent = true
-    }
+    if(state){
+        if(!state.isFinished){
+            socket.emit(eventsEnum.playerStateUpdate, state)
+            endGameAlreadySent = false
+        }
+        else if (!endGameAlreadySent){
+            for(let p in state.players)
+            socket.emit(eventsEnum.endGame, state)
 
+            endGameAlreadySent = true
+        }
+    }
 }
 
 function getLocalPlayersState (){
     var localPlayersState = {}
     localPlayersState.players = {}
     let state = gameLogic.getState()
-    for(let p in state.players){
-        if(state.players[p].isLocal)
-        localPlayersState.players[p] = state.players[p]
+    if(state){
+        for(let p in state.players){
+            if(state.players[p].isLocal)
+            localPlayersState.players[p] = state.players[p]
+        }
+
+        localPlayersState.roomId = state.roomId
+        localPlayersState.isFinished = state.isFinished
     }
-    localPlayersState.roomId = state.roomId
-    localPlayersState.isFinished = state.isFinished
     return localPlayersState
 }

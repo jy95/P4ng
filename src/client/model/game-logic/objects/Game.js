@@ -97,6 +97,17 @@ PongGame.prototype.canUpdate = function(){
     return true
 }
 
+PongGame.prototype.wallPlayer = function(id){
+    this.players[id].wallMe()
+
+    let wallCounter = 0
+
+    for(let paddle of this.sides)
+    if(paddle.isAWall()) wallCounter++
+
+    if(wallCounter === 3)this.isFinished = true
+}
+
 PongGame.prototype.toJSON = function(){
     var thePlayers = {}
 
@@ -106,5 +117,4 @@ PongGame.prototype.toJSON = function(){
     var theBall = this.ball.toJSON()
 
     return {players : thePlayers, ball : theBall, isFinished: this.isFinished, roomId: this.id}
-
 }

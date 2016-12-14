@@ -105,6 +105,10 @@ Lobby.prototype.addPlayerToCurrentRoom = function(player){
     return this.currentRoom.addPlayer(player)
 }
 
+Lobby.prototype.removePlayer = function(id){
+    if(this.currentRoom) this.currentRoom.removePlayer(id)
+}
+
 Lobby.prototype.toJSON = function(){
     return {
         'rooms': this.availableRooms,

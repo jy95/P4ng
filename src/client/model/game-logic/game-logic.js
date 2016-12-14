@@ -15,7 +15,7 @@ module.exports.initGame = function(id){
     currentGame = new Game(id)
     return currentGame.ball.direction;
 }
-console.log('hahihiho')
+
 // subscribe to state update
 module.exports.subscribe = function(callback){
     gameEventEmitter.on('gameStateUpdate', function(){
@@ -25,10 +25,8 @@ module.exports.subscribe = function(callback){
 // this JSON player needs an id and a side
 // if he has no side, he is given a remaining side
 module.exports.addPlayer = function(player){
-    if(currentGame && !currentGame.isFinished){
-        currentGame.addPlayer(player)
-        console.log(player)
-    }
+    if(currentGame && !currentGame.isFinished)
+    currentGame.addPlayer(player)
 }
 
 module.exports.startGame = function({angle}){
@@ -60,6 +58,8 @@ function doUpdate(){
 module.exports.killGame = function(){
     if(currentGame){
         if(updateTimeout)clearTimeout(updateTimeout)
+        currentGame.isFinished = true;
+        gameEventEmitter.emit('gameStateUpdate')
         delete currentGame.ball.game // I'm afraid of circular references
         currentGame = null
         gameEventEmitter.emit('gameStateUpdate')
@@ -96,5 +96,5 @@ module.exports.stopPlayer = function({side}){
 }
 
 module.exports.wallPlayer = function({id}){
-    currentGame.players[id].wallMe()
+    if(currentGame) currentGame.players[id].wallMe()
 }

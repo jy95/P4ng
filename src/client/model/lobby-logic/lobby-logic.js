@@ -64,18 +64,20 @@ module.exports.leaveRoom = function({roomId, id}){
     if(id === theLobby.localPlayer.id && theLobby.currentRoom){
         nukeRoom()
     }else{ // else juste remove the player
-        theLobby.currentRoom.removePlayer(id)
+        theLobby.removePlayer(id)
         gameLogic.wallPlayer({'id': id})
     }
-    // warn the server if order comes from local
-    if(!roomId && theLobby.currentRoom)
 
     // tell listeners
     lobbyEventEmitter.emit('lobbyUpdate')
 }
 
 module.exports.askToLeaveRoom = function(){
+    // tell the server
+    if(theLobby.currentRoom)
     lobbyToServer.leaveRoom({roomId: theLobby.currentRoom.roomId, id:theLobby.localPlayer.id})
+
+    // leave anyway
     nukeRoom()
     lobbyEventEmitter.emit('lobbyUpdate')
 }

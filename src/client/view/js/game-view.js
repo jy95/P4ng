@@ -14,18 +14,20 @@ gameLogic.subscribe(()=>{
 function updateView (state){
     requestAnimationFrame(()=>{
         c.clearRect(0,0,500,500)
+        if(state){
 
-        c.fillStyle = '#FAEBD7'
-        // draw the ball
-        drawBall(state.ball)
+            c.fillStyle = '#FAEBD7'
+            // draw the ball
+            drawBall(state.ball)
 
-        // draw the paddles and scores
-        for(let id in state.players){
-            drawPaddle(state.players[id])
-            drawScore(state.players[id])
-            //drawName(state.players[id])
+            // draw the paddles and scores
+            for(let id in state.players){
+                drawPaddle(state.players[id])
+                drawScore(state.players[id])
+                //drawName(state.players[id])
+            }
+            drawCorners()
         }
-        drawCorners()
     })
 }
 
