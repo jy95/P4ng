@@ -5,21 +5,7 @@
     <title>P4ng!</title>
     <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function(){
-        var props = require('../../../properties-loader.js')
-        /*// doesn't work for some unknown reason
-        require(props.gameViewPath())
-        require(props.lobbyViewPath())
-        require(props.gameControllerPath())
-        require(props.lobbyControllerPath())*/
-
-        // ORDER MATTERS
-        require('../js/game-view.js')
-        require('../js/lobby-view.js')
-        require('../js/great-wall-of-trump-view.js')
-        require('../../controller/game-controller.js').init()
-        require('../../controller/lobby-controller.js')
-        require('../../controller/great-wall-of-trump-controller.js')
-
+        var props = require('../../init.js')
     })
     </script>
     <link rel="stylesheet" type="text/css" href="../css/p4ng-style.css">

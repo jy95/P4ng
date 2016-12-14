@@ -48,15 +48,15 @@ function poll(s) {
         for (let axis in gp.axes) {
             //behold ..  !!
             let keyVal = ~~gp.axes[axis] //the double-bitwise-NOT ! (1.0 --> 1, -1.0 --> -1)
-            /** 
+            /**
             *   apparantly more efficient than Math.floor/Math.ceil
-            *   source : 
+            *   source :
             * http://web.archive.org/web/20100422040551/http://james.padolsey.com/javascript/double-bitwise-not/
-            **/ 
+            **/
             if (isPressed(gp.axes[axis]) && !devices[gp.index].keys[axis]) {
                 devices[gp.index].keys[axis] = keyVal
-                moveCallback({ deviceID: gp.index, value: keyVal }) 
-                
+                moveCallback({ deviceID: gp.index, value: keyVal })
+
             } else if (!isPressed(gp.axes[axis]) && devices[gp.index].keys[axis]) {
                 devices[gp.index].keys[axis] = 0
                 moveCallback({ deviceID: gp.index, value: 0 })
@@ -84,9 +84,9 @@ function assignGamepad(playerSide, callback) {
         let gamepadInstance = devices[deviceID].gamepad
         if (devices[deviceID] === undefined || devices[deviceID].assigned == false) {
             devices[deviceID] = {
-                id: deviceID, 
+                id: deviceID,
                 assigned: true,
-                keys: [ 0, 0 ] 
+                keys: [ 0, 0 ]
             }
             assignedID = deviceID
             assignedDevices++

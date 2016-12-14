@@ -1,4 +1,4 @@
-const props = require('../../properties-loader.js');
+const props = require('../../../properties-loader.js');
 const socketProps = props.socketProps;
 const socket = require(props.socketPath());
 const eventsEnum = require(props.eventsEnumPath());
@@ -10,7 +10,7 @@ module.exports.registerUser = function(username, email, pwd, callback){
 
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-            manageResponse(xmlhttp, callback);        
+            manageResponse(xmlhttp, callback);
         }
     };
 
@@ -47,7 +47,7 @@ function manageResponse(xmlhttp, callback){
         callback(false, '');
     }
     else{
-        callback(true, xmlhttp.responseText);   
+        callback(true, xmlhttp.responseText);
     }
 }
 
@@ -55,6 +55,3 @@ module.exports.logInAsGuest = function(username, callback){
     socket.emit(eventsEnum.newPlayer, {name: username});
     callback();
 }
-
-
-

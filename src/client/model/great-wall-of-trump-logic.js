@@ -42,8 +42,8 @@ module.exports.checkCreateAccountForm = function(){
     else{
         greatWallOfTrumpEventEmitter.emit('greatWallOfTrumpUpdate', 'create');
     }
-    
-    
+
+
 
 }
 
@@ -61,11 +61,11 @@ module.exports.checkAuthenticateForm = function(){
         greatWallOfTrumpToServer.authenticate(emailAuthenticateForm.value, pwdAuthenticateForm.value, function(failed, msg){
             changeState(failed, msg);
             greatWallOfTrumpEventEmitter.emit('greatWallOfTrumpUpdate', 'authenticate');
-        });  
+        });
     }
     else{
          greatWallOfTrumpEventEmitter.emit('greatWallOfTrumpUpdate', 'authenticate');
-    }   
+    }
 }
 
 
@@ -82,7 +82,7 @@ module.exports.checkLogInAsGuestForm = function(){
     }
     else{
         greatWallOfTrumpEventEmitter.emit('greatWallOfTrumpUpdate', 'logInAsGuest');
-    } 
+    }
 
 }
 

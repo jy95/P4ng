@@ -1,4 +1,4 @@
-const props = require('../../properties-loader.js')
+const props = require('../../../properties-loader.js')
 const socket = require(props.socketPath());
 const eventsEnum = require(props.eventsEnumPath());
 var greatWallOfTrumpLogic = require(props.greatWallOfTrumpLogicPath())

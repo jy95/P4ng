@@ -11,16 +11,16 @@ greatWallOfTrumpLogic.subscribe(function(type){
     var state = greatWallOfTrumpLogic.getState();
     if(state.failed){
         switch(type){
-            case 'create': 
+            case 'create':
                 setText(alertCreateAccountForm, state.msg);
                 break;
-            case 'authenticate': 
+            case 'authenticate':
                 setText(alertAuthenticateForm, state.msg);
                 break;
             case 'logInAsGuest':
                 setText(alertLogInAsGuestForm, state.msg);
                 break;
-        }        
+        }
     }
     else
         displayLobby();

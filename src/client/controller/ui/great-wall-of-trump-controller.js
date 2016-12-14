@@ -1,4 +1,4 @@
-const props = require('../../properties-loader.js')
+const props = require('../../../properties-loader.js')
 var greatWallOfTrumpLogic = require(props.greatWallOfTrumpLogicPath())
 
 
@@ -19,4 +19,3 @@ document.getElementById('submitLogInAsGuestForm').addEventListener('click', func
      e.preventDefault();
      greatWallOfTrumpLogic.checkLogInAsGuestForm();
 })
-

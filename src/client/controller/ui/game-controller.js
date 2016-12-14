@@ -1,4 +1,4 @@
-const props = require('../../properties-loader.js')
+const props = require('../../../properties-loader.js')
 const gameLogic = require(props.gameLogicPath())
 const lobbyLogic = require(props.lobbyLogicPath())
 const lobbyToServer = require(props.lobbyToServerPath())

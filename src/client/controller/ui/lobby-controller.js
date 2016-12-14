@@ -1,4 +1,4 @@
-var props = require('../../properties-loader.js')
+var props = require('../../../properties-loader.js')
 var eventsEnum = require(props.eventsEnumPath())
 var lobbyLogic = require(props.lobbyLogicPath())
 var lobbyToServer = require(props.lobbyToServerPath())

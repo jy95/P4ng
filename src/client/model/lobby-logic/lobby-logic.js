@@ -3,6 +3,7 @@ const props = require('../../../properties-loader.js')
 const eventsEnum = require(props.eventsEnumPath())
 var lobbyToServer = require(props.lobbyToServerPath())
 var gameLogic = require(props.gameLogicPath())
+console.log('ll loaded')
 const gameController = require(props.gameControllerPath())
 const Lobby = require('./objects/Lobby.js')
 

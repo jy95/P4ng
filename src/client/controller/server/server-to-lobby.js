@@ -1,7 +1,8 @@
-const props = require('../../properties-loader.js')
+const props = require('../../../properties-loader.js')
 
 var eventsEnum = require(props.eventsEnumPath())
 var socket = require(props.socketPath())
+console.log(socket)
 var lobbyLogic = require(props.lobbyLogicPath())
 var gameLogic = require(props.gameLogicPath())
 

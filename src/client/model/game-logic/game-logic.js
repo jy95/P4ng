@@ -1,7 +1,6 @@
 const props = require('../../../properties-loader.js')
 const {NORTH, EAST, WEST, SOUTH} = props.gameConsts
 const Game = require('./objects/Game.js')
-const gameToServer = require(props.gameToServerPath())
 
 var gameEventEmitter = new (require('events'))()
 
@@ -16,7 +15,7 @@ module.exports.initGame = function(id){
     currentGame = new Game(id)
     return currentGame.ball.direction;
 }
-
+console.log('hahihiho')
 // subscribe to state update
 module.exports.subscribe = function(callback){
     gameEventEmitter.on('gameStateUpdate', function(){

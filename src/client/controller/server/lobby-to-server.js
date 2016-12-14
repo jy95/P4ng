@@ -1,10 +1,6 @@
-var props = require('../../properties-loader.js')
+var props = require('../../../properties-loader.js')
 var eventsEnum = require(props.eventsEnumPath())
 var socket = require(props.socketPath())
-// loading the modules because it has to be done somewhere
-require(props.serverToLobbyPath())
-require(props.serverToGamePath())
-require(props.gameToServerPath())
 
 module.exports.createRoom = function({id, roomName}){
     socket.emit(eventsEnum.createRoom, {'id': id, 'roomName': roomName})
