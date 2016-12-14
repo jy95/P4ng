@@ -379,10 +379,6 @@ describe('Server tests : ' , function () {
                 if (socketTest !== undefined) {
                     socketTest.removeAllListeners();
 
-                    if (someScoreStuff != {} ) {
-                        socketTest.emit(eventEnum.playerStateUpdate, someScoreStuff);
-                    }
-
                 }
 
             }
