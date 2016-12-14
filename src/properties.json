@@ -5,8 +5,8 @@
         "SOUTH": 2,
         "WEST": 3,
         "FIELD_WIDTH": 500,
-        "slowpokeDelay": 300,
-        "slowpokeLimit" : 3
+        "slowpokeDelay": 500,
+        "slowpokeLimit" : 7
     },
     "p4ngModules":{
         "eventsEnum": "./events.js",

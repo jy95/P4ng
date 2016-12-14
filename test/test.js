@@ -766,7 +766,7 @@ describe('Server tests : ' , function () {
                     players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
                     someScoreStuff["players"] = players;
 
-
+                    while(true) {
                     testFunctions.GameState([socket1,socket2,socket3], someScoreStuff, function (err) {
                         if (err) {
                             done(err);
@@ -774,7 +774,7 @@ describe('Server tests : ' , function () {
                             done();
                         }
                     });
-
+                    }
                 });
                 /*
                 it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
