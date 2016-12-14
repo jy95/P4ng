@@ -688,7 +688,7 @@ describe('Server tests : ' , function () {
 
             describe("Test case n°3 B : GameState", function () {
 
-                it('Test n°1 : Should be able to send GameState ', function (done) {
+                it('Test n°1 : Should be able to receive GameState ', function (done) {
                     this.timeout(350);
 
                     let someScoreStuff = {};
@@ -702,47 +702,11 @@ describe('Server tests : ' , function () {
 
 
                     testFunctions.GameState([socket1,socket2], someScoreStuff, function (err) {
-                        if (err) {
-                            done(err);
-                        } else {
-                            done();
-                        }
-                    });
-
-                });
-
-                it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
-
-                    // player 3 doesn't received playerStateUpdate at time X times
-                    let someScoreStuff = {};
-                    someScoreStuff["roomId"] = roomId1;
-
-                    let players = {};
-                    players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
-                    players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
-                    someScoreStuff["players"] = players;
-
-                    for ( let i = 0 ; i < props.gameConsts.slowpokeLimit ; i++) {
-
-                        async.forEach([socket1,socket2], function (socket, callback){
-                            socket.emit(eventEnum.playerStateUpdate, someScoreStuff );
-                            callback();
-                        }, function(err) {
-
-                        });
-
-                    }
-
-
-                    // player 3 should be ejected from room
-                    socket2.on(eventEnum.leaveRoom, function (data) {
-                        assert.deepEqual(data.roomId, roomId1);
-                        assert.deepEqual(data.id, player3.id);
 
                     });
                     done();
 
-                })
+                });
 
             });
 
@@ -756,9 +720,11 @@ describe('Server tests : ' , function () {
                     let players = {};
                     players[player1.id] = {"isLocal":true,"id": player1.id,"score":5,"position":18};
                     players[player2.id] = {"isLocal":true,"id": player2.id,"score":2,"position":18};
+                    players[player3.id] = {"isLocal":true,"id": player3.id,"score":1,"position":18};
                     someScoreStuff["players"] = players;
 
-                    async.forEach([socket1,socket2], function (socket, callback){
+                    // HERE TWO TIMES socket 2 because there are 2 players on it
+                    async.forEach([socket1,socket2,socket2], function (socket, callback){
                         socket.emit(eventEnum.endGame, someScoreStuff );
                         callback();
                     }, function(err) {
@@ -770,18 +736,18 @@ describe('Server tests : ' , function () {
 
                 it("Test n°2 : Exit Room  ", function (done) {
 
-                        this.timeout(500);
+                    this.timeout(500);
 
-                        testFunctions.RageExit(socket2,socket1,player2 , function (err) {
-                            if (err) {
-                                done(err);
-                            } else {
-                                done();
-                            }
-                        });
+                    testFunctions.RageExit(socket2,socket1,player2 , function (err) {
+                        if (err) {
+                            done(err);
+                        } else {
+                            done();
+                        }
+                    });
 
                 });
-                
+
                 it("Test n°3 : Master leaves his room", function (done) {
                     socket1.disconnect();
                     done();

@@ -5,7 +5,7 @@
         "SOUTH": 2,
         "WEST": 3,
         "FIELD_WIDTH": 500,
-        "slowpokeDelay": 200,
+        "slowpokeDelay": 300,
         "slowpokeLimit" : 7
     },
     "p4ngModules":{
