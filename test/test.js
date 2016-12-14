@@ -778,7 +778,6 @@ describe('Server tests : ' , function () {
                             done();
                         }
                     });
-                    }
                 });
                 /*
                 it("Test n°2 - kickSlowpoke : Player 3 should be expulsed ", function (done) {
