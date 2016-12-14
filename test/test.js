@@ -380,7 +380,7 @@ describe('Server tests : ' , function () {
                     socketTest.removeAllListeners();
                 }
                 if (roomId1 != undefined) {
-                    socket.emit(eventEnum.playerStateUpdate, someScoreStuff);
+                    socketTest.emit(eventEnum.playerStateUpdate, someScoreStuff);
                 }
             }
             done();
