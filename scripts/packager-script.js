@@ -42,7 +42,7 @@ if (error()) {
 // copy files for packaged app
 echo(" ");
 echo("Copy files for packaged app");
-cp('-R', 'src/client', 'client_for_package/src/client');
+cp('-R', 'src/client', 'client_for_package/src/');
 
 // check
 if ( error() ) {
