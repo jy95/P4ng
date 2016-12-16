@@ -9,8 +9,9 @@ let devices = {
     'kbPrimary': {
         'ArrowLeft': -1,
         'ArrowRight': 1,
+        'visualRepr': '  L/R  ',
         assigned: false
-    },
+    },  
     'kbSecondary': { //supports QWERTY and AZERTY keyboard layouts
         'a': -1,
         'A': -1,
@@ -18,6 +19,7 @@ let devices = {
         'Q': -1,
         'd': 1,
         'D': 1,
+        'visualRepr': '  A/D  ',
         assigned: false
     },
     'kbTertiary': { // ?
@@ -25,6 +27,7 @@ let devices = {
         'V': -1,
         'n': 1,
         'N': 1,
+        'visualRepr': '  V/N  ',
         assigned: false
     },
     'kbQuadriary': { // ?
@@ -32,6 +35,7 @@ let devices = {
         'I': -1,
         'p': 1,
         'P': 1,
+        'visualRepr': '  I/P  ',
         assigned: false
     }
 }
@@ -81,7 +85,7 @@ function assignDevice(playerSide, callback) {
     if (deviceID === null) { //couldn't assign a device, not really possible
         error = {message: 'All defined keysets are already assigned'}
     }
-    callback(error, {deviceID: deviceID, side: playerSide})
+    callback(error, {deviceID: deviceID, visualRepr: devices[deviceID].visualRepr, side: playerSide})
 }
 
 /**

@@ -12,7 +12,7 @@ let gamepadDisconnectedCallback
 let pollingInterval
 
 window.addEventListener("gamepadconnected", function(e) {
-    e.preventDefault()
+    e.preventDefault() // has this ever even worked ?
     devices[e.gamepad.index] = { assigned: false }
     connectedDevices++
     gamepadConnectedCallback({ deviceID: e.gamepad.index })

@@ -3,6 +3,9 @@ const gameLogic = require(props.gameLogicPath())
 const lobbyLogic = require(props.lobbyLogicPath())
 const lobbyToServer = require(props.lobbyToServerPath())
 
+const KEYBOARD_ICON = "../../view/icon-keyboard.png"
+const GAMEPAD_ICON = "../../view/icon-gamepad.png"
+
 //slave controllers
 const gpc = require('./gamepad-controller.js')
 const kbc = require('./keyboard-controller.js')
@@ -31,6 +34,12 @@ function onStart() {
 function onStop(){
     lobbyLogic.askToLeaveRoom()
     deassignAll(0, true)
+    var pControllerIcons = document.getElementsByClassName('controlIcon')
+    var pControlDetails = document.getElementsByClassName('controlDetails')
+    for (let i = 0; i < pControllerIcons.length; i++) {
+        pControllerIcons[i].style.visibility = 'hidden'
+        pControlDetails[i].textContent = ''
+    }
 }
 
 function onAddPlayer() {
@@ -42,6 +51,23 @@ function onAddPlayer() {
         inputZone.value = ''
         lobbyToServer.newPlayer({name: playerName})
         inputZone.style.visibility = 'hidden'
+    }
+}
+
+/**
+* updates the user interface with information regarding
+* a newly assigned controller (keyboard/gamepad icon + more details if necessary)
+**/
+function updateDeviceInfo(device) {
+    var pControllerIcons = document.getElementsByClassName('controlIcon')
+    var pControlDetails = document.getElementsByClassName('controlDetails')
+    pControllerIcons[device.side].style.visibility = 'visible'
+    if (getDeviceType(device) == KEYBOARD) {
+        pControllerIcons[device.side].src = KEYBOARD_ICON
+        pControlDetails[device.side].textContent = device.visualRepr
+    } else {
+        pControllerIcons[device.side].src = GAMEPAD_ICON
+        pControlDetails[device.side].textContent = ''
     }
 }
 
@@ -103,7 +129,7 @@ function init() {
 * called when a new gamepad is available
 **/
 function onDeviceAvailable(device) {
-    if (pendingDeviceID != device.deviceID) {
+    if (pendingDeviceID != device.deviceID) { // a desperate last minute attempt to fix an annoying bug
         pendingDeviceID = device.deviceID
         assignFromQueue()
     }
@@ -162,7 +188,12 @@ function handleAssignment(err, data) {
             popFromQueue()
             if (pendingDeviceID == data.deviceID) pendingDeviceID = undefined
         }
+        updateDeviceInfo(data)
     }
+}
+
+function getDeviceType(deviceID) {
+    return KEYBOARD ? isNaN(deviceID) : GAMEPAD
 }
 
 /**
@@ -178,7 +209,7 @@ function deassignAll(side, allPlayers) {
 
 function deassignDevice(deviceID) {
     delete controllerMap[deviceID]
-    if (isNaN(deviceID)) {
+    if (getDeviceType(deviceID) == KEYBOARD) {
         kbc.deassignDevice(deviceID)
     } else {
         gpc.deassignGamepad(deviceID)
