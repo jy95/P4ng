@@ -127,6 +127,7 @@ module.exports.startGame = function({angle}) {
             gameLogic.addPlayer(theRoom.players[i])
             //this is ideally where the game-controller should be asked to assign a
             //controller device to the players
+            if (theRoom.players[i].isLocal)
             gameController.assignController(gameController.GAMEPAD, i)
         }
         gameLogic.startGame({'angle': angle})

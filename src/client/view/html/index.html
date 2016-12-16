@@ -118,11 +118,16 @@
     <div id="gameContainer" class="closed">
         <div id="gamePanel">
             <h3 id="roomName"></h3>
-            <div style="margin: auto; width: 500px;">
-                <span class="roomPlayerName"></span><span>&nbsp;-&nbsp;</span>
-                <span class="roomPlayerName"></span><span>&nbsp;-&nbsp;</span>
-                <span class="roomPlayerName"></span><span>&nbsp;-&nbsp;</span>
-                <span class="roomPlayerName"></span>
+            <div id="roomPlayers" style="margin: auto; width: 500px;">
+                <div class="playerRow">
+                    <span class="roomPlayerName"></span><img class="controlIcon" src="" style="visibility:hidden;"><span class="controlDetails"></span><span>&nbsp;-&nbsp;</span></div>
+                <div class="playerRow">
+                    <span class="roomPlayerName"></span><img class="controlIcon" src="" style="visibility:hidden;"><span class="controlDetails"></span><span>&nbsp;-&nbsp;</span></div>
+                <div class="playerRow">
+                    <span class="roomPlayerName"></span><img class="controlIcon" src="" style="visibility:hidden;"><span class="controlDetails"></span><span>&nbsp;-&nbsp;</span></div>
+                <div class="playerRow">
+                    <span class="roomPlayerName"></span><img class="controlIcon" src="" style="visibility:hidden;"><span class="controlDetails"></span>
+                </div>
             </div>
             <canvas id="gameArea" width="500" height="500"></canvas>
             <div id="controls">

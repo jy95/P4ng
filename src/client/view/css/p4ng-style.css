@@ -103,6 +103,7 @@ h1, h3{
 /* GAME PANEL */
 
 canvas{
+    clear: both;
     display: block;
     background-color: #322;
     margin: auto;
@@ -113,6 +114,15 @@ canvas{
     display: block;
     margin: auto;
     width: 500px;
+}
+
+#roomPlayers div {
+    display: inline-block;
+}
+
+#roomPlayers img {
+    width: 28px;
+    height: 28px;
 }
 
 .control{
