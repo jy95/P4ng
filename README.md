@@ -39,7 +39,7 @@ $ npm run packagerApp
 ```
 > This script is designed to work on Windows 32 bits  
 > If you wish to change for your OS or architecture,    
-> Change line 33 in scripts/packager-script.sh to yours  
+> Change line 95 in scripts/packager-script.js to yours  
 > https://github.com/electron-userland/electron-packager for more details
 
 Last step : Run it :
