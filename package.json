@@ -12,6 +12,7 @@
     "express": "^4.14.0",
     "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.7.1",
+    "shelljs": "^0.7.5",
     "socket.io": "^1.5.1",
     "socket.io-client": "^1.6.0",
     "underscore": "^1.8.3",
@@ -30,7 +31,7 @@
     "startServer": "node src/server/launch-server.js",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec test/test.js",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
-	"packagerApp" : "scripts/packager-script.sh"
+    "packagerApp": "node scripts/packager-script.js"
   },
   "repository": {
     "type": "git",

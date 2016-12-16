@@ -1,9 +1,6 @@
 img_1.png
 orga_mvc_1.png
-/node_modules/*
-.idea/workspace.xml
-src/client/view/css/p4ng-style-browser.css
-src/client/view/js/script.js
-src/client/view/html/game-view-browser.html
+/node_modules
 /coverage
 /.idea
+/client_for_package

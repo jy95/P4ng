@@ -6,7 +6,7 @@ let Game = function (roomId) {
     this.slowpokeDelay = props.gameConsts.slowpokeDelay; 
     this.roomId = roomId;
     this.players = {};
-    this.slowpokeTimeout;
+    this.slowpokeTimeout = undefined;
     this.slowpokes = {};
     this.slowpokesLimit = props.gameConsts.slowpokesLimit;
     this.scores = {};
@@ -38,8 +38,10 @@ Game.prototype.removePlayer = function(player){
 
 Game.prototype.updatePlayers = function(players){
     for(let id in players){
-        this.players[id].push(players[id]);
-        this.playerStateReceived.add(id);
+        if (players.hasOwnProperty(id) ) {
+            this.players[id].push(players[id]);
+            this.playerStateReceived.add(id);
+        }
     }
     if(this.receivedAllPlayerStates()){
         clearTimeout(this.slowpokeTimeout);
@@ -57,7 +59,9 @@ Game.prototype.endGame = function (players, callback) {
     clearTimeout(this.slowpokeTimeout);
     this.nbEndGameReceived++;
     for(let id in players){
-        this.scores[id].push(players[id].score);
+        if (players.hasOwnProperty(id) ) {
+            this.scores[id].push(players[id].score);
+        }
     }
     callback(this.nbEndGameReceived == Object.keys(this.players).length);
 };
@@ -65,7 +69,9 @@ Game.prototype.endGame = function (players, callback) {
 Game.prototype.getFinalScores = function(){
     let finalScores = {};
     for(let id in this.scores){
-        finalScores[id] = u.chain(this.scores[id]).countBy().pairs().max(u.last).head().value();
+        if (this.scores.hasOwnProperty(id) ) {
+            finalScores[id] = u.chain(this.scores[id]).countBy().pairs().max(u.last).head().value();
+        }
     }
     return finalScores;
 };
@@ -73,11 +79,14 @@ Game.prototype.getFinalScores = function(){
 Game.prototype.getPlayerState = function(){
     let gameState = {};
     gameState["players"] = {};
-    for(let id in this.players){
-        let player = this.players[id].shift();
-        if(player !== undefined){
-             gameState["players"][id] = player.position;
-        }    
+    for(let id in this.players) {
+        if (this.players.hasOwnProperty(id)) {
+
+            let player = this.players[id].shift();
+            if (player !== undefined) {
+                gameState["players"][id] = player.position;
+            }
+        }
     }
     gameState.roomId = this.roomId;
     return gameState;
@@ -90,10 +99,12 @@ Game.prototype.receivedAllPlayerStates = function(){
 
 Game.prototype.punishSlowpokes = function(){
     for(let id in this.players){
-        if(!(this.playerStateReceived.has(id))){
-            this.slowpokes[id]++;
-            if(this.slowpokes[id] >= this.slowpokesLimit){
-                this.eventEmitter.emit(eventEnum.kickSlowpoke, { playerId: id, roomId: this.gameId});
+        if ( this.players.hasOwnProperty(id)) {
+            if (!(this.playerStateReceived.has(id))) {
+                this.slowpokes[id]++;
+                if (this.slowpokes[id] >= this.slowpokesLimit) {
+                    this.eventEmitter.emit(eventEnum.kickSlowpoke, {playerId: id, roomId: this.gameId});
+                }
             }
         }
     }
@@ -101,8 +112,10 @@ Game.prototype.punishSlowpokes = function(){
 
 Game.prototype.reduceThePressure = function(){
     for(let id in this.players){
-        if(this.slowpokes[id] >= 0.1){
-            this.slowpokes[id]-= 0.1;
+        if ( this.players.hasOwnProperty(id)) {
+            if (this.slowpokes[id] >= 0.1) {
+                this.slowpokes[id] -= 0.1;
+            }
         }
     }
 };

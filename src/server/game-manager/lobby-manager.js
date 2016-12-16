@@ -33,7 +33,7 @@ LobbyManager.prototype.joinRoom = function(socket,data,callback) {
                 });
 
                 // sends to new player an array of players
-                self.socketManager.sendMessage(socket, data.roomId ,eventEnum.ListEnrolledPlayers,json);
+                self.socketManager.sendMessage(socket, data.roomId ,eventEnum.listEnrolledPlayers,json);
 
                 callback(null);
 

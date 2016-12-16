@@ -86,17 +86,18 @@ module.exports.listen = function () {
             // get the sockets of all players from this game
             for ( let key in data ) {
 
-                // store the user socket
-                let mySocket = lobbyData.playersToSocket.get(key);
-                sockets.add(mySocket);
+                if ( data.hasOwnProperty(key)) {
+                    // store the user socket
+                    let mySocket = lobbyData.playersToSocket.get(key);
+                    sockets.add(mySocket);
 
-                // check if current player has the best score
-                if ( bestRecordScore < data[key]) {
-                    bestRecordScore = data[key];
-                    bestRecordUserKey = key;
-                    bestRecordSocketKey = mySocket.id;
+                    // check if current player has the best score
+                    if ( bestRecordScore < data[key]) {
+                        bestRecordScore = data[key];
+                        bestRecordUserKey = key;
+                        bestRecordSocketKey = mySocket.id;
+                    }
                 }
-
             }
 
             // check if there is a winner
@@ -104,7 +105,7 @@ module.exports.listen = function () {
             // => No winner
             // Resume : the winner should be the first user on the socket
 
-            if ( (lobbyData.idToSockets.get(bestRecordSocketKey).players)[0] === bestRecordUserKey ) {
+            if ( (bestRecordSocketKey !== undefined && lobbyData.idToSockets.get(bestRecordSocketKey).players)[0] === bestRecordUserKey ) {
 
                 let UserIdDatabase = lobbyData.socketIdtoIdDb.get(bestRecordSocketKey);
 

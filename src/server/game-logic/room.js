@@ -40,7 +40,7 @@ Room.prototype.addPlayer = function(player,callback) {
 Room.prototype.startGame = function(playerId,callback) {
 
     if (this.creatorId === playerId.id && !this.isStarted && !this.isFinished && this.players.length >= 2) {
-        isStarted = true;
+        this.isStarted = true;
         //this.game.start();
         callback(null);
     } else {
@@ -117,8 +117,10 @@ Room.prototype.listAllPlayer = function(callback) {
 Room.prototype.findPlayer = function(player) {
     let index = -1;
     for ( let key in this.players ) {
-        if (  this.players[key].id === player.id ) {
-            index = key;
+        if ( this.players.hasOwnProperty(key)) {
+            if (  this.players[key].id === player.id ) {
+                index = key;
+            }
         }
     }
     return index;
@@ -169,5 +171,8 @@ Room.prototype.stopGame = function () {
 
 };
 
+Room.prototype.canBeListed = function () {
+    return this.isStarted === false;
+};
 
 module.exports = Room;

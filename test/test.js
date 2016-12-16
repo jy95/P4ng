@@ -24,10 +24,18 @@ describe('Server tests : ' , function () {
     describe('Create and connect to a Server : ', function () {
 
         it('Test n°1 : Should create a Server' , function (done) {
+            this.timeout(2500);
             // Db init and jwt takes too much time now
-            this.timeout(25000);
-            require('../src/server/server.js').listen();
-            done();
+
+            try {
+                require.resolve("../src/server/server.js");
+                require('../src/server/server.js').listen();
+                done();
+            } catch(e) {
+                console.error("Server is not found");
+                process.exit(e.code);
+            }
+
         });
 
         // shup up winstom log

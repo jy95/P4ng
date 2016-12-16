@@ -157,15 +157,15 @@ Lobby.prototype.getAvailableRooms = function (callback) {
 
     // iteration
     this.rooms.forEach( (value,key) => {
+        if (value.canBeListed() ) {
+            // Json for a single room
+            let Roomjson = {};
 
-        // Json for a single room
-        let Roomjson = {};
-
-        value._allPlayers( function (err,data) {
-            Roomjson = data;
-            Roomsjson.push(Roomjson);
-        });
-
+            value._allPlayers( function (err,data) {
+                Roomjson = data;
+                Roomsjson.push(Roomjson);
+            });
+        }
     });
 
     callback(null,Roomsjson);

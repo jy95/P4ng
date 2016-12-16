@@ -109,11 +109,7 @@ module.exports = {
                 $inc : { partiesGagnees: 1  }
             },
             function(err, model) {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(null);
-                }
+                callback(err,model);
             }
         );
 
@@ -131,11 +127,7 @@ module.exports = {
                 $inc : { partiesFinies : 1}
             },
             function(err, model) {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(null);
-                }
+                callback(err,model);
             }
         );
 
