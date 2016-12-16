@@ -12,7 +12,6 @@ gameLogic.subscribe(()=>{
 })
 
 gameLogic.subscribeStart(()=>{
-    console.log("COUCOU")
     document.getElementById('startButton').disabled = true;
 })
 
