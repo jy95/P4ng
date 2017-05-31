@@ -13,11 +13,12 @@
     "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.7.2",
     "shelljs": "^0.7.5",
-    "socket.io": "^1.5.1",
-    "socket.io-client": "^1.6.0",
+    "socket.io": "^2.0.0",
+    "socket.io-client": "^2.0.0",
     "underscore": "^1.8.3",
     "uuid": "^3.0.0",
-    "winston": "^2.3.0"
+    "winston": "^2.3.0",
+    "snyk": "^1.32.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.15",
@@ -31,7 +32,9 @@
     "startServer": "node src/server/launch-server.js",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec test/test.js",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
-    "packagerApp": "node scripts/packager-script.js"
+    "packagerApp": "node scripts/packager-script.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -50,5 +53,6 @@
   "bugs": {
     "url": "https://github.com/jy95/P4ng/issues"
   },
-  "homepage": "https://github.com/jy95/P4ng#readme"
+  "homepage": "https://github.com/jy95/P4ng#readme",
+  "snyk": true
 }
